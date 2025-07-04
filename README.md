@@ -4,7 +4,6 @@
 개발자들을 위한 온라인 스터디 플랫폼
 
 </div>
-
 ![example branch parameter](https://github.com/StartStudy-project/Backend/actions/workflows/CICD.yml/badge.svg?branch=develop)
 
 
