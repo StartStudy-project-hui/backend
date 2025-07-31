@@ -7,7 +7,6 @@
 
 ![example branch parameter](https://github.com/StartStudy-project/Backend/actions/workflows/CICD.yml/badge.svg?branch=develop)
 
-
 ### 초기 데이터
 ```
 아이디 : admin@naver.com 
