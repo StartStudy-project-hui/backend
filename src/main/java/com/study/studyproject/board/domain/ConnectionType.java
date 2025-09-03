@@ -2,6 +2,8 @@ package com.study.studyproject.board.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.study.studyproject.global.exception.ex.ErrorCode;
+import com.study.studyproject.global.exception.ex.NotFoundException;
 
 public enum ConnectionType {
 
@@ -24,11 +26,13 @@ public enum ConnectionType {
     public static ConnectionType fromValue(String value) {
         if ("ONLINE".equalsIgnoreCase(value)) {
             return ONLINE;
-        } else if ("OFFLINE".equalsIgnoreCase(value)) {
-            return OFFLINE;
-        } else {
-            throw new IllegalArgumentException("Unknown value: " + value);
         }
+        if ("OFFLINE".equalsIgnoreCase(value)) {
+            return OFFLINE;
+        }
+
+        throw new NotFoundException(ErrorCode.NOT_FOUND_VALUE);
+
     }
 
 

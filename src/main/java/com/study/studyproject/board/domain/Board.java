@@ -14,6 +14,7 @@ import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.study.studyproject.board.domain.Recruit.*;
 import static com.study.studyproject.global.exception.ex.ErrorCode.UNABLE_DELETE_BOARD;
@@ -77,6 +78,18 @@ public class Board extends BaseTimeEntity {
 
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board board = (Board) o;
+        return Objects.equals(id, board.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Builder
     public Board(Member member, String title, String content, Category category, ConnectionType connectionType, OfflineLocation offlineLocation) {

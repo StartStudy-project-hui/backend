@@ -31,6 +31,7 @@ public enum ErrorCode {
 
     //그 외 오류
     NOT_FOUND_PAGE("페이지가 없습니다.", NOT_FOUND ),
+    NOT_FOUND_VALUE("값을 찾을 수 없습니다.",NOT_FOUND),
     INTERNAL_SEVER_ERROR("서버 에러가 발생하였습니다. 관리자에게 문의해 주세요.", INTERNAL_SERVER_ERROR );
 
     private final HttpStatus status;

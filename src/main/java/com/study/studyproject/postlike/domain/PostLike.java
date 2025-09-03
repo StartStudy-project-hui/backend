@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -36,6 +37,19 @@ public class PostLike extends BaseTimeEntity {
     public PostLike(Member member, Board board) {
         this.member = member;
         this.board = board;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PostLike postLike = (PostLike) o;
+        return Objects.equals(id, postLike.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public static PostLike create(Member member, Board board) {
