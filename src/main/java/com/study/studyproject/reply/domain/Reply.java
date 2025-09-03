@@ -13,6 +13,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
@@ -61,7 +62,18 @@ public class Reply extends BaseTimeEntity {
         this.board = board;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reply reply = (Reply) o;
+        return Objects.equals(id, reply.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     public static Reply toEntity(ReplyRequestDto replyRequestDto, Board board, Member member) {
         return Reply.builder()

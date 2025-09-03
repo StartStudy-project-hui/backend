@@ -16,6 +16,7 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -64,6 +65,19 @@ public class Member extends BaseTimeEntity {
         this.socialId = socialId;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return Objects.equals(id, member.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     public static Member toEntity(SocialType socialType, OAuth2UserInfo oauth2UserInfo) {
         return Member.builder().password("" + UUID.randomUUID())
