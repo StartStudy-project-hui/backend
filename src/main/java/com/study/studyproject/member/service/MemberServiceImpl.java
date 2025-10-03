@@ -49,8 +49,6 @@ public class MemberServiceImpl implements MemberService{
         if (memberRepository.existsByNickname(memberUpdateResDto.getNickname())) {
             throw new DuplicateException(NICKNAME_DUPLICATED);
         }
-
-
         Member getMember = memberRepository
                 .findById(member.getId())
                 .orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
@@ -70,10 +68,14 @@ public class MemberServiceImpl implements MemberService{
     public Member getOrCreateUser(OAuthAttributes attributes, SocialType socialType) {
         Member findMember = memberRepository.findBySocialTypeAndSocialId(socialType,
                 attributes.getOauth2UserInfo().getId()).orElse(null);
-        if (findMember == null) {
+        if (notFindMember(findMember)) {
             return saveMember(attributes, socialType);
         }
         return findMember;
+    }
+
+    private static boolean notFindMember(Member findMember) {
+        return findMember == null;
     }
 
     private Member saveMember(OAuthAttributes attributes, SocialType socialType) {

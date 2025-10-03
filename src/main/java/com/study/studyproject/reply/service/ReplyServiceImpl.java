@@ -63,18 +63,12 @@ public class ReplyServiceImpl implements ReplyService {
 
     @Transactional
     public void insert(Long memberId, ReplyRequestDto replyRequestDto) {
-        Board board = boardRepository.findById(replyRequestDto.getBoardId())
-                .orElseThrow(() -> new NotFoundException(NOT_FOUND_BOARD));
-
-        Member member = memberRepository
-                .findById(memberId)
-                .orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
-
+        Board board = findByBoardId(replyRequestDto);
+        Member member = findByMemberId(memberId);
         Reply reply = Reply.toEntity(replyRequestDto, board, member);
 
         if (replyRequestDto.isReplyParent()) { // 대댓글인 경우
-            Reply replyParent = replyRepository.findById(replyRequestDto.getParentId())
-                    .orElseThrow(() -> new NotFoundException(NOT_FOUND_REPLY));
+            Reply replyParent = findByReply(replyRequestDto);
             reply.updateParent(replyParent);
         }
 
@@ -86,7 +80,21 @@ public class ReplyServiceImpl implements ReplyService {
         replyRepository.save(reply);
     }
 
+    private Reply findByReply(ReplyRequestDto replyRequestDto) {
+        return replyRepository.findById(replyRequestDto.getParentId())
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_REPLY));
+    }
 
+    private Member findByMemberId(Long memberId) {
+        return memberRepository
+                .findById(memberId)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
+    }
+
+    private Board findByBoardId(ReplyRequestDto replyRequestDto) {
+        return boardRepository.findById(replyRequestDto.getBoardId())
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_BOARD));
+    }
 
 
     @Override
