@@ -29,14 +29,18 @@ public class PostLikeService {
 
 
     public PostLikeOneResponseDto getPostLikeForOneBoard(Member member, Long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException(NOT_FOUND_BOARD));
+        Board board = findByBoardId(boardId);
         Long postLikeId = findByPostLikeId(member, boardId);
         String  postLikeValue = findByPostLike(member, board);
         return PostLikeOneResponseDto.of(postLikeValue,postLikeId);
     }
 
+    private Board findByBoardId(Long boardId) {
+        return boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException(NOT_FOUND_BOARD));
+    }
+
     public Long findByPostLikeId(Member member, long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException(NOT_FOUND_BOARD));
+        Board board = findByBoardId(boardId);
         Optional<PostLike> byBoardAndMember = postLikeRepository.findByBoardAndMember(board, member);
         if (byBoardAndMember.isPresent()) {
             return byBoardAndMember.get().getId();
@@ -51,7 +55,7 @@ public class PostLikeService {
 
 
     public GlobalResultDto postLikeSave(Long boardId ,Member member) {
-        Board board = boardRepository.findById(boardId).orElseThrow(()-> new NotFoundException(NOT_FOUND_BOARD));
+        Board board = findByBoardId(boardId);
         Optional<PostLike> postLike = postLikeRepository.findByBoardAndMember(board, member);
         if (postLike.isPresent()) {
             throw new BadRequestException(POST_LIKE_DUPLICATED);
