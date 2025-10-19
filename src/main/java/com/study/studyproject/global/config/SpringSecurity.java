@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -52,7 +51,7 @@ public class SpringSecurity {
     //제외될 url
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers("/h2-console/**"); //제외될 url
+        return web -> web.ignoring().requestMatchers("/h2-console/**","/actuator/**"); //제외될 url
     }
 
     @Bean
@@ -111,6 +110,7 @@ public class SpringSecurity {
                                 , "/api/v*/auth/**", "/api/v*/board/**", "/api/v*/view/post-like/**").permitAll()
                         .requestMatchers("api/v*/board/member/**", "/api/v*/user/**", "/api/v*/postLike/**", "/api/v*/reply/**").authenticated()
                         .requestMatchers("api/v*/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().permitAll()
         );
 

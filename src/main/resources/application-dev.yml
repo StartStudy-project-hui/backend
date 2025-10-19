@@ -62,3 +62,13 @@ logging:
       springframework:
         web: DEBUG
     org.springframework.security: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,loggers,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: always

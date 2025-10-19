@@ -3,6 +3,7 @@ spring:
     active: local
 
 
+
 ---
 spring:
   profiles:
@@ -37,5 +38,16 @@ dotenv:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,loggers,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+      # localhost:8080/actuator
 
 
