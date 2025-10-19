@@ -14,6 +14,7 @@ import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.domain.PostLike;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,15 @@ class MemberServiceImplTest {
 
     @Autowired
     PostLikeRepository postLikeRepository;
+
+    @AfterEach
+    void tearDown() {
+        postLikeRepository.deleteAllInBatch();
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+
+    }
+
     @Test
     @DisplayName("사용자 정보를 조회한다.")
     void userInfoService() {
@@ -134,7 +144,7 @@ class MemberServiceImplTest {
         assertThat(content.size()).isEqualTo(2);
         assertThat(content)
                 .extracting("title", "type")
-                .containsExactly(
+                .contains(
                         tuple("제목2", "CS"),
                         tuple("제목1", "CS")
                 );

@@ -10,6 +10,7 @@ import com.study.studyproject.member.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,12 @@ class LoginServiceTest {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAllInBatch();
+
+    }
 
     @Test
     @DisplayName("사용자 이메일과 비밀번호가 일치했을 때, 로그인을 성공한다.")

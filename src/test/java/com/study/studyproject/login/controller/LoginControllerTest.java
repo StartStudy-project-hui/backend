@@ -7,6 +7,7 @@ import com.study.studyproject.login.dto.LoginRequest;
 import com.study.studyproject.login.dto.SignRequest;
 import com.study.studyproject.login.dto.TokenDtoResponse;
 import com.study.studyproject.member.repository.MemberRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,10 @@ class LoginControllerTest {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("사용자가 회원가입을 한다.")

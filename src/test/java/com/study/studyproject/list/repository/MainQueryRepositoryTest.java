@@ -9,6 +9,7 @@ import com.study.studyproject.list.dto.ListResponseDto;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,11 @@ class MainQueryRepositoryTest {
     MainQueryRepository mainQueryRepository;
 
 
+    @AfterEach
+    void tearDown() {
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("메인페이지에 찾고자 하는 값을 검색하여 정보를 추출한다.")

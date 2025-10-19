@@ -10,6 +10,7 @@ import com.study.studyproject.list.dto.MainRequestDto;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.reply.dto.ReplyRequestDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,11 @@ class MainControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @AfterEach
+    void tearDown() {
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("모든 카테고리를 최신순으로 조회한다.")

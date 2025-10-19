@@ -11,6 +11,7 @@ import com.study.studyproject.login.dto.TokenDtoResponse;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.reply.repository.ReplyRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,13 @@ class BoardControllerTest  {
     private JwtUtil jwtUtil;
 
 
+    @AfterEach
+    void tearDown() {
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+        replyRepository.deleteAllInBatch();
+
+    }
 
     @Test
     @DisplayName("게시글을 작성한다.")

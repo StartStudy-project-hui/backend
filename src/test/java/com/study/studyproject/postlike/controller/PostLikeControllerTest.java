@@ -9,6 +9,7 @@ import com.study.studyproject.global.jwt.JwtUtil;
 import com.study.studyproject.login.dto.TokenDtoResponse;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,14 @@ class PostLikeControllerTest {
 
     @Autowired
     private  JwtUtil jwtUtil;
+
+    @AfterEach
+    void tearDown() {
+        postLikeRepository.deleteAllInBatch();
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+
+    }
 
     @Test
     @DisplayName("관심글을 등록합니다.")
