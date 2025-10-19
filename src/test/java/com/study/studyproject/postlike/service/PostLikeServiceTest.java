@@ -10,6 +10,7 @@ import com.study.studyproject.global.exception.ex.BadRequestException;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,14 @@ class PostLikeServiceTest {
 
     @Autowired
     PostLikeRepository postLikeRepository;
+
+
+    @AfterEach
+    void tearDown() {
+        postLikeRepository.deleteAllInBatch();
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("관심글을 추가한다.")

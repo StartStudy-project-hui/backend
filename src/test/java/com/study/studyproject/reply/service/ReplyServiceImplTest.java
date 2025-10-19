@@ -13,6 +13,7 @@ import com.study.studyproject.reply.repository.ReplyRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,13 @@ class ReplyServiceImplTest {
     @Autowired
     private EntityManager entityManager;
 
+
+    @AfterEach
+    void tearDown() {
+        replyRepository.deleteAllInBatch();
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("게시글에 댓글 작성하다")

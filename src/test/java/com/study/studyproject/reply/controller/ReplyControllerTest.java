@@ -13,6 +13,7 @@ import com.study.studyproject.reply.dto.ReplyRequestDto;
 import com.study.studyproject.reply.dto.UpdateReplyRequest;
 import com.study.studyproject.reply.repository.ReplyRepository;
 import com.study.studyproject.reply.service.ReplyServiceImpl;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,13 @@ class ReplyControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @AfterEach
+    void tearDown() {
+        replyRepository.deleteAllInBatch();
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("게시글에 댓글 작성하다.")

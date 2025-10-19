@@ -20,6 +20,7 @@ import com.study.studyproject.reply.repository.ReplyRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,13 @@ class BoardServiceTest {
     @Autowired
     HttpServletRequest request;
 
+    @AfterEach
+    void tearDown() {
+        replyRepository.deleteAllInBatch();
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+
+    }
 
     @Test
     @DisplayName("게시글 저장을 한다.")

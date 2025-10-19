@@ -9,6 +9,7 @@ import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.dto.MemberListRequestDto;
 import com.study.studyproject.reply.repository.ReplyRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,12 @@ class MyPageQueryRepositoryTest {
     @Autowired
     JwtUtil jwtUtil;
 
+    @AfterEach
+    void tearDown() {
+        replyRepository.deleteAllInBatch();
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+    }
 
     @Test
     @DisplayName("마이페이지의 내가 작성한 글 조회한다. ")

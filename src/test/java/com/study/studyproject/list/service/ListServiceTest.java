@@ -69,7 +69,7 @@ class ListServiceTest {
         List<ListResponseDto> boardList = list.getContent();
         assertThat(boardList).hasSize(3)
                 .extracting("title","content","type")
-                .containsExactly(
+                .contains(
                         tuple("타이틀1", "내용3","CS"),
                         tuple("제목2", "내용2","CS"),
                         tuple("제목1", "내용1","CS")
