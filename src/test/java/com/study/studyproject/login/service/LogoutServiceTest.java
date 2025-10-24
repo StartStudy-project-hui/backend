@@ -9,6 +9,7 @@ import com.study.studyproject.login.repository.RefreshRepository;
 import com.study.studyproject.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,12 @@ class LogoutServiceTest {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAllInBatch();
+        refreshRepository.deleteAll();
 
+    }
 
     @Test
     @DisplayName("로그아웃 버튼을 누를 시, 로그아웃이 된다.")

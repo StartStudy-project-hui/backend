@@ -6,6 +6,7 @@ import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.reply.domain.Reply;
 import com.study.studyproject.member.repository.MemberRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,13 @@ class ReplyRepositoryImplTest {
     @Autowired
     BoardRepository boardRepository;
 
+    @AfterEach
+    void tearDown() {
+        replyRepository.deleteAllInBatch();
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+
+    }
 
     @Test
     @DisplayName("해당 게시글의 댓글과 부모 댓글와 작성자를 함께 조회한다.")

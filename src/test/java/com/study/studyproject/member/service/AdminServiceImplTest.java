@@ -12,6 +12,7 @@ import com.study.studyproject.member.dto.MemberListRequestDto;
 import com.study.studyproject.member.dto.UserInfoResponseDto;
 import com.study.studyproject.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,12 @@ class AdminServiceImplTest {
     AdminServiceImpl adminService;
 
 
+    @AfterEach
+    void tearDown() {
+        boardRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+
+    }
 
     @Test
     @DisplayName("사용자 검색을 입력하지 않을 경우, 사용자 전체 정보 가져온다.")
