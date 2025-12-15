@@ -5,6 +5,11 @@
 
 </div>
 
+![Hits](https://hitscounter.dev/api/hit?url=https%3A%2F%2Fgithub.com%2FStartStudy-project-hui%2Fbackend&label=Hit&icon=github&color=%236ea8fe&style=flat-square&tz=Asia%2FSeoul)
+
+
+
+
 ![example branch parameter](https://github.com/StartStudy-project/Backend/actions/workflows/CICD.yml/badge.svg?branch=develop)
 
 ### 초기 데이터
