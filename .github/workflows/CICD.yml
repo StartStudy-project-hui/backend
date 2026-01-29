@@ -67,7 +67,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
-            cd /home/ubuntu/Backend
+            cd /home/ubuntu/backend
             git pull origin main
             
             docker stop  backend || true
@@ -75,9 +75,7 @@ jobs:
 
 
             echo ${{ secrets.ENV }} | base64 --decode > ./.env
-            
             echo ${{ secrets.APPLICATION_SECRET }} | base64 --decode > ./src/main/resources/application-prod.yml
-            ls -la /home/ubuntu/.env
             
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/study_project:latest
             docker run --env-file ./.env -d --name backend -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/study_project:latest
