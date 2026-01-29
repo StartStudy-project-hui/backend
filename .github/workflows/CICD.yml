@@ -72,7 +72,11 @@ jobs:
             
             docker stop  backend || true
             docker rm  backend || true
-                
+
+            echo "SSH_CONNECTION=$SSH_CONNECTION"
+            echo "USER=$USER"
+
+            
             echo ${{ secrets.ENV }} | base64 --decode > ./.env
             echo ${{ secrets.APPLICATION_SECRET }} | base64 --decode > ./src/main/resources/application-prod.yml
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/study_project:latest
