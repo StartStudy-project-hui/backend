@@ -67,14 +67,16 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
-            cd Backend
-            git pull main
+            cd /home/ubuntu/backend
+            git pull origin main
             
             docker stop  backend || true
             docker rm  backend || true
-                
+
+
             echo ${{ secrets.ENV }} | base64 --decode > ./.env
             echo ${{ secrets.APPLICATION_SECRET }} | base64 --decode > ./src/main/resources/application-prod.yml
+            
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/study_project:latest
             docker run --env-file ./.env -d --name backend -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/study_project:latest
             sudo docker image prune -f
