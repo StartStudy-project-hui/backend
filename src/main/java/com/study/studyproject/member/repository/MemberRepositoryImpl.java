@@ -28,6 +28,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
 
         JPAQuery<Member> countQuery = getTotal(username);
         return PageableExecutionUtils.getPage(userInfoResponseDtos,pageable, countQuery::fetchCount);
+
     }
 
     @Override
