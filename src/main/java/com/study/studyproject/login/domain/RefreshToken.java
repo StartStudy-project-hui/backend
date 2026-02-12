@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.index.Indexed;
 @Getter
 @NoArgsConstructor
 @RedisHash(value = "refreshToken", timeToLive = 86400)
-public class RefreshToken {
+public class  RefreshToken {
     @Id
     private String email;
 

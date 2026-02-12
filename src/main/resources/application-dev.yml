@@ -9,7 +9,7 @@ spring:
       enabled: true
       force: true
   datasource:
-    url: jdbc:h2:tcp://localhost/~/bookstore
+    url: jdbc:h2:~/bookstore
     username: sa
     password:
     driver-class-name: org.h2.Driver
