@@ -4,6 +4,7 @@ import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.global.config.BaseTimeEntity;
 import com.study.studyproject.member.domain.Member;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import static jakarta.persistence.FetchType.LAZY;
 
 
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "postLike")
 public class PostLike extends BaseTimeEntity {

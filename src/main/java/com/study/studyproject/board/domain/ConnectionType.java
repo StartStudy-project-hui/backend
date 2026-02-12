@@ -12,7 +12,6 @@ public enum ConnectionType {
 
     @JsonValue
     private String description;
-
     ConnectionType(String description) {
         this.description = description;
     }

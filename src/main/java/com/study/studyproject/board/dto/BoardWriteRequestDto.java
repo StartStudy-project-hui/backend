@@ -43,7 +43,6 @@ public class BoardWriteRequestDto {
 
     public Board toEntity(Member member) {
         return Board.builder()
-                .member(member)
                 .title(title)
                 .content(content)
                 .category(category)

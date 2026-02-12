@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.global.config.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +17,7 @@ import java.util.Objects;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ad extends BaseTimeEntity {
 
     @Id @GeneratedValue
@@ -24,15 +26,18 @@ public class Ad extends BaseTimeEntity {
 
     private String name;
 
-    @OneToMany(mappedBy = "board_id")
-    private List<Board> board = new ArrayList<>();
+    @OneToMany(mappedBy = "ad")
+    private List<AdContractHistory> adContractHistories = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private AdStatus status;
 
+    @OneToMany(mappedBy = "ad")
+    private List<Banner> banners = new ArrayList<>();
+
     @Column(name = "start_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime  startDate;
+    private LocalDateTime  startDate; //시갖
 
     @Column(name = "end_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -50,4 +55,24 @@ public class Ad extends BaseTimeEntity {
     public int hashCode() {
         return Objects.hash(id);
     }
+    @Builder
+    public Ad(String name, List<AdContractHistory> adContractHistories, AdStatus status, List<Banner> banners, LocalDateTime startDate, LocalDateTime endDate) {
+        this.name = name;
+        this.adContractHistories = adContractHistories;
+        this.status = status;
+        this.banners = banners;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+
+
+    public void addHistory(AdContractHistory history) {
+        adContractHistories.add(history);
+        history.assignAd(this);
+    }
+
+
+
+
 }
