@@ -2,7 +2,6 @@ package com.study.studyproject.board.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.study.studyproject.board.domain.*;
-import com.study.studyproject.postlike.dto.PostLikeOneResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
