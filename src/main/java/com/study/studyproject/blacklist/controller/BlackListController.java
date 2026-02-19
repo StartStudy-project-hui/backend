@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.*;
 public class BlackListController {
     private final BlackListService blackListService;
 
-    // 등록
+    // 등록 /
     @PostMapping
-    public ResponseEntity<GlobalResultDto> register(@RequestBody BlackListCreateRequestDto dto) {
-        return ResponseEntity.ok(blackListService.register(dto));
+    public ResponseEntity<GlobalResultDto> registerOrUpdateBlackList(@RequestBody BlackListCreateRequestDto dto) {
+        return ResponseEntity.ok(blackListService.registerOrUpdateBlackList(dto));
     }
 
     // 수정

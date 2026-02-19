@@ -31,19 +31,26 @@ public class BlackListServiceImpl implements BlackListService {
     private final BlackListHistoryRepository blackListHistoryRepository;
 
     @Override
-    public GlobalResultDto register(BlackListCreateRequestDto request) {
+    public GlobalResultDto registerOrUpdateBlackList(BlackListCreateRequestDto request) {
 
         String hash = HashUtil.sha256(request.getRawValue());
-        BlackList blacklist = BlackList.create(request.getType(), hash, request.getReason());
+        BlackList findByBlackList = blacklistRepository.findByHashValueAndType(hash, request.getType())
+                .orElseGet(() -> BlackList.create(request.getType(), hash, request.getReason()));
 
-        //history reposeitory에서 가져오기 -
+        //history reposeitory에서 가져오기
         long violationCount = blackListHistoryRepository.countByHashValueAndAction(hash, REGISTER);
-        BlacklistStatus blacklistStatus = blacklist.setDuration(request.getDurationMonths(), violationCount);
+        BlacklistStatus blacklistStatus = findByBlackList.setDuration(request.getDurationMonths(), violationCount);
 
-        String hashValue = HashUtil.sha256(request.getRawValue());
-        BlackListHistory blackListHistory = BlackListHistory.save(BlacklistAction.REGISTER, blacklist,hashValue, request.getType(), request.getReason(), blacklistStatus);
 
-        blacklistRepository.save(blacklist);
+        if (findByBlackList.isNew()) { //값이 없다면
+            blacklistRepository.save(findByBlackList);
+        }
+
+        if(findByBlackList.existsInDB()){
+            findByBlackList.updateReason(request.getReason());
+        }
+
+        BlackListHistory blackListHistory = BlackListHistory.save(BlacklistAction.REGISTER, findByBlackList,hash, request.getType(), request.getReason(), blacklistStatus);
         blackListHistoryRepository.save(blackListHistory);
 
         return new GlobalResultDto("블랙리스트 등록 완료", HttpStatus.OK.value());
