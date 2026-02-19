@@ -109,7 +109,7 @@ public class SpringSecurity {
                         .requestMatchers("/api/v*/reply/view/**", "/api/v*/", "/api/renew-token"
                                 , "/api/v*/auth/**", "/api/v*/board/**", "/api/v*/view/post-like/**").permitAll()
                         .requestMatchers("api/v*/board/member/**", "/api/v*/user/**", "/api/v*/postLike/**", "/api/v*/reply/**").authenticated()
-                        .requestMatchers("api/v*/admin/**").hasRole("ADMIN")
+                        .requestMatchers("api/v*/admin/**","api/v*/back-list/admin/**").hasRole("ADMIN")
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().permitAll()
         );
