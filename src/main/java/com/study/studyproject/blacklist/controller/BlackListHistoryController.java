@@ -1,7 +1,8 @@
 package com.study.studyproject.blacklist.controller;
 
 import com.study.studyproject.blacklist.dto.request.BlackListHistoryMainRequestDto;
-import com.study.studyproject.blacklist.dto.response.BlacklistHistoryResponseDto;
+import com.study.studyproject.blacklist.dto.response.BlacklistHistoryAdminResponseDto;
+import com.study.studyproject.blacklist.dto.response.BlacklistHistoryMemberResponseDto;
 import com.study.studyproject.blacklist.service.BlackListHistoryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,19 +24,19 @@ public class BlackListHistoryController {
 
     // 전체 조회 , 특정 값 조회
     @GetMapping("admin/")
-    public ResponseEntity<Page<BlacklistHistoryResponseDto>> findPageBlackListHistory(
+    public ResponseEntity<Page<BlacklistHistoryAdminResponseDto>> findPageBlackListHistory(
             @ModelAttribute BlackListHistoryMainRequestDto blackListHistoryMainRequestDto
             , @PageableDefault(size = 15) Pageable pageable
     ) {
-        Page<BlacklistHistoryResponseDto> responseDto = blackListHistoryService.blackHistoryAdminList(blackListHistoryMainRequestDto, pageable);
+        Page<BlacklistHistoryAdminResponseDto> responseDto = blackListHistoryService.blackHistoryAdminList(blackListHistoryMainRequestDto, pageable);
         return ResponseEntity.ok(responseDto);
     }
 
 
     // 사용자가 조회시
     @GetMapping("{id}")
-    public Slice<BlacklistHistoryResponseDto> findSliceBlackListHistoryById(@PathVariable Long id,
-                                                                            @PageableDefault(size = 15) Pageable pageable) {
+    public Slice<BlacklistHistoryMemberResponseDto> findSliceBlackListHistoryById(@PathVariable Long id,
+                                                                                  @PageableDefault(size = 15) Pageable pageable) {
         return blackListHistoryService.findSliceBlackHistoryById(id, pageable);
 
     }

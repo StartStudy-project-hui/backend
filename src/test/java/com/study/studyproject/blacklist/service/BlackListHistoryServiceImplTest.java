@@ -5,7 +5,8 @@ import com.study.studyproject.blacklist.domain.BlackType;
 import com.study.studyproject.blacklist.domain.BlacklistAction;
 import com.study.studyproject.blacklist.domain.BlacklistStatus;
 import com.study.studyproject.blacklist.dto.request.BlackListHistoryMainRequestDto;
-import com.study.studyproject.blacklist.dto.response.BlacklistHistoryResponseDto;
+import com.study.studyproject.blacklist.dto.response.BlacklistHistoryAdminResponseDto;
+import com.study.studyproject.blacklist.dto.response.BlacklistHistoryMemberResponseDto;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.global.Hash.HashUtil;
 import com.study.studyproject.login.domain.Role;
@@ -74,9 +75,9 @@ class BlackListHistoryServiceImplTest {
         BlackListHistoryMainRequestDto dto = new BlackListHistoryMainRequestDto();
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        Page<BlacklistHistoryResponseDto> list = blackListHistoryService.blackHistoryAdminList(dto, pageRequest);
+        Page<BlacklistHistoryAdminResponseDto> list = blackListHistoryService.blackHistoryAdminList(dto, pageRequest);
 
-        List<BlacklistHistoryResponseDto> contents = list.getContent();
+        List<BlacklistHistoryAdminResponseDto> contents = list.getContent();
 
         assertThat(contents).hasSize(6)
                 .extracting("action")
@@ -95,7 +96,7 @@ class BlackListHistoryServiceImplTest {
         blackListHistoryRepository.saveAll(List.of(blackListHistory, update1,update2));
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        Slice<BlacklistHistoryResponseDto> findByIdSliceList = blackListHistoryService.findSliceBlackHistoryById(member1.getId(), pageRequest);
+        Slice<BlacklistHistoryMemberResponseDto> findByIdSliceList = blackListHistoryService.findSliceBlackHistoryById(member1.getId(), pageRequest);
 
         assertThat(findByIdSliceList).hasSize(3)
                 .extracting("action")

@@ -6,9 +6,11 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.studyproject.blacklist.domain.*;
 import com.study.studyproject.blacklist.dto.request.BlackListHistoryMainRequestDto;
-import com.study.studyproject.blacklist.dto.response.BlacklistHistoryResponseDto;
+import com.study.studyproject.blacklist.dto.response.BlacklistHistoryAdminResponseDto;
 import com.study.studyproject.blacklist.domain.BlackListHistory;
-import com.study.studyproject.blacklist.dto.response.QBlacklistHistoryResponseDto;
+import com.study.studyproject.blacklist.dto.response.BlacklistHistoryMemberResponseDto;
+import com.study.studyproject.blacklist.dto.response.QBlacklistHistoryAdminResponseDto;
+import com.study.studyproject.blacklist.dto.response.QBlacklistHistoryMemberResponseDto;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,8 +34,8 @@ public class BlackListHistoryRepositoryImpl implements BlackListHistoryRepositor
     }
 
     @Override
-    public Page<BlacklistHistoryResponseDto> blackListHistorySearchPageMainList(BlackListHistoryMainRequestDto condition, Pageable pageable) {
-        List<BlacklistHistoryResponseDto> content = getContent(condition, pageable);
+    public Page<BlacklistHistoryAdminResponseDto> blackListHistorySearchPageMainList(BlackListHistoryMainRequestDto condition, Pageable pageable) {
+        List<BlacklistHistoryAdminResponseDto> content = getContent(condition, pageable);
         JPAQuery<BlackListHistory> countQuery = getTotal(condition);
 
         return PageableExecutionUtils.getPage(content,pageable, () -> countQuery.select(blackListHistory.count()).fetchOne());
@@ -41,9 +43,9 @@ public class BlackListHistoryRepositoryImpl implements BlackListHistoryRepositor
 
 
 
-    private List<BlacklistHistoryResponseDto> getContent(BlackListHistoryMainRequestDto condition, Pageable pageable) {
+    private List<BlacklistHistoryAdminResponseDto> getContent(BlackListHistoryMainRequestDto condition, Pageable pageable) {
         return queryFactory
-                .select(new QBlacklistHistoryResponseDto(
+                .select(new QBlacklistHistoryAdminResponseDto(
                         blackListHistory.id
                         ,blackListHistory.reason, blackListHistory.createAt,blackListHistory.type
                         ,blackListHistory.createBy, blackListHistory.status,
@@ -94,13 +96,13 @@ public class BlackListHistoryRepositoryImpl implements BlackListHistoryRepositor
 //
 
     @Override
-    public Slice<BlacklistHistoryResponseDto> searchSliceByEmail(String hash, Pageable pageable) {
-        List<BlacklistHistoryResponseDto> result = queryFactory
-                .select(new QBlacklistHistoryResponseDto(
+    public Slice<BlacklistHistoryMemberResponseDto> searchSliceByEmail(String hash, Pageable pageable) {
+        List<BlacklistHistoryMemberResponseDto> result = queryFactory
+                .select(new QBlacklistHistoryMemberResponseDto(
                         blackListHistory.id
                         , blackListHistory.reason, blackListHistory.createAt, blackListHistory.type
-                        , blackListHistory.createBy, blackListHistory.status,
-                        blackListHistory.action, blackListHistory.hashValue))
+                        , blackListHistory.status,
+                        blackListHistory.action))
                 .from(blackListHistory)
                 .where(blackListHistory.hashValue.eq(hash))
                 .orderBy(blackListHistory.createAt.desc()
@@ -111,7 +113,7 @@ public class BlackListHistoryRepositoryImpl implements BlackListHistoryRepositor
         return checkNext(result, pageable);
     }
 
-    private Slice<BlacklistHistoryResponseDto> checkNext(List<BlacklistHistoryResponseDto> result, Pageable pageable) {
+    private Slice<BlacklistHistoryMemberResponseDto> checkNext(List<BlacklistHistoryMemberResponseDto> result, Pageable pageable) {
         boolean hasNext = false;
 
         if (result.size() > pageable.getPageSize()) {

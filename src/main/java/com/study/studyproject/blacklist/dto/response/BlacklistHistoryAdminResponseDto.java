@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class BlacklistHistoryResponseDto {
+public class BlacklistHistoryAdminResponseDto {
     @Schema(description = "블랙리스트 id", defaultValue = "1")
     private Long id;
     @Schema(description = "블랙리스트 히스토리 이유", defaultValue = "욕설")
@@ -38,7 +38,7 @@ public class BlacklistHistoryResponseDto {
     private String hashValue;
 
     @QueryProjection
-    public BlacklistHistoryResponseDto(Long id, String reason, LocalDateTime createdAt, BlackType type, String createBy, BlacklistStatus status, BlacklistAction action, String hashValue) {
+    public BlacklistHistoryAdminResponseDto(Long id, String reason, LocalDateTime createdAt, BlackType type, String createBy, BlacklistStatus status, BlacklistAction action, String hashValue) {
         this.id = id;
         this.reason = reason;
         this.createdAt = createdAt;
@@ -51,8 +51,8 @@ public class BlacklistHistoryResponseDto {
 
 
 
-    public static BlacklistHistoryResponseDto from(BlackListHistory history) {
-        return BlacklistHistoryResponseDto.builder()
+    public static BlacklistHistoryAdminResponseDto from(BlackListHistory history) {
+        return BlacklistHistoryAdminResponseDto.builder()
                 .id(history.getId())
                 .reason(history.getReason())
                 .action(history.getAction())

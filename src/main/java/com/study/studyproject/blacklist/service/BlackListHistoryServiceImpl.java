@@ -1,7 +1,8 @@
 package com.study.studyproject.blacklist.service;
 
 import com.study.studyproject.blacklist.dto.request.BlackListHistoryMainRequestDto;
-import com.study.studyproject.blacklist.dto.response.BlacklistHistoryResponseDto;
+import com.study.studyproject.blacklist.dto.response.BlacklistHistoryAdminResponseDto;
+import com.study.studyproject.blacklist.dto.response.BlacklistHistoryMemberResponseDto;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.global.Hash.HashUtil;
 import com.study.studyproject.global.exception.ex.NotFoundException;
@@ -24,12 +25,12 @@ public class BlackListHistoryServiceImpl implements BlackListHistoryService {
     private final BlackListHistoryRepository blackListHistoryRepository;
 
     @Override
-    public Page<BlacklistHistoryResponseDto> blackHistoryAdminList(BlackListHistoryMainRequestDto blackListHistoryMainRequestDto, Pageable pageable) {
+    public Page<BlacklistHistoryAdminResponseDto> blackHistoryAdminList(BlackListHistoryMainRequestDto blackListHistoryMainRequestDto, Pageable pageable) {
         return blackListHistoryRepository.blackListHistorySearchPageMainList(blackListHistoryMainRequestDto, pageable);
     }
 
     @Override
-    public Slice<BlacklistHistoryResponseDto> findSliceBlackHistoryById(Long id,Pageable pageable) {
+    public Slice<BlacklistHistoryMemberResponseDto> findSliceBlackHistoryById(Long id, Pageable pageable) {
         // 해당 닉네임 가져와서
         String email = memberRepository.findEmailById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
         String hash = HashUtil.sha256(email);
