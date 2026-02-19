@@ -12,9 +12,8 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "ad_contract_history")
-public class AdContractHistory extends BaseTimeEntity {
-    @Id
-    @GeneratedValue
+public class AdContractHistory extends com.study.studyproject.global.config.BaseTimeEntity {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ad_history_id")
     private Long id;
 

@@ -7,10 +7,7 @@ import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.postlike.domain.PostLike;
 import com.study.studyproject.reply.domain.Reply;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
@@ -23,11 +20,11 @@ import static com.study.studyproject.reply.domain.Reply.isReplies;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "title", "viewCount","content","category","recruit"})
 public class Board extends BaseTimeEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_id")
     private Long id;
 
