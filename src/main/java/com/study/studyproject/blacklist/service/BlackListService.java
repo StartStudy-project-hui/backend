@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface BlackListService {
-    GlobalResultDto register(BlackListCreateRequestDto dto);
+    GlobalResultDto registerOrUpdateBlackList(BlackListCreateRequestDto dto);
 
     GlobalResultDto update(Long id, BlackListUpdateRequestDto dto);
 

@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import  com.study.studyproject.blacklist.domain.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -68,11 +67,20 @@ public class BlackList {
     }
 
 
+    public boolean isNew() {
+        return this.id == null;
+    }
+
+    public boolean existsInDB() {
+        return !isNew();
+    }
+
     // 히스토리 연결 메서드
     public void addHistory(BlackListHistory history) {
         histories.add(history);
         history.addBlacklist(this);
     }
+
 
 
     public void updateReason(String reason) {
