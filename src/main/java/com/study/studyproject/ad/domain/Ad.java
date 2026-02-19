@@ -20,7 +20,8 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ad extends BaseTimeEntity {
 
-    @Id @GeneratedValue
+
+    @Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ad_id")
     private Long id;
 
