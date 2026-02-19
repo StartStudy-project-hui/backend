@@ -16,17 +16,11 @@ import com.study.studyproject.postlike.domain.PostLike;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
 import com.study.studyproject.reply.domain.Reply;
 import com.study.studyproject.reply.repository.ReplyRepository;
-import com.zaxxer.hikari.HikariDataSource;
-import io.lettuce.core.RedisClient;
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 //(33.450701, 126.570667)
 @Component

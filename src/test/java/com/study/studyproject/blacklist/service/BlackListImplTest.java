@@ -51,7 +51,7 @@ class BlackListImplUnitTest {
         when(blacklistRepository.save(any(BlackList.class))).thenReturn(saved);
 
         // when
-        GlobalResultDto register = blackListService.register(dto);
+        GlobalResultDto register = blackListService.registerOrUpdateBlackList(dto);
 
         // then
         assertThat(register.getStatusCode()).isEqualTo(200);
@@ -61,6 +61,8 @@ class BlackListImplUnitTest {
         verify(blackListHistoryRepository).countByHashValueAndAction(anyString(), any());
 
     }
+
+
 
 
     @Test
