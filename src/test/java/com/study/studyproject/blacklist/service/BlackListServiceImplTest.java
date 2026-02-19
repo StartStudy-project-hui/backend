@@ -30,8 +30,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class BlackListServiceImplTest {
 
-    @Autowired
-    BlackListRepository blacklistRepository;
 
     @Autowired
     BlackListHistoryRepository blackListHistoryRepository;
@@ -60,12 +58,42 @@ class BlackListServiceImplTest {
         BlackListCreateRequestDto requestDto = new BlackListCreateRequestDto(member1.getEmail(), BlackType.EMAIL, "pishing", 1);
 
         //when
-        GlobalResultDto register = blackListService.register(requestDto);
+        GlobalResultDto register = blackListService.registerOrUpdateBlackList(requestDto);
 
         //then
         List<BlackList> all = blackListRepository.findAll();
         assertThat(all).hasSize(1);
         assertThat(register.getStatusCode()).isEqualTo(200);
+
+    }
+
+    @Test
+    @DisplayName("블랙리스트에 2번 등록하면 블랙리스트는 수정하면 저장이 된다.")
+    void blackList_update() throws Exception {
+        //given
+
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1", Role.ROLE_ADMIN);
+        BlackListCreateRequestDto requestDto = new BlackListCreateRequestDto(member1.getEmail(), BlackType.EMAIL, "pishing", 1);
+
+        //when
+        GlobalResultDto register = blackListService.registerOrUpdateBlackList(requestDto);
+
+        BlackListCreateRequestDto requestDto2 = new BlackListCreateRequestDto(member1.getEmail(), BlackType.EMAIL, "변경-욕설", 2);
+
+        //when
+        GlobalResultDto res = blackListService.registerOrUpdateBlackList(requestDto2);
+
+        //then
+        List<BlackList> blackList = blackListRepository.findAll();
+
+        List<BlackListHistory> history = blackListHistoryRepository.findByHashValue(blackList.get(0).getHashValue());
+
+
+
+        assertThat(blackList).hasSize(1);
+        assertThat(blackList.get(0).getReason()).isEqualTo("변경-욕설");
+        assertThat(history.size()).isEqualTo(2);
+        assertThat(res.getStatusCode()).isEqualTo(200);
 
     }
 
