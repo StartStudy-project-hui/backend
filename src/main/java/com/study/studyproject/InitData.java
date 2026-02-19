@@ -1,10 +1,14 @@
 package com.study.studyproject;
 
+import com.study.studyproject.blacklist.domain.*;
+import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
+import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.board.domain.ConnectionType;
 import com.study.studyproject.board.domain.OfflineLocation;
 import com.study.studyproject.board.repository.BoardRepository;
+import com.study.studyproject.global.Hash.HashUtil;
 import com.study.studyproject.login.domain.Role;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
@@ -21,6 +25,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 //(33.450701, 126.570667)
 @Component
@@ -42,6 +48,14 @@ public class InitData {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    BlackListRepository blackListRepository;
+
+    @Autowired
+    BlackListHistoryRepository blackListHistoryRepository;
+
+
 
 
     @PostConstruct
@@ -79,6 +93,20 @@ public class InitData {
                 .build();
 
         memberRepository.save(membertree);
+
+        Member[] arr1 = {
+              memberOne, membertwo, membertree
+        };
+
+        for (int i = 0; i < 16; i++) {
+            int val = (int) (Math.random() * 3);
+            String hashValue = HashUtil.sha256(arr1[val].getEmail());
+            BlackList blackList1 = BlackList.create(BlackType.EMAIL, hashValue, "피싱");
+            BlackListHistory hisitory = BlackListHistory.save(BlacklistAction.REGISTER, blackList1, hashValue, BlackType.EMAIL, "피싱", BlacklistStatus.ACTIVE);
+            blackListRepository.save(blackList1);
+            blackListHistoryRepository.save(hisitory);
+        }
+
 
         Category[] arr = {
                 Category.CS, Category.기타, Category.코테
@@ -143,6 +171,9 @@ public class InitData {
             PostLike postLike = PostLike.create(membertree, getBoard);
             postLikeRepository.save(postLike);
         }
+
+
+        
 
 
     }
