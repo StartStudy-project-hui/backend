@@ -58,7 +58,7 @@ public class InitData {
         String encode1 = passwordEncoder.encode("Y@3r9o$7k");
         String encode2 = passwordEncoder.encode("Y@3r9o$7aaak");
         String encode3 = passwordEncoder.encode("Y@3r9o$7kff");
-        Member memberOne = Member.builder()
+        Member user = Member.builder()
                 .role(Role.ROLE_USER)
                 .username("김하임")
                 .email("kimSky@naver.com")
@@ -66,19 +66,19 @@ public class InitData {
                 .password(passwordEncoder.encode("Y@3r9o$7k"))
                 .build();
 
-        memberRepository.save(memberOne);
+        memberRepository.save(user);
 
-        Member membertwo = Member.builder()
+        Member admin = Member.builder()
                 .role(Role.ROLE_ADMIN)
                 .username("김일우")
                 .email("admin@naver.com")
                 .nickname("admin")
                 .password(encode2)
                 .build();
-        memberRepository.save(membertwo);
+        memberRepository.save(admin);
 
         Member member = memberRepository.findById(1L).get();
-        Member membertree = Member.builder()
+        Member user2 = Member.builder()
                 .role(Role.ROLE_USER)
                 .username("김지우")
                 .email("huj@naver.com")
@@ -86,21 +86,15 @@ public class InitData {
                 .password(encode3)
                 .build();
 
-        memberRepository.save(membertree);
+        memberRepository.save(user2);
 
         Member[] arr1 = {
-              memberOne, membertwo, membertree
+              user, admin, user2
         };
 
-        for (int i = 0; i < 16; i++) {
-            int val = (int) (Math.random() * 3);
-            String hashValue = HashUtil.sha256(arr1[val].getEmail());
-            BlackList blackList1 = BlackList.create(BlackType.EMAIL, hashValue, "피싱");
-            BlackListHistory hisitory = BlackListHistory.save(BlacklistAction.REGISTER, blackList1, hashValue, BlackType.EMAIL, "피싱", BlacklistStatus.ACTIVE);
-            blackListRepository.save(blackList1);
-            blackListHistoryRepository.save(hisitory);
-        }
-
+        createBlackList(user.getEmail(), "피싱", BlacklistStatus.ACTIVE);
+        createBlackList(admin.getEmail(), "스팸", BlacklistStatus.PERMANENT);
+        createBlackList(user2.getEmail(), "욕설", BlacklistStatus.ACTIVE);
 
         Category[] arr = {
                 Category.CS, Category.기타, Category.코테
@@ -145,7 +139,7 @@ public class InitData {
 
             Reply replyer;
             for (int j = 0; j < 2; j++) {
-                replyer = getReply(memberOne, reply, board, "대댓글" + j);
+                replyer = getReply(user, reply, board, "대댓글" + j);
                 replyer.updateParent(reply);
                 replyRepository.save(reply);
                 replyRepository.save(replyer);
@@ -162,7 +156,7 @@ public class InitData {
 
         for (int i = 0; i < 3; i++) {
             Board getBoard = boardRepository.findById((long) (i + 1)).get();
-            PostLike postLike = PostLike.create(membertree, getBoard);
+            PostLike postLike = PostLike.create(user2, getBoard);
             postLikeRepository.save(postLike);
         }
 
@@ -172,8 +166,41 @@ public class InitData {
 
     }
 
+    private void createBlackList(String email,
+                                String reason,
+                                BlacklistStatus status) {
 
+        String hashValue = HashUtil.sha256(email);
 
+        // 이미 존재하면 생성 안 함 (unique 안전)
+        if (blackListRepository.existsByHashValue(hashValue)) {
+            return;
+        }
+
+        BlackList blackList = BlackList.create(
+                BlackType.EMAIL,
+                hashValue,
+                reason
+        );
+
+        if (status == BlacklistStatus.PERMANENT) {
+            blackList.setDuration(0, 3); // 영구 정지 처리
+        }
+
+        BlackListHistory history =
+                BlackListHistory.save(
+                        BlacklistAction.REGISTER,
+                        blackList,
+                        hashValue,
+                        BlackType.EMAIL,
+                        reason,
+                        status
+                );
+
+        blackList.addHistory(history);
+
+        blackListRepository.save(blackList);
+    }
 
     private static Reply getReply(Member memberOne, Reply reply, Board board, String content) {
         return Reply.builder()

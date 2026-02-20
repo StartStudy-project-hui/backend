@@ -10,4 +10,8 @@ public interface BlackListRepository extends JpaRepository<BlackList, Long>,Blac
 
 
     Optional<BlackList> findByHashValueAndType(String hash, BlackType type);
+
+    boolean existsByHashValue(String hashValue);
+
+    Optional<BlackList> findByHashValue(String hash);
 }

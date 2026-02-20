@@ -34,7 +34,7 @@ public class BlackList {
     private List<BlackListHistory> histories = new ArrayList<>();
 
     // 해시된 값 -
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String hashValue;
 
     @NotNull(message = "값을 입력해주세요")

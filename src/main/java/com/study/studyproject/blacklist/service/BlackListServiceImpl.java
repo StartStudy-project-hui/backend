@@ -34,7 +34,7 @@ public class BlackListServiceImpl implements BlackListService {
     public GlobalResultDto registerOrUpdateBlackList(BlackListCreateRequestDto request) {
 
         String hash = HashUtil.sha256(request.getRawValue());
-        BlackList findByBlackList = blacklistRepository.findByHashValueAndType(hash, request.getType())
+        BlackList findByBlackList = blacklistRepository.findByHashValue(hash)
                 .orElseGet(() -> BlackList.create(request.getType(), hash, request.getReason()));
 
         //history reposeitory에서 가져오기
