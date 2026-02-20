@@ -1,5 +1,7 @@
 package com.study.studyproject.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
 import com.study.studyproject.global.auth.UserDetailsImpl;
 import com.study.studyproject.global.jwt.JwtAccessDeniedHandler;
 import com.study.studyproject.global.jwt.JwtAuthenticationEntryPoint;
@@ -41,7 +43,8 @@ public class SpringSecurity {
     private final RefreshRepository refreshRepository;
     private final CorsFilter filter;
     private final JwtUtil jwtUtil;
-
+    private final ObjectMapper objectMapper;
+    private final BlackListRepository blackListRepository;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -56,7 +59,7 @@ public class SpringSecurity {
 
     @Bean
     public JwtFilter jwtFilter() {
-        return new JwtFilter(jwtUtil); // JwtFilter를 빈으로 등록
+        return new JwtFilter(objectMapper,jwtUtil,blackListRepository); // JwtFilter를 빈으로 등록
     }
 
 
