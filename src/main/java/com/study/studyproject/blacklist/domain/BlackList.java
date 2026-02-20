@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BlackList {
+public class  BlackList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -83,6 +83,7 @@ public class BlackList {
 
 
 
+
     public void updateReason(String reason) {
         this.reason = reason;
     }
@@ -97,6 +98,24 @@ public class BlackList {
         }
         return this.status;
     }
+
+
+    //  영구정지 체크
+    public boolean isPermanent() {
+        return this.status == BlacklistStatus.PERMANENT;
+    }
+
+    //  기간정지 체크
+    public boolean isActive() {
+        return this.status == BlacklistStatus.ACTIVE && expireAt.isAfter(LocalDateTime.now())
+                && expireAt != null;
+    }
+
+    //  현재 차단 상태인지 한 번에 체크
+    public boolean isBlocked() {
+        return isPermanent() || isActive();
+    }
+
 
 
 }
