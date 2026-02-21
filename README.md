@@ -330,4 +330,4 @@ pwd :Y@3r9o$7k
 
 |           Backend                    |                        Frontend                    |
 | :------------------------------------------: | :------------------------------------------------: |
-|  [전유진](https://github.com/jacomyou0121)  |  [원종대](https://github.com/blkaka66)  |  
+|  [jacomyou0121](https://github.com/jacomyou0121)  |  [blkaka66](https://github.com/blkaka66)  |  
