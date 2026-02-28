@@ -14,7 +14,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEMBER;
+import static com.study.studyproject.global.exception.ex.ErrorCode.MEMBER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class BlackListHistoryServiceImpl implements BlackListHistoryService {
     @Override
     public Slice<BlacklistHistoryMemberResponseDto> findSliceBlackHistoryById(Long id, Pageable pageable) {
         // 해당 닉네임 가져와서
-        String email = memberRepository.findEmailById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
+        String email = memberRepository.findEmailById(id).orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
         String hash = HashUtil.sha256(email);
         return blackListHistoryRepository.searchSliceByEmail(hash, pageable);
     }

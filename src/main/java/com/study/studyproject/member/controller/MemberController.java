@@ -2,8 +2,7 @@ package com.study.studyproject.member.controller;
 
 import com.study.studyproject.global.auth.CurrentUser;
 import com.study.studyproject.global.auth.UserDetailsImpl;
-import com.study.studyproject.global.jwt.JwtUtil;
-import com.study.studyproject.list.dto.ListResponseDto;
+import com.study.studyproject.main.dto.ListResponseDto;
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.member.dto.MemberListRequestDto;
 import com.study.studyproject.member.dto.MemberUpdateResDto;
@@ -12,14 +11,11 @@ import com.study.studyproject.member.service.MemberServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

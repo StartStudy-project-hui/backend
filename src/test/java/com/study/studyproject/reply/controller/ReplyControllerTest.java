@@ -123,7 +123,7 @@ class ReplyControllerTest {
         //given
         Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
         Board boardCreate = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
-        Reply parentReply = createReply("첫댓글",null, member1,boardCreate) ; //1
+        Reply parentReply = createReply("댓글1", boardCreate, member1,null);
 
         memberRepository.save(member1);
         boardRepository.save(boardCreate);
@@ -153,7 +153,7 @@ class ReplyControllerTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply one = createReply("댓글1", null, member1, board);
+        Reply one = createReply("댓글1", board, member1,null);
         replyRepository.saveAll(List.of(one));
         TokenDtoResponse allToken = jwtUtil.createAllToken(member1.getEmail(), member1.getId());
         UpdateReplyRequest replyRequestDto = UpdateReplyRequest.builder()
@@ -184,7 +184,7 @@ class ReplyControllerTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply one = createReply("댓글1", null, member1, board);
+        Reply one = createReply("댓글1", board, member1,null);
         replyRepository.saveAll(List.of(one));
         TokenDtoResponse allToken = jwtUtil.createAllToken(member1.getEmail(), member1.getId());
         UpdateReplyRequest replyRequestDto = UpdateReplyRequest.builder()
@@ -214,7 +214,7 @@ class ReplyControllerTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply one = createReply("댓글1", null, member1, board);
+        Reply one = createReply("댓글1", board, member1,null);
         replyRepository.save(one);
         TokenDtoResponse allToken = jwtUtil.createAllToken(member1.getEmail(), member1.getId());
 
@@ -255,15 +255,20 @@ class ReplyControllerTest {
                 .category(category)
                 .build();
     }
-    private Reply createReply(
-            String content, Reply parent,  Member member, Board board
-    ) {
-        return Reply.builder()
-                .member(member)
-                .parent(parent)
+    public  Reply createReply(String content, Board board, Member member, Reply parent) {
+        Reply reply = Reply.builder()
                 .content(content)
-                .board(board)
+                .nickname(member.getNickname())
                 .build();
+
+        reply.assignBoard(board);
+        reply.assignWriter(member);
+
+        if (parent != null) {
+            reply.assignParent(parent);
+        }
+
+        return reply;
     }
 
 }

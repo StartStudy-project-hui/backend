@@ -63,10 +63,7 @@ class ReplyServiceImplTest {
         Board boardCreate = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         memberRepository.save(member1);
         boardRepository.save(boardCreate);
-
-
         ReplyRequestDto replyOne = new ReplyRequestDto(boardCreate.getId(), null, "댓글 내용");
-
         //when
         replyService.insert(member1.getId(), replyOne);
 
@@ -83,12 +80,15 @@ class ReplyServiceImplTest {
     void insertDuplReply() {
         Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
         Board board = createBoard(member1, "제목1", "내용1",    "닉네임1", CS);
-        Reply parentReply = createReply("첫댓글",null, member1,board) ; //1
+        Reply parentReply = createReply("첫댓글",board, member1,null) ; //1
 
+        System.out.println("member1 = " + member1.getNickname());
         memberRepository.save(member1);
         boardRepository.save(board);
-        replyRepository.save(parentReply);
 
+        replyRepository.save(parentReply);
+        entityManager.flush();
+        entityManager.clear();
 
         ReplyRequestDto replyOne = new ReplyRequestDto(board.getId(), parentReply.getId(), "댓글 내용");
 
@@ -98,7 +98,6 @@ class ReplyServiceImplTest {
         //then
         List<Reply> all = replyRepository.findAll();
         Assertions.assertThat(all).hasSize(2);
-
 
     }
 
@@ -114,7 +113,7 @@ class ReplyServiceImplTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply one = createReply("댓글1", null, member1, board);
+        Reply one = createReply("댓글1", board, member1, null);
         replyRepository.saveAll(List.of(one));
 
         UpdateReplyRequest updateReplyRequest = new UpdateReplyRequest(one.getId(), "수정된 내용1");
@@ -138,18 +137,17 @@ class ReplyServiceImplTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply one = createReply("댓글1", null, member1, board);
-        Reply two = createReply("대댓글1", one, member1, board);
-        Reply tree = createReply("대댓글2", one, member1, board);
-        Reply four = createReply("대댓글3", one, member1, board);
+        Reply one = createReply("댓글1",board,  member1,  null);
+        Reply two = createReply("대댓글1",  board,member1,one);
+        Reply tree = createReply("대댓글2",  board, member1,one);
+        Reply four = createReply("대댓글3",  board, member1,one);
 
-        two.updateParent(one);
-        tree.updateParent(one);
-        four.updateParent(one);
+
+        two.assignParent(one);
+        tree.assignParent(one);
+        four.assignParent(one);
 
         replyRepository.saveAll(List.of(one, two, tree, four));
-
-
 
 
         //when
@@ -171,15 +169,15 @@ class ReplyServiceImplTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply one = createReply("댓글1", null, member1, board);
-        Reply two = createReply("대댓글1", one, member1, board);
-        Reply tree = createReply("대댓글2", one, member1, board);
-        Reply four = createReply("대댓글3", one, member1, board);
+        Reply one = createReply("댓글1",board,  member1,  null);
+        Reply two = createReply("대댓글1",  board,member1,one);
+        Reply tree = createReply("대댓글2",  board, member1,one);
+        Reply four = createReply("대댓글3",  board, member1,one);
 
 
-        two.updateParent(one);
-        tree.updateParent(one);
-        four.updateParent(one);
+        two.assignParent(one);
+        tree.assignParent(one);
+        four.assignParent(one);
         replyRepository.saveAll(List.of(one, two, tree, four));
 
 
@@ -188,14 +186,12 @@ class ReplyServiceImplTest {
 
         //then
         List<Reply> all = replyRepository.findAll();
-        assertThatThrownBy(() -> replyRepository.findById(two.getId()).orElseThrow(() -> new NotFoundException(NOT_FOUND_REPLY)))
-                .isInstanceOf(NotFoundException.class);
-
+        Assertions.assertThat(all.get(1).getIsDeleted()).isEqualTo(true);
     }
 
 
     @Test
-    @DisplayName("댓글과 여러개의 대댓글가 있는 댓글일 경우, 대댓글을 모두 삭제하면 댓글도 삭제된다.")
+    @DisplayName("댓글 삭제를 하면 논리적 삭제가 진행된다. ")
     void deleteParentChildReply() {
 
         Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
@@ -203,50 +199,56 @@ class ReplyServiceImplTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply one = createReply("댓글1", null, member1, board);
-        Reply two = createReply("대댓글1", one, member1, board);
-        Reply tree = createReply("대댓글2", one, member1, board);
-        Reply four = createReply("대댓글3", one, member1, board);
+        Reply one = createReply("댓글1", board, member1,null);
+        Reply two = createReply("대댓글1",board,  member1, one);
+        Reply tree = createReply("대댓글2", board, member1, one);
+        Reply four = createReply("대댓글3", board, member1 ,one);
 
-
-        two.updateParent(one);
-        tree.updateParent(one);
-        four.updateParent(one);
 
         replyRepository.save(one);
         replyRepository.save(two);
         replyRepository.save(tree);
-
-
         replyRepository.save(four);
+        entityManager.flush();
+        entityManager.clear();
 
 
         //when
         replyService.deleteReply(one.getId());
         replyService.deleteReply(two.getId());
         replyService.deleteReply(tree.getId());
-
-        entityManager.flush();
-        entityManager.clear();
-
         replyService.deleteReply(four.getId());
 
         //then
         List<Reply> all = replyRepository.findAll();
-        Assertions.assertThat(all).hasSize(0);
+        assertThat(all)
+                .extracting("content", "isDeleted")
+                .containsExactlyInAnyOrder(
+                        tuple("삭제된 댓글입니다.", true),
+                        tuple("삭제된 댓글입니다.", true),
+                        tuple("삭제된 댓글입니다.", true),
+                        tuple("삭제된 댓글입니다.", true)
+
+                );
 
     }
 
-    private Reply createReply(
-            String content, Reply parent,  Member member, Board board
-    ) {
-        return Reply.builder()
-                .member(member)
-                .parent(parent)
+    public  Reply createReply(String content, Board board, Member member, Reply parent) {
+        Reply reply = Reply.builder()
                 .content(content)
-                .board(board)
+                .nickname(member.getNickname())
                 .build();
+
+        reply.assignBoard(board);
+        reply.assignWriter(member);
+
+        if (parent != null) {
+            reply.assignParent(parent);
+        }
+
+        return reply;
     }
+
     private Member createMember
             (String email, String password, String username, String nickname) {
         {

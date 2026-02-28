@@ -1,5 +1,6 @@
 package com.study.studyproject.reply.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.study.studyproject.reply.domain.Reply;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,33 +12,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class ReplyInfoResponseDto {
     private Long replyId;
     private Long parentId;
     private String nickname;
     private String content;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime updateTime;
     private List<ReplyInfoResponseDto> children = new ArrayList<>();
 
-    public ReplyInfoResponseDto(Reply reply, String content) {
+    public ReplyInfoResponseDto(Reply reply) {
         this.replyId = reply.getId();
         this.updateTime = reply.getLastModifiedDate();
         this.nickname = reply.getNickname();
         this.parentId = (reply.getParent() != null) ? reply.getParent().getId() : null;
-        this.content = content;
+        this.content = reply.getContent();
     }
 
-
-
-    public static ReplyInfoResponseDto convertReplyToDto(Reply reply) {
-
-
-        return reply.getIsDeleted() ?
-                new ReplyInfoResponseDto(reply, "삭제된 댓글입니다.") :
-                new ReplyInfoResponseDto(reply,reply.getContent());
-
+    public static ReplyInfoResponseDto from(Reply reply) {
+        return new ReplyInfoResponseDto(reply);
     }
+
 
 }

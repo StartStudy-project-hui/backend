@@ -36,7 +36,7 @@ public class PostLikeService {
     }
 
     private Board findByBoardId(Long boardId) {
-        return boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException(NOT_FOUND_BOARD));
+        return boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException(BOARD_NOT_FOUND));
     }
 
     public Long findByPostLikeId(Member member, long boardId) {

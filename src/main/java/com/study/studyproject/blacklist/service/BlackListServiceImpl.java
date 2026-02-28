@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.study.studyproject.blacklist.domain.BlacklistAction.*;
-import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEMBER;
+import static com.study.studyproject.global.exception.ex.ErrorCode.MEMBER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -31,41 +31,49 @@ public class BlackListServiceImpl implements BlackListService {
     private final BlackListHistoryRepository blackListHistoryRepository;
 
     @Override
-    public GlobalResultDto registerOrUpdateBlackList(BlackListCreateRequestDto request) {
+    public Long registerOrUpdateBlackList(BlackListCreateRequestDto request) {
 
         String hash = HashUtil.sha256(request.getRawValue());
-        BlackList findByBlackList = blacklistRepository.findByHashValue(hash)
-                .orElseGet(() -> BlackList.create(request.getType(), hash, request.getReason()));
+        BlackList blackList = blacklistRepository.findByHashValueWithLock(hash)
+                .map(existing -> {
+                    // 기존 데이터가 있으면 업데이트 로직 수행
+                    long count = blackListHistoryRepository.countByHashValueAndAction(hash, REGISTER);
+                    existing.overwrite(request.getReason(), request.getDurationMonths(), count);
+                    return existing;
+                })
+                .orElseGet(() -> {
+                    // 없으면 신규 생성 및 저장
+                    return blacklistRepository.save(BlackList.from(request.getDurationMonths(),request.getReason(),request.getType(), hash));
+                });
 
-        //history reposeitory에서 가져오기
-        long violationCount = blackListHistoryRepository.countByHashValueAndAction(hash, REGISTER);
-        BlacklistStatus blacklistStatus = findByBlackList.setDuration(request.getDurationMonths(), violationCount);
+        // 2. 이력 생성 및 저장 (무조건 실행)
+        saveHistory(blackList, request, hash);
 
+        return blackList.getId();
+    }
 
-        if (findByBlackList.isNew()) { //값이 없다면
-            blacklistRepository.save(findByBlackList);
-        }
-
-        if(findByBlackList.existsInDB()){
-            findByBlackList.updateReason(request.getReason());
-        }
-
-        BlackListHistory blackListHistory = BlackListHistory.save(BlacklistAction.REGISTER, findByBlackList,hash, request.getType(), request.getReason(), blacklistStatus);
-        blackListHistoryRepository.save(blackListHistory);
-
-        return new GlobalResultDto("블랙리스트 등록 완료", HttpStatus.OK.value());
+    private void saveHistory(BlackList blackList, BlackListCreateRequestDto request, String hash) {
+        BlackListHistory history = BlackListHistory.create(
+                BlacklistAction.REGISTER,
+                blackList,
+                hash,
+                request.getType(),
+                request.getReason(),
+                blackList.getStatus()
+        );
+        blackListHistoryRepository.save(history);
     }
 
     @Override
-    public GlobalResultDto update(Long id, BlackListUpdateRequestDto dto) {
+    public Long update(Long id, BlackListUpdateRequestDto dto) {
         BlackList blacklist = blacklistRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
 
         blacklist.updateReason(dto.getReason());
-        BlackListHistory save = BlackListHistory.save(UPDATE,blacklist,blacklist.getHashValue(), blacklist.getType(), blacklist.getReason(), blacklist.getStatus());
-        blackListHistoryRepository.save(save);
+        BlackListHistory blackListHistory = BlackListHistory.create(UPDATE,blacklist,blacklist.getHashValue(), blacklist.getType(), blacklist.getReason(), blacklist.getStatus());
+        blackListHistoryRepository.save(blackListHistory);
 
-        return new GlobalResultDto("블랙리스트 수정 완료", HttpStatus.OK.value());
+        return blacklist.getId();
 
     }
 
@@ -73,11 +81,11 @@ public class BlackListServiceImpl implements BlackListService {
     public GlobalResultDto delete(Long id) {
 
         BlackList blacklist = blacklistRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
 
         // 히스토리엔 저
-        BlackListHistory save = BlackListHistory.save(BlacklistAction.DELETE,blacklist,blacklist.getHashValue(), blacklist.getType(), blacklist.getReason(), BlacklistStatus.EXPIRED);
-        blackListHistoryRepository.save(save);
+        BlackListHistory blackListHistory = BlackListHistory.create(BlacklistAction.DELETE,blacklist,blacklist.getHashValue(), blacklist.getType(), blacklist.getReason(), BlacklistStatus.EXPIRED);
+        blackListHistoryRepository.save(blackListHistory);
         blacklistRepository.delete(blacklist);
 
         return new GlobalResultDto("블랙리스트 삭제 완료", HttpStatus.OK.value());

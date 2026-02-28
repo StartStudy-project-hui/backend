@@ -1,8 +1,8 @@
-package com.study.studyproject.list.controller;
+package com.study.studyproject.main.controller;
 
-import com.study.studyproject.list.dto.ListResponseDto;
-import com.study.studyproject.list.dto.MainRequestDto;
-import com.study.studyproject.list.service.ListService;
+import com.study.studyproject.main.dto.ListResponseDto;
+import com.study.studyproject.main.dto.MainRequestDto;
+import com.study.studyproject.main.service.ListService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

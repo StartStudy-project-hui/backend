@@ -1,5 +1,6 @@
 package com.study.studyproject.blacklist.domain;
 
+import com.study.studyproject.blacklist.dto.request.BlackListCreateRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -21,7 +22,7 @@ public class  BlackList {
     @Column(name = "blacklist_id")
     private Long id;
 
-    // EMAIL, PHONE
+    // EMAIL
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BlackType type;
@@ -66,14 +67,12 @@ public class  BlackList {
                 .build();
     }
 
-
-    public boolean isNew() {
-        return this.id == null;
+    public static BlackList from(int durationMonths, String reason, BlackType type, String hash) {
+        BlackList blackList = BlackList.create(type, hash, reason);
+        blackList.setDuration(durationMonths, 0);
+        return blackList;
     }
 
-    public boolean existsInDB() {
-        return !isNew();
-    }
 
     // 히스토리 연결 메서드
     public void addHistory(BlackListHistory history) {
@@ -82,14 +81,9 @@ public class  BlackList {
     }
 
 
-
-
-    public void updateReason(String reason) {
-        this.reason = reason;
-    }
-
-    public BlacklistStatus setDuration(int months, long violationCount) {
-        if (violationCount >= 3 || months <= 0) { // 누적 4회 이상 또는 기간 0개월이면 영구정지
+    public BlacklistStatus setDuration(int months, long pastViolationCount) {
+        long totalViolationCount = pastViolationCount + 1;
+        if (totalViolationCount >= 3 || months <= 0) { // 누적 3회 이상 또는 기간 0개월이면 영구정지
             this.expireAt = null;
             this.status = BlacklistStatus.PERMANENT;
         } else { // 일반 기간 정지
@@ -99,6 +93,16 @@ public class  BlackList {
         return this.status;
     }
 
+    public void overwrite(String reason, int durationMonths, long violationCount) {
+        this.reason = reason;
+        setDuration(durationMonths, violationCount);
+    }
+
+    public void updateReason(String reason) {
+        this.reason = reason;
+    }
+
+
 
     //  영구정지 체크
     public boolean isPermanent() {
@@ -107,8 +111,7 @@ public class  BlackList {
 
     //  기간정지 체크
     public boolean isActive() {
-        return this.status == BlacklistStatus.ACTIVE && expireAt.isAfter(LocalDateTime.now())
-                && expireAt != null;
+        return this.status == BlacklistStatus.ACTIVE &&  expireAt != null &&expireAt.isAfter(LocalDateTime.now());
     }
 
     //  현재 차단 상태인지 한 번에 체크

@@ -17,198 +17,138 @@ import com.study.studyproject.postlike.repository.PostLikeRepository;
 import com.study.studyproject.reply.domain.Reply;
 import com.study.studyproject.reply.repository.ReplyRepository;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-//(33.450701, 126.570667)
 @Component
-@Profile({"local","prod","dev"})
+@Profile({"local", "prod", "dev"})
+@RequiredArgsConstructor
 public class InitData {
 
-    @Autowired
-    BoardRepository boardRepository;
-
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Autowired
-    ReplyRepository replyRepository;
-
-
-    @Autowired
-    PostLikeRepository postLikeRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    BlackListRepository blackListRepository;
-
-    @Autowired
-    BlackListHistoryRepository blackListHistoryRepository;
-
-
-
+    private final InitService initService;
 
     @PostConstruct
     void init() {
+        initService.init();
+    }
 
-        String encode1 = passwordEncoder.encode("Y@3r9o$7k");
-        String encode2 = passwordEncoder.encode("Y@3r9o$7aaak");
-        String encode3 = passwordEncoder.encode("Y@3r9o$7kff");
-        Member user = Member.builder()
-                .role(Role.ROLE_USER)
-                .username("김하임")
-                .email("kimSky@naver.com")
-                .nickname("kimSky")
-                .password(passwordEncoder.encode("Y@3r9o$7k"))
-                .build();
+    @Component
+    @Transactional
+    @RequiredArgsConstructor
+    static class InitService {
 
-        memberRepository.save(user);
+        private final BoardRepository boardRepository;
+        private final MemberRepository memberRepository;
+        private final ReplyRepository replyRepository;
+        private final PostLikeRepository postLikeRepository;
+        private final PasswordEncoder passwordEncoder;
+        private final BlackListRepository blackListRepository;
+        private final BlackListHistoryRepository blackListHistoryRepository;
 
-        Member admin = Member.builder()
-                .role(Role.ROLE_ADMIN)
-                .username("김일우")
-                .email("admin@naver.com")
-                .nickname("admin")
-                .password(encode2)
-                .build();
-        memberRepository.save(admin);
-
-        Member member = memberRepository.findById(1L).get();
-        Member user2 = Member.builder()
-                .role(Role.ROLE_USER)
-                .username("김지우")
-                .email("huj@naver.com")
-                .nickname("huj")
-                .password(encode3)
-                .build();
-
-        memberRepository.save(user2);
-
-        Member[] arr1 = {
-              user, admin, user2
-        };
-
-        createBlackList(user.getEmail(), "피싱", BlacklistStatus.ACTIVE);
-        createBlackList(admin.getEmail(), "스팸", BlacklistStatus.PERMANENT);
-        createBlackList(user2.getEmail(), "욕설", BlacklistStatus.ACTIVE);
-
-        Category[] arr = {
-                Category.CS, Category.기타, Category.코테
-        };
-
-
-        for (int i = 1; i <= 15; i++) {
-            int val = (int) (Math.random() * 3);
-            Board build = Board.builder()
-                    .content("같이 " + arr[val] + " 같이해요")
-                    .category(arr[val])
-                    .title("같이 하실 " + arr[val] + " 하실 분?")
-                    .member(member)
-                    .connectionType(ConnectionType.ONLINE)
+        public void init() {
+            Member user = Member.builder()
+                    .role(Role.ROLE_USER)
+                    .username("김하임")
+                    .email("kimSky@naver.com")
+                    .nickname("kimSky")
+                    .password(passwordEncoder.encode("Y@3r9o$7k"))
                     .build();
+            memberRepository.save(user);
 
-            boardRepository.save(build);
-        }
-
-        String[] regin = {"서울", "인천", "경기"};
-        for (int i = 1; i <= 15; i++) {
-            int val = (int) (Math.random() * 3);
-            Board build = Board.builder()
-                    .content(regin[val] + "에서 " + arr[val] + "같이해요")
-                    .category(arr[val])
-                    .connectionType(ConnectionType.OFFLINE)
-                    .offlineLocation(new OfflineLocation(33.450701,126.570667))
-                    .title(regin[val] + "에서 같이 " + arr[val] + "하실 분? ")
-                    .member(member)
+            Member admin = Member.builder()
+                    .role(Role.ROLE_ADMIN)
+                    .username("김일우")
+                    .email("admin@naver.com")
+                    .nickname("admin")
+                    .password(passwordEncoder.encode("Y@3r9o$7aaak"))
                     .build();
-            boardRepository.save(build);
-        }
+            memberRepository.save(admin);
 
-        Board board = boardRepository.findById(25L).get();
-        Reply reply = null;
-        for (int i = 0; i < 3; i++) {
-            reply = Reply.builder()
-                    .board(board)
-                    .member(member)
-                    .content("답글" + (i + 1))
+            Member user2 = Member.builder()
+                    .role(Role.ROLE_USER)
+                    .username("김지우")
+                    .email("huj@naver.com")
+                    .nickname("huj")
+                    .password(passwordEncoder.encode("Y@3r9o$7kff"))
                     .build();
+            memberRepository.save(user2);
 
-            Reply replyer;
-            for (int j = 0; j < 2; j++) {
-                replyer = getReply(user, reply, board, "대댓글" + j);
-                replyer.updateParent(reply);
-                replyRepository.save(reply);
-                replyRepository.save(replyer);
+            createBlackList(user.getEmail(), "피싱", BlacklistStatus.ACTIVE);
+            createBlackList(admin.getEmail(), "스팸", BlacklistStatus.PERMANENT);
+            createBlackList(user2.getEmail(), "욕설", BlacklistStatus.ACTIVE);
+
+            Member member = memberRepository.findById(1L).get();
+            Category[] categories = {Category.CS, Category.기타, Category.코테};
+            String[] regions = {"서울", "인천", "경기"};
+
+            for (int i = 1; i <= 15; i++) {
+                int val = (int) (Math.random() * 3);
+                Board board = Board.builder()
+                        .content("같이 " + categories[val] + " 같이해요")
+                        .category(categories[val])
+                        .title("같이 하실 " + categories[val] + " 하실 분?")
+                        .member(member)
+                        .connectionType(ConnectionType.ONLINE)
+                        .build();
+                boardRepository.save(board);
             }
 
+            for (int i = 1; i <= 15; i++) {
+                int val = (int) (Math.random() * 3);
+                Board board = Board.builder()
+                        .content(regions[val] + "에서 " + categories[val] + "같이해요")
+                        .category(categories[val])
+                        .connectionType(ConnectionType.OFFLINE)
+                        .offlineLocation(new OfflineLocation(33.450701, 126.570667))
+                        .title(regions[val] + "에서 같이 " + categories[val] + "하실 분? ")
+                        .member(member)
+                        .build();
+                boardRepository.save(board);
+            }
 
+            Board board = boardRepository.findById(25L).get();
+            for (int i = 0; i < 3; i++) {
+                Reply reply = Reply.createReply("답글" + (i + 1), board, member, null);
+                replyRepository.save(reply);
+                for (int j = 0; j < 2; j++) {
+                    Reply child = Reply.createReply("대댓글" + j, board, user, reply);
+                    replyRepository.save(child);
+                }
+            }
+
+            for (int i = 0; i < 3; i++) {
+                Board getBoard = boardRepository.findById((long) (i + 4)).get();
+                postLikeRepository.save(PostLike.create(member, getBoard));
+            }
+
+            for (int i = 0; i < 3; i++) {
+                Board getBoard = boardRepository.findById((long) (i + 1)).get();
+                postLikeRepository.save(PostLike.create(user2, getBoard));
+            }
         }
 
-        for (int i = 0; i < 3; i++) {
-            Board getBoard = boardRepository.findById((long) (i + 4)).get();
-            PostLike postLike = PostLike.create(member, getBoard);
-            postLikeRepository.save(postLike);
+        private void createBlackList(String email, String reason, BlacklistStatus status) {
+            String hashValue = HashUtil.sha256(email);
+
+            if (blackListRepository.existsByHashValue(hashValue)) {
+                return;
+            }
+
+            BlackList blackList = BlackList.create(BlackType.EMAIL, hashValue, reason);
+
+            if (status == BlacklistStatus.PERMANENT) {
+                blackList.setDuration(0, 3);
+            }
+
+            BlackListHistory history = BlackListHistory.create(
+                    BlacklistAction.REGISTER, blackList, hashValue, BlackType.EMAIL, reason, status
+            );
+
+            blackList.addHistory(history);
+            blackListRepository.save(blackList);
         }
-
-        for (int i = 0; i < 3; i++) {
-            Board getBoard = boardRepository.findById((long) (i + 1)).get();
-            PostLike postLike = PostLike.create(user2, getBoard);
-            postLikeRepository.save(postLike);
-        }
-
-
-        
-
-
     }
-
-    private void createBlackList(String email,
-                                String reason,
-                                BlacklistStatus status) {
-
-        String hashValue = HashUtil.sha256(email);
-
-        // 이미 존재하면 생성 안 함 (unique 안전)
-        if (blackListRepository.existsByHashValue(hashValue)) {
-            return;
-        }
-
-        BlackList blackList = BlackList.create(
-                BlackType.EMAIL,
-                hashValue,
-                reason
-        );
-
-        if (status == BlacklistStatus.PERMANENT) {
-            blackList.setDuration(0, 3); // 영구 정지 처리
-        }
-
-        BlackListHistory history =
-                BlackListHistory.save(
-                        BlacklistAction.REGISTER,
-                        blackList,
-                        hashValue,
-                        BlackType.EMAIL,
-                        reason,
-                        status
-                );
-
-        blackList.addHistory(history);
-
-        blackListRepository.save(blackList);
-    }
-
-    private static Reply getReply(Member memberOne, Reply reply, Board board, String content) {
-        return Reply.builder()
-                .member(memberOne)
-                .content(content)
-                .parent(reply)
-                .board(board)
-                .build();
-    }
-
 }

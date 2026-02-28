@@ -3,17 +3,19 @@ package com.study.studyproject.reply.domain;
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.global.config.BaseTimeEntity;
 import com.study.studyproject.member.domain.Member;
-import com.study.studyproject.reply.dto.ReplyRequestDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static jakarta.persistence.FetchType.*;
 
 @Entity
 @NoArgsConstructor
@@ -30,7 +32,7 @@ public class Reply extends BaseTimeEntity {
     private String nickname;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "parent_id")
     private Reply parent;
 
@@ -44,22 +46,19 @@ public class Reply extends BaseTimeEntity {
 
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
 
     @Builder
-    public Reply(String content, Reply parent, Member member, Board board) {
+    public Reply(String content, String nickname) {
         this.content = content;
-        this.parent = parent;
         this.isDeleted = false;
-        this.member = member;
-        this.nickname = member.getNickname();
-        this.board = board;
+        this.nickname = nickname;
     }
 
     @Override
@@ -75,38 +74,54 @@ public class Reply extends BaseTimeEntity {
         return Objects.hash(id);
     }
 
-    public static Reply toEntity(ReplyRequestDto replyRequestDto, Board board, Member member) {
-        return Reply.builder()
-                .content(replyRequestDto.getContent())
-                .member(member)
-                .board(board)
+    public static Reply createReply(String content, Board board, Member member, Reply parent) {
+        Reply reply = Reply.builder()
+                .content(content)
+                .nickname(member.getNickname())
                 .build();
+
+        // 연관관계 편의 메서드들 호출
+        reply.assignBoard(board);
+        reply.assignWriter(member);
+
+        if (parent != null) {
+            reply.assignParent(parent);
+        }
+
+        return reply;
     }
 
-    public void updateParent(Reply parent) {
+
+
+    public void anonymize() {
+        this.content = "삭제된 댓글입니다.";
+        this.nickname = "알수없음";
+        this.isDeleted = true;
+    }
+
+    public void assignBoard(Board board) {
+        this.board = board;
+        this.board.getReplies().add(this);
+    }
+
+    public void assignWriter(Member member) {
+        this.member = member;
+        member.getReplies().add(this);
+    }
+
+
+    public void assignParent(Reply parent) {
         this.parent = parent;
-         parent.getChildren().add(this);
+        parent.getChildren().add(this);
     }
-
 
     //수정
     public void updateReply(String content) {
         this.content = content;
     }
 
-    public void updateWriter(Member member) {
-        this.member = member;
-        member.getReplies().add(this);
-    }
 
-    public void UpdateBoard(Board board) {
-        this.board = board;
-        if (board.getReplies() != null) {
-            board.getReplies().add(this);
-        }
-    }
-
-    public void ChangeIsDeleted(Boolean deleted) {
+    public void changeIsDeleted(Boolean deleted) {
         isDeleted = deleted;
     }
 

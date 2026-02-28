@@ -39,10 +39,10 @@ public class LoginService {
 
     public LoginResponseDto loginService(@Valid LoginRequest loginRequest, HttpServletResponse response) throws NotFoundException {
 
-        Member member = memberRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
 
         if (!passwordEncoder.matches(loginRequest.getPwd(), member.getPassword())) {
-            throw new NotFoundException(NOT_FOUND_PASSWORD);
+            throw new NotFoundException(MEMBER_PASSWORD_INVALID);
         }
 
         TokenDtoResponse tokensDto = jwtUtil.createAllToken(loginRequest.getEmail(), member.getId());
@@ -73,7 +73,7 @@ public class LoginService {
 
     private void validate(SignRequest signRequest) {
         if (signRequest.isNotEqualsCheckPwd()) {
-            throw new NotFoundException(NOT_FOUND_PASSWORD);
+            throw new NotFoundException(MEMBER_PASSWORD_INVALID);
         }
         //중복 확인
         if (isPresentEmail(signRequest)) {

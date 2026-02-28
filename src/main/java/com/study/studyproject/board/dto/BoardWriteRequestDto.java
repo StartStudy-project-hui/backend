@@ -37,18 +37,17 @@ public class BoardWriteRequestDto {
 
     OfflineLocation offlineLocation;
 
-
-
-
-
     public Board toEntity(Member member) {
-        return Board.builder()
+        Board build = Board.builder()
                 .title(title)
                 .content(content)
                 .category(category)
                 .connectionType(connectionType)
                 .offlineLocation(offlineLocation)
                 .build();
+
+        build.addMember(member);
+        return build;
     }
 
     @Builder

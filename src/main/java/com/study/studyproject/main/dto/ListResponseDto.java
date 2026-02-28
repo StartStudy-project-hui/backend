@@ -1,4 +1,4 @@
-package com.study.studyproject.list.dto;
+package com.study.studyproject.main.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;

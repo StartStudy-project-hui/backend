@@ -1,4 +1,4 @@
-package com.study.studyproject.list.dto;
+package com.study.studyproject.main.dto;
 
 import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.board.domain.ConnectionType;

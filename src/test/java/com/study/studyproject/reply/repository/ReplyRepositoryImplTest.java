@@ -48,15 +48,17 @@ class ReplyRepositoryImplTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply one = createReply("댓글1", null, member1, board);
-        Reply two = createReply("대댓글1", one, member1, board);
-        Reply tree = createReply("대댓글2", one, member1, board);
-        Reply four = createReply("대댓글3", one, member1, board);
+        Reply one = createReply("댓글1", board, member1,null);
+        Reply two = createReply("대댓글1",board,  member1, one);
+        Reply tree = createReply("대댓글2", board, member1, one);
+        Reply four = createReply("대댓글3", board, member1, one);
+        replyRepository.saveAll(List.of(one, two, tree, four));
 
-        Reply one2 = createReply("댓글2", null, member1, board);
-        Reply two2 = createReply("대댓글2-1", one, member1, board);
-        Reply tree2 = createReply("대댓글2-2", one, member1, board);
-        Reply four2 = createReply("대댓글2-3", one, member1, board);
+        Reply one2 = createReply("댓글2", board, member1,null);
+        Reply two2 = createReply("대댓글2-1",board,  member1, one);
+        Reply tree2 = createReply("대댓글2-2", board, member1, one);
+        Reply four2 = createReply("대댓글2-3", board, member1, one);
+        replyRepository.saveAll(List.of(one, two, tree, four));
         replyRepository.saveAll(List.of(one, two, tree, four,one2,two2,tree2,four2));
 
 
@@ -80,10 +82,10 @@ class ReplyRepositoryImplTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply one = createReply("댓글1", null, member1, board);
-        Reply two = createReply("대댓글1", one, member1, board);
-        Reply tree = createReply("대댓글2", one, member1, board);
-        Reply four = createReply("대댓글3", one, member1, board);
+        Reply one = createReply("댓글1", board, member1,null);
+        Reply two = createReply("대댓글1",board,  member1, one);
+        Reply tree = createReply("대댓글2", board, member1, one);
+        Reply four = createReply("대댓글3", board, member1, one);
         replyRepository.saveAll(List.of(one, two, tree, four));
 
         //when
@@ -105,10 +107,10 @@ class ReplyRepositoryImplTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply one = createReply("댓글1", null, member1, board);
-        Reply two = createReply("대댓글1", one, member1, board);
-        Reply tree = createReply("대댓글2", one, member1, board);
-        Reply four = createReply("대댓글3", one, member1, board);
+        Reply one = createReply("댓글1", board, member1,null);
+        Reply two = createReply("대댓글1",board,  member1, one);
+        Reply tree = createReply("대댓글2", board, member1, one);
+        Reply four = createReply("대댓글3", board, member1, one);
         replyRepository.saveAll(List.of(one, two, tree, four));
 
         //when
@@ -129,10 +131,10 @@ class ReplyRepositoryImplTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply one = createReply("댓글1", null, member1, board);
-        Reply two = createReply("대댓글1", one, member1, board);
-        Reply tree = createReply("대댓글2", one, member1, board);
-        Reply four = createReply("대댓글3", one, member1, board);
+        Reply one = createReply("댓글1", board, member1,null);
+        Reply two = createReply("대댓글1",board,  member1, one);
+        Reply tree = createReply("대댓글2", board, member1, one);
+        Reply four = createReply("대댓글3", board, member1, one);
         replyRepository.saveAll(List.of(one, two, tree, four));
 
         //when
@@ -159,15 +161,21 @@ class ReplyRepositoryImplTest {
                 .build();
     }
 
-    private Reply createReply(
-            String content, Reply parent,  Member member, Board board
-    ) {
-        return Reply.builder()
-                .member(member)
-                .parent(parent)
-                .content("내용")
-                .board(board)
+    public  Reply createReply(String content, Board board, Member member, Reply parent) {
+        System.out.println("content = " + member.getNickname());
+        Reply reply = Reply.builder()
+                .content(content)
+                .nickname(member.getNickname())
                 .build();
+
+        reply.assignBoard(board);
+        reply.assignWriter(member);
+
+        if (parent != null) {
+            reply.assignParent(parent);
+        }
+
+        return reply;
     }
 
     private Member createMember

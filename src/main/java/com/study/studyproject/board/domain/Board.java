@@ -10,17 +10,18 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static com.study.studyproject.board.domain.Recruit.*;
-import static com.study.studyproject.global.exception.ex.ErrorCode.UNABLE_DELETE_BOARD;
+import static com.study.studyproject.global.exception.ex.ErrorCode.BOARD_DELETE_NOT_ALLOWED;
 import static com.study.studyproject.postlike.domain.PostLike.isPostLikes;
 import static com.study.studyproject.reply.domain.Reply.isReplies;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @ToString(of = {"id", "title", "viewCount","content","category","recruit"})
 public class Board extends BaseTimeEntity {
 
@@ -59,11 +60,11 @@ public class Board extends BaseTimeEntity {
 
 
     @OneToMany(mappedBy = "board") //지연로딩
-    private List<PostLike> postLikes;
+    private List<PostLike> postLikes = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "board") //지연로딩
-    private List<Reply> replies;
+    private List<Reply> replies = new ArrayList<>();
 
     public void ChangeBoardIsDeleted(Boolean deleted) {
         isDeleted = deleted;
@@ -102,6 +103,24 @@ public class Board extends BaseTimeEntity {
 
     }
 
+
+    /**
+     * 정적 팩토리 메서드
+     */
+    public static Board create(Member member, String title, String content, Category category, ConnectionType connectionType, OfflineLocation offlineLocation) {
+        Board board = Board.builder()
+                .title(title)
+                .content(content)
+                .category(category)
+                .connectionType(connectionType)
+                .offlineLocation(offlineLocation)
+                .build();
+
+        board.addMember(member);
+
+        return board;
+    }
+
     public Board updateBoard(BoardReUpdateRequestDto boardReUpdateRequestDto){
         this.title = boardReUpdateRequestDto.getTitle();
         this.content = boardReUpdateRequestDto.getContent();
@@ -132,13 +151,17 @@ public class Board extends BaseTimeEntity {
 
     public static void validateDeleteBoard(List<Reply> replies, List<PostLike> postLikes) throws NotFoundException {
         if (isReplies(replies) || isPostLikes(postLikes)) {
-            throw new NotFoundException(UNABLE_DELETE_BOARD);
+            throw new NotFoundException(BOARD_DELETE_NOT_ALLOWED);
         }
     }
 
 
+    public void addMember(Member member) {
+        if (this.member != null) {
+            this.member.getBoard().remove(this);
+        }
 
-
-
-
+        this.member = member;
+        member.getBoard().add(this);
+    }
 }

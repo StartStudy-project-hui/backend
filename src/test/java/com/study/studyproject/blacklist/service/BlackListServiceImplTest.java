@@ -22,11 +22,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
+import static com.study.studyproject.global.exception.ex.ErrorCode.MEMBER_NOT_FOUND;
 import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEMBER;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -62,12 +61,11 @@ class BlackListServiceImplTest {
         BlackListCreateRequestDto requestDto = new BlackListCreateRequestDto(member1.getEmail(), BlackType.EMAIL, "pishing", 1);
 
         //when
-        GlobalResultDto register = blackListService.registerOrUpdateBlackList(requestDto);
+        Long id = blackListService.registerOrUpdateBlackList(requestDto);
 
         //then
         List<BlackList> all = blackListRepository.findAll();
         assertThat(all).hasSize(1);
-        assertThat(register.getStatusCode()).isEqualTo(200);
 
     }
 
@@ -80,24 +78,21 @@ class BlackListServiceImplTest {
         BlackListCreateRequestDto requestDto = new BlackListCreateRequestDto(member1.getEmail(), BlackType.EMAIL, "pishing", 1);
 
         //when
-        GlobalResultDto register = blackListService.registerOrUpdateBlackList(requestDto);
+        Long aLong = blackListService.registerOrUpdateBlackList(requestDto);
 
         BlackListCreateRequestDto requestDto2 = new BlackListCreateRequestDto(member1.getEmail(), BlackType.EMAIL, "변경-욕설", 2);
 
         //when
-        GlobalResultDto res = blackListService.registerOrUpdateBlackList(requestDto2);
+        Long id = blackListService.registerOrUpdateBlackList(requestDto2);
 
         //then
         List<BlackList> blackList = blackListRepository.findAll();
-
         List<BlackListHistory> history = blackListHistoryRepository.findByHashValue(blackList.get(0).getHashValue());
-
-
 
         assertThat(blackList).hasSize(1);
         assertThat(blackList.get(0).getReason()).isEqualTo("변경-욕설");
         assertThat(history.size()).isEqualTo(2);
-        assertThat(res.getStatusCode()).isEqualTo(200);
+        Assertions.assertThat(id).isEqualTo(2);
 
     }
 
@@ -129,7 +124,7 @@ class BlackListServiceImplTest {
         blackListRepository.save(blacklist);
 
         // 히스토리 생성
-        BlackListHistory history = BlackListHistory.save(BlacklistAction.REGISTER,blacklist, hash,BlackType.EMAIL,"reason", BlacklistStatus.ACTIVE);
+        BlackListHistory history = BlackListHistory.create(BlacklistAction.REGISTER,blacklist, hash,BlackType.EMAIL,"reason", BlacklistStatus.ACTIVE);
         blackListHistoryRepository.save(history);
 
         //when
@@ -140,7 +135,7 @@ class BlackListServiceImplTest {
 
         Assertions.assertThat(histories.getLast().getAction()).isEqualTo(BlacklistAction.DELETE);
         assertThatThrownBy(() -> blackListRepository.findById(blacklist.getId())
-                .orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER)))
+                .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND)))
                 .isInstanceOf(NotFoundException.class);
 
     }

@@ -148,15 +148,16 @@ class BoardServiceTest {
         Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
 
-        Reply reply = createReply(null, member1, board);
-        Reply reply1 = createReply(reply, member1, board);
-        Reply reply2 = createReply(reply, member1, board);
-        Reply reply3 = createReply(reply, member1, board);
 
-        Reply replyParent2 = createReply(null, member1, board);
-        Reply replyChild1 = createReply(replyParent2, member1, board);
-        Reply replyChild2 = createReply(replyParent2, member1, board);
-        Reply replyChild3 = createReply(replyParent2, member1, board);
+        Reply reply = createReply("댓글1", board, member1,null);
+        Reply reply1 = createReply("대댓글1",board,  member1, reply );
+        Reply reply2 = createReply("대댓글2", board, member1, reply );
+        Reply reply3 = createReply("대댓글3", board, member1, reply );
+
+        Reply replyParent2 = createReply("댓글1", board, member1,null);
+        Reply replyChild1 = createReply("대댓글1",board,  member1, reply );
+        Reply replyChild2 = createReply("대댓글2", board, member1, reply );
+        Reply replyChild3 = createReply("대댓글3", board, member1, reply );
 
 
         memberRepository.save(member1);
@@ -189,15 +190,15 @@ class BoardServiceTest {
         Member member1 = createAdmin();
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
 
-        Reply reply = createReply(null, member1, board);
-        Reply reply1 = createReply(reply, member1, board);
-        Reply reply2 = createReply(reply, member1, board);
-        Reply reply3 = createReply(reply, member1, board);
+        Reply reply = createReply("댓글1", board, member1,null);
+        Reply reply1 = createReply("대댓글1",board,  member1, reply );
+        Reply reply2 = createReply("대댓글2", board, member1, reply );
+        Reply reply3 = createReply("대댓글3", board, member1, reply );
 
-        Reply replyParent2 = createReply(null, member1, board);
-        Reply replyChild1 = createReply(replyParent2, member1, board);
-        Reply replyChild2 = createReply(replyParent2, member1, board);
-        Reply replyChild3 = createReply(replyParent2, member1, board);
+        Reply replyParent2 = createReply("댓글1", board, member1,null);
+        Reply replyChild1 = createReply("대댓글1",board,  member1, reply );
+        Reply replyChild2 = createReply("대댓글2", board, member1, reply );
+        Reply replyChild3 = createReply("대댓글3", board, member1, reply );
 
 
         memberRepository.save(member1);
@@ -228,11 +229,9 @@ class BoardServiceTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-
-        Reply reply = createReply(null, member1, board);
-
-        Reply reply1 = createReply(reply, member1, board);
-        Reply reply2 = createReply(reply, member1, board);
+        Reply reply = createReply("댓글1", board, member1,null);
+        Reply reply1 = createReply("대댓글1",board,  member1, reply );
+        Reply reply2 = createReply("대댓글2", board, member1, reply );
         replyRepository.save(reply);
         replyRepository.saveAll(List.of(reply1, reply2));
 
@@ -261,10 +260,9 @@ class BoardServiceTest {
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(board);
 
-        Reply reply = createReply(null, member1, board);
-
-        Reply reply1 = createReply(reply, member1, board);
-        Reply reply2 = createReply(reply, member1, board);
+        Reply reply = createReply("댓글1", board, member1,null);
+        Reply reply1 = createReply("대댓글1",board,  member1, reply );
+        Reply reply2 = createReply("대댓글2", board, member1, reply );
         replyRepository.save(reply);
         replyRepository.saveAll(List.of(reply1, reply2));
 
@@ -305,15 +303,20 @@ class BoardServiceTest {
 
 
 
-    private Reply createReply(
-             Reply parent,  Member member, Board board
-    ) {
-        return Reply.builder()
-                .member(member)
-                .parent(parent)
-                .content("내용")
-                .board(board)
+    public  Reply createReply(String content, Board board, Member member, Reply parent) {
+        Reply reply = Reply.builder()
+                .content(content)
+                .nickname(member.getNickname())
                 .build();
+
+        reply.assignBoard(board);
+        reply.assignWriter(member);
+
+        if (parent != null) {
+            reply.assignParent(parent);
+        }
+
+        return reply;
     }
 
     private Member createMember

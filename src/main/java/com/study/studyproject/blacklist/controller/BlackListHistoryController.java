@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/back-list-history/")
+@RequestMapping("/api/v1/back-main-history/")
 @Tag(name = "블랙리스트 히스토리 API", description = "블랙리스트 Document")
 @Slf4j
 public class BlackListHistoryController {

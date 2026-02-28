@@ -3,7 +3,7 @@ package com.study.studyproject.member.service;
 
 import com.study.studyproject.global.oauth.OAuthAttributes;
 import com.study.studyproject.member.domain.Member;
-import com.study.studyproject.list.dto.ListResponseDto;
+import com.study.studyproject.main.dto.ListResponseDto;
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.member.domain.SocialType;
 import com.study.studyproject.member.dto.MemberListRequestDto;

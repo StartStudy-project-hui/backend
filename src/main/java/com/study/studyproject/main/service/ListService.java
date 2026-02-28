@@ -1,8 +1,8 @@
-package com.study.studyproject.list.service;
+package com.study.studyproject.main.service;
 
-import com.study.studyproject.list.dto.ListResponseDto;
-import com.study.studyproject.list.dto.MainRequestDto;
-import com.study.studyproject.list.repository.MainQueryRepository;
+import com.study.studyproject.main.dto.ListResponseDto;
+import com.study.studyproject.main.dto.MainRequestDto;
+import com.study.studyproject.main.repository.MainQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -14,14 +14,13 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.study.studyproject.global.exception.ex.ErrorCode.*;
 import static com.study.studyproject.global.exception.ex.ErrorCode.INTERNAL_SEVER_ERROR;
-import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_BOARD;
 
 @Slf4j
 @RestControllerAdvice
@@ -33,13 +32,12 @@ public class ExControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
 
-
-
     //500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> exceptionHandler(Exception e) {
         ExceptionResponse errorResponse = ExceptionResponse.builder()
                 .message(INTERNAL_SEVER_ERROR.getMessage())
+                .code(INTERNAL_SEVER_ERROR.getCode())
                 .status(INTERNAL_SEVER_ERROR.getStatus().value())
                 .build();
         return ResponseEntity.internalServerError().body(errorResponse);
@@ -52,7 +50,10 @@ public class ExControllerAdvice extends ResponseEntityExceptionHandler {
             HttpHeaders headers, HttpStatusCode status, WebRequest request
     ) {
         log.error("error :{}" ,exception.getParameterName());
-        return ResponseEntity.badRequest().body(ExceptionResponse.of(HttpStatus.BAD_REQUEST.value(),exception.getParameterName() + "은 NULL일 수 없습니다."));
+        String message = MISSING_REQUEST_PARAM.getMessage(exception.getParameterName());
+
+        return ResponseEntity.badRequest().body(ExceptionResponse.of(
+                MISSING_REQUEST_PARAM.getStatus().value(),message, MISSING_REQUEST_PARAM.getCode()));
     }
 
 
@@ -69,6 +70,7 @@ public class ExControllerAdvice extends ResponseEntityExceptionHandler {
     private ResponseEntity<ExceptionResponse> createErrorResponse(ErrorCode errorCode) {
         ExceptionResponse errorResponse = ExceptionResponse.builder()
                 .message(errorCode.getMessage())
+                .code(errorCode.getCode())
                 .status(errorCode.getStatus().value())
                 .build();
         return ResponseEntity

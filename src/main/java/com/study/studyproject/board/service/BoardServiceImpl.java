@@ -12,9 +12,7 @@ import com.study.studyproject.login.domain.Role;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.domain.PostLike;
-import com.study.studyproject.postlike.dto.PostLikeOneResponseDto;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
-import com.study.studyproject.postlike.service.PostLikeService;
 import com.study.studyproject.reply.domain.Reply;
 import com.study.studyproject.reply.repository.ReplyRepository;
 import jakarta.servlet.http.Cookie;
@@ -31,7 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.study.studyproject.board.domain.Board.validateDeleteBoard;
-import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_BOARD;
+import static com.study.studyproject.global.exception.ex.ErrorCode.BOARD_NOT_FOUND;
 import static com.study.studyproject.login.domain.Role.isAdmin;
 import static com.study.studyproject.login.domain.Role.isAnonymous;
 
@@ -49,16 +47,24 @@ public class BoardServiceImpl implements BoardService {
 
     //작성
     @Override
-    public GlobalResultDto boardSave(BoardWriteRequestDto boardWriteRequestDto, Long memberId) {
+    public GlobalResultDto boardSave(BoardWriteRequestDto dto, Long memberId) {
         Member member = findMemberById(memberId);
-        Board entity = boardWriteRequestDto.toEntity(member);
-        boardRepository.save(entity);
+        Board board = Board.create(
+                member,
+                dto.getTitle(),
+                dto.getContent(),
+                dto.getCategory(),
+                dto.getConnectionType(),
+                dto.getOfflineLocation()
+        );
+
+        boardRepository.save(board);
         return new GlobalResultDto("글 작성 완료", HttpStatus.OK.value());
 
     }
 
     private Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow(() -> new NotFoundException(NOT_FOUND_BOARD));
+        return memberRepository.findById(memberId).orElseThrow(() -> new NotFoundException(BOARD_NOT_FOUND));
     }
 
     //수정
@@ -83,7 +89,7 @@ public class BoardServiceImpl implements BoardService {
 
 
     private Board findBoardById(Long boardId) {
-        return boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException(NOT_FOUND_BOARD));
+        return boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException(BOARD_NOT_FOUND));
     }
 
 
@@ -102,7 +108,7 @@ public class BoardServiceImpl implements BoardService {
         if (boardRepository.existsById(boardId)) {
             return;
         }
-        throw new NotFoundException(NOT_FOUND_BOARD);
+        throw new NotFoundException(BOARD_NOT_FOUND);
     }
 
     private boolean isNewView(Long boardId, HttpServletRequest request) {

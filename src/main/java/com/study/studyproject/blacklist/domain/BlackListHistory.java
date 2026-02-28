@@ -55,7 +55,7 @@ public class BlackListHistory   {
     }
 
 
-    public static BlackListHistory save(BlacklistAction action, BlackList blacklist, String hashValue , BlackType type, String reason, BlacklistStatus status ) {
+    public static BlackListHistory create(BlacklistAction action, BlackList blacklist, String hashValue , BlackType type, String reason, BlacklistStatus status ) {
         BlackListHistory blackListHistory = BlackListHistory.builder()
                 .action(action)
                 .reason(reason)

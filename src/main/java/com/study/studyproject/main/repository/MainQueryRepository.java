@@ -1,4 +1,4 @@
-package com.study.studyproject.list.repository;
+package com.study.studyproject.main.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
@@ -10,9 +10,9 @@ import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.board.domain.ConnectionType;
 import com.study.studyproject.board.domain.Recruit;
-import com.study.studyproject.list.dto.ListResponseDto;
-import com.study.studyproject.list.dto.MainRequestDto;
-import com.study.studyproject.list.dto.QListResponseDto;
+import com.study.studyproject.main.dto.ListResponseDto;
+import com.study.studyproject.main.dto.MainRequestDto;
+import com.study.studyproject.main.dto.QListResponseDto;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

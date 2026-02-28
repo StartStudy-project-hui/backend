@@ -2,7 +2,7 @@ package com.study.studyproject.member.dto;
 
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.login.domain.Role;
-import com.study.studyproject.list.dto.ListResponseDto;
+import com.study.studyproject.main.dto.ListResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
