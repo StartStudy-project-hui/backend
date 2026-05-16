@@ -99,18 +99,12 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public GlobalResultDto boardDeleteOne(Long boardId, Role role) {
-        if (isAdmin(role)) {
-            Board board = findBoardById(boardId);
-            board.changeAdminDeleteBoard();
-            return new GlobalResultDto("관리자 권한으로 게시글 삭제 완료", HttpStatus.OK.value());
-        }
+    public GlobalResultDto boardDeleteOne(Long boardId) {
 
         //댓글
         List<Reply> replies = replyRepository.findByBoardReplies(boardId);
         //postLike
         List<PostLike> postLikes = postLikeRepository.findByBoardId(boardId);
-
 
         validateDeleteBoard(replies, postLikes);
 

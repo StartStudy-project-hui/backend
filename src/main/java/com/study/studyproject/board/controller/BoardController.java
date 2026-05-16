@@ -54,7 +54,7 @@ public class BoardController {
     @DeleteMapping("v1/board/member/{boardId}")
     @Operation(summary = "게시글 삭제 ", description = "해당 게시글 삭제")
     public ResponseEntity<GlobalResultDto> deleteBoard(@PathVariable(name = "boardId", required = true) Long boardId) {
-        return ResponseEntity.ok(boardService.boardDeleteOne(boardId, null));
+        return ResponseEntity.ok(boardService.boardDeleteOne(boardId));
     }
 
 
