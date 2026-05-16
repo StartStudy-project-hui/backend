@@ -46,8 +46,10 @@ public class AdminController {
     }
 
     @DeleteMapping("v1/admin/board/{boardId}")
-    @Operation(summary = "관리자 게시글 삭제 ", description = "관리자 게시글 삭제")
-    public ResponseEntity<GlobalResultDto> adminDelete(@PathVariable(name = "boardId") Long boardId) {
-        return ResponseEntity.ok(boardService.boardDeleteOne(boardId,Role.ROLE_ADMIN));
+    @Operation(summary = "관리자 게시글 삭제", description = "관리자 권한으로 게시글을 삭제 처리합니다.")
+    public ResponseEntity<GlobalResultDto> deleteBoardByAdmin(
+            @PathVariable Long boardId
+    ) {
+        return ResponseEntity.ok(adminService.adminDeleteBoard(boardId));
     }
 }

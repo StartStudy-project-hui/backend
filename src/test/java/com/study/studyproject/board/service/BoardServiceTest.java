@@ -239,7 +239,7 @@ class BoardServiceTest {
         Role role = ROLE_USER;
 
         //when & then
-        assertThatThrownBy(() -> boardService.boardDeleteOne(board.getId(), role))
+        assertThatThrownBy(() -> boardService.boardDeleteOne(board.getId()))
                 .isInstanceOf(NotFoundException.class);
 
 
@@ -247,38 +247,6 @@ class BoardServiceTest {
         List<Board> allBoard = boardRepository.findAll();
         assertThat(allBoard).hasSize(1);
 
-
-    }
-
-
-    @Test
-    @DisplayName("관리자 권한으로 댓글이 있는 게시글을 삭제한다.")
-    void deleteBoardWithAdmin() throws Exception {
-        //given
-        Member member1 = createAdmin();
-        memberRepository.save(member1);
-
-        Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
-        boardRepository.save(board);
-
-        Reply reply = createReply(null, member1, board);
-
-        Reply reply1 = createReply(reply, member1, board);
-        Reply reply2 = createReply(reply, member1, board);
-        replyRepository.save(reply);
-        replyRepository.saveAll(List.of(reply1, reply2));
-
-        Role role = ROLE_ADMIN;
-
-
-        //when
-        GlobalResultDto globalResultDto = boardService.boardDeleteOne(board.getId(), role);
-
-        //then
-        List<Board> allBoard = boardRepository.findAll();
-        Board board1 = allBoard.get(0);
-        assertThat(board1.getTitle()).isEqualTo("관리자로 의해 게시글 삭제");
-        assertThat(board1.getContent()).isEqualTo("관리자로 의해 게시글 삭제되었습니다.");
 
     }
 
