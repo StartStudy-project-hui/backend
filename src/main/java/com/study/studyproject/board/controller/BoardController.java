@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,17 +60,23 @@ public class BoardController {
 
     //글 조회 1개 -
     @GetMapping("v1/board/{boardId}")
-    @Operation(summary = "게시글 상세", description = "게시글 상세페이지")
-    public ResponseEntity<BoardOneResponseDto> getBoard(@Parameter(description = "게시판 ID") @PathVariable(name = "boardId") Long boardId,
-                                                        @Parameter(hidden = true) @CurrentUser UserDetailsImpl userDetails
-            , HttpServletRequest request,HttpServletResponse response
+    @Operation(summary = "게시글 상세 페이지 보기", description = "게시글 상세페이지")
+    public ResponseEntity<BoardOneResponseDto> getDetailBoard(@Parameter(description = "게시판 ID") @PathVariable(name = "boardId") Long boardId,
+                                                              @Parameter(hidden = true) @CurrentUser UserDetailsImpl userDetails
+            , HttpServletRequest request, HttpServletResponse response
 
     ) {
-        boardService.updateView(boardId, request, response);
         BoardOneResponseDto boardOneResponseDto = boardService.boardOne(boardId, userDetails);
         return ResponseEntity.ok(boardOneResponseDto);
-
     }
+
+
+    @PostMapping("v1/board/{boardId}")
+    @Operation(summary = "게시글 조회수", description = "게시글 조회수 상세페이지")
+    public void getUpdateViewBoard(@Parameter(description = "게시판 ID") @PathVariable(name = "boardId") Long boardId) {
+        boardService.updateView(boardId);
+    }
+
 
 
 }
