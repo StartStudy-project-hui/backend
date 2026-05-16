@@ -14,7 +14,7 @@ public interface BoardService {
 
      GlobalResultDto updateWrite(BoardReUpdateRequestDto boardReUpdateRequestDto);
 
-    void updateView(Long boardId, HttpServletRequest request, HttpServletResponse response);
+    void updateView(Long boardId);
      BoardOneResponseDto boardOne(Long boardId, UserDetailsImpl userDetails);
 
 
