@@ -1,18 +1,14 @@
 package com.study.studyproject.global.oauth;
 
-import com.study.studyproject.global.oauth.provider.GoogleOAuth2UserInfo;
 import com.study.studyproject.global.oauth.provider.KakaoOAuth2UserInfo;
 import com.study.studyproject.global.oauth.provider.NaverOAuth2UserInfo;
 import com.study.studyproject.global.oauth.provider.OAuth2UserInfo;
-import com.study.studyproject.login.domain.Role;
-import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.domain.SocialType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
-import java.util.UUID;
 
 import static com.study.studyproject.member.domain.SocialType.KAKAO;
 import static com.study.studyproject.member.domain.SocialType.NAVER;
@@ -33,14 +29,14 @@ public class OAuthAttributes {
     public static OAuthAttributes of(SocialType socialType,
                                      String userNameAttributeName, Map<String, Object> attributes) {
 
-        if (socialType == NAVER) {
+        if (socialType.equals(NAVER)) {
 
             return ofNaver(userNameAttributeName, (Map<String, Object>)attributes.get(userNameAttributeName));
         }
-        if (socialType == KAKAO) {
+        if (socialType.equals(KAKAO)) {
             return ofKakao(userNameAttributeName, attributes);
         }
-        return ofGoogle(userNameAttributeName, attributes);
+        throw new IllegalArgumentException("지원하지 않는 소셜 로그인 타입입니다. socialType=" + socialType);
     }
 
 
@@ -51,12 +47,6 @@ public class OAuthAttributes {
                 .build();
     }
 
-    public static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
-        return OAuthAttributes.builder()
-                .nameAttributeKey(userNameAttributeName)
-                .oauth2UserInfo(new GoogleOAuth2UserInfo(attributes))
-                .build();
-    }
 
     public static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
         return OAuthAttributes.builder()

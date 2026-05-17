@@ -2,11 +2,13 @@ package com.study.studyproject.global.oauth.provider;
 
 import java.util.Map;
 
-public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
+public class KakaoOAuth2UserInfo implements OAuth2UserInfo {
 
+
+    private final Map<String, Object> attributes;
 
     public KakaoOAuth2UserInfo(Map<String, Object> attributes) {
-        super(attributes);
+        this.attributes = attributes;
     }
 
     @Override

@@ -2,16 +2,13 @@ package com.study.studyproject.global.oauth.provider;
 
 import java.util.Map;
 
-public abstract class OAuth2UserInfo {
+public interface  OAuth2UserInfo {
 
-    protected Map<String, Object> attributes;
+    String getId();
 
-    OAuth2UserInfo(Map<String, Object> attributes) {
-        this.attributes = attributes;
-    }
+    String getEmail();
 
-    public abstract String getId(); // 소셜 식별 : 구글 : sub  ,카카오 id, 네이버 id
-    public abstract  String getEmail();
-    public abstract  String getName();
-    public abstract  String getNickname();
+    String getName();
+
+    String getNickname();
 }
