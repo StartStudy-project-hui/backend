@@ -4,7 +4,7 @@ import com.study.studyproject.blacklist.dto.request.BlackListHistoryMainRequestD
 import com.study.studyproject.blacklist.dto.response.BlacklistHistoryAdminResponseDto;
 import com.study.studyproject.blacklist.dto.response.BlacklistHistoryMemberResponseDto;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
-import com.study.studyproject.global.Hash.HashUtil;
+import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

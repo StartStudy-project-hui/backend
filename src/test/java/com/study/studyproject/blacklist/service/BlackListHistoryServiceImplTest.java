@@ -2,13 +2,12 @@ package com.study.studyproject.blacklist.service;
 
 import com.study.studyproject.blacklist.domain.BlackListHistory;
 import com.study.studyproject.blacklist.domain.BlackType;
-import com.study.studyproject.blacklist.domain.BlacklistAction;
 import com.study.studyproject.blacklist.domain.BlacklistStatus;
 import com.study.studyproject.blacklist.dto.request.BlackListHistoryMainRequestDto;
 import com.study.studyproject.blacklist.dto.response.BlacklistHistoryAdminResponseDto;
 import com.study.studyproject.blacklist.dto.response.BlacklistHistoryMemberResponseDto;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
-import com.study.studyproject.global.Hash.HashUtil;
+import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.login.domain.Role;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;

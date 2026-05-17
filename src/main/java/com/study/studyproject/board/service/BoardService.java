@@ -15,10 +15,10 @@ public interface BoardService {
      GlobalResultDto updateWrite(BoardReUpdateRequestDto boardReUpdateRequestDto);
 
     void updateView(Long boardId);
-     BoardOneResponseDto boardOne(Long boardId, UserDetailsImpl userDetails);
+     BoardOneResponseDto detailBoard(Long boardId);
 
 
-     GlobalResultDto boardDeleteOne(Long boardId);
+     GlobalResultDto boardDeleteOne(Long boardId, UserDetailsImpl userDetails);
 
      GlobalResultDto changeRecruit(Long boardId);
 

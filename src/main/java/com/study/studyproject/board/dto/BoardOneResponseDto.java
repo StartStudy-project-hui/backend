@@ -63,9 +63,8 @@ public class BoardOneResponseDto {
 
 
 
-    public static BoardOneResponseDto of(Board board, String nickname) {
+    public static BoardOneResponseDto of(Board board) {
 
-        String boardNickname = board.getMember().getNickname();
         return BoardOneResponseDto.builder()
                 .updateTime(board.getLastModifiedDate())
                 .createTime(board.getCreatedDate())
@@ -73,8 +72,7 @@ public class BoardOneResponseDto {
                 .recruit(board.getRecruit())
                 .content(board.getContent())
                 .viewCnt(Math.toIntExact(board.getViewCount()))
-                .boardWriteNickname(boardNickname)
-                .currentNickname(nickname)
+                .boardWriteNickname(board.getMember().getNickname())
                 .type(board.getConnectionType())
                 .offlineLocation(board.getOfflineLocation())
                 .category(board.getCategory())

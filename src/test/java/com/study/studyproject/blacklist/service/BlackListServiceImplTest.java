@@ -6,7 +6,7 @@ import com.study.studyproject.blacklist.dto.request.BlackListUpdateRequestDto;
 import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.global.GlobalResultDto;
-import com.study.studyproject.global.Hash.HashUtil;
+import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.login.domain.Role;
 import com.study.studyproject.member.domain.Member;
@@ -22,11 +22,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEMBER;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional

@@ -7,6 +7,7 @@ import com.study.studyproject.board.dto.BoardWriteRequestDto;
 import com.study.studyproject.board.repository.BoardRepository;
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.global.auth.UserDetailsImpl;
+import com.study.studyproject.global.exception.ex.ForbiddenException;
 import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.login.domain.Role;
 import com.study.studyproject.member.domain.Member;
@@ -29,7 +30,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static com.study.studyproject.board.domain.Board.validateDeleteBoard;
-import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_BOARD;
+import static com.study.studyproject.global.exception.ex.ErrorCode.*;
+import static com.study.studyproject.login.domain.Role.*;
 import static com.study.studyproject.login.domain.Role.isAdmin;
 import static com.study.studyproject.login.domain.Role.isAnonymous;
 
@@ -69,15 +71,40 @@ public class BoardServiceImpl implements BoardService {
 
     //글 1개만 가져오기
     @Override
-    public BoardOneResponseDto boardOne(Long boardId, UserDetailsImpl userDetails) {
+    public BoardOneResponseDto detailBoard(Long boardId) {
         Board board = findBoardById(boardId);
-        if (isAnonymous()) {
-            return BoardOneResponseDto.of(board, null);
-        }
-        return BoardOneResponseDto.of(board, userDetails.getNickname());
+        return BoardOneResponseDto.of(board);
 
     }
 
+
+    @Override
+    @Transactional
+    public GlobalResultDto boardDeleteOne(Long boardId, UserDetailsImpl userDetails) {
+        Board board = findBoardById(boardId);
+        validateBoardOwner(board, userDetails);
+        List<Reply> replies = replyRepository.findByBoardReplies(boardId);
+        List<PostLike> postLikes = postLikeRepository.findByBoardId(boardId);
+
+        validateDeleteBoard(replies, postLikes);
+
+        boardRepository.delete(board);
+
+        return new GlobalResultDto("게시글 삭제 완료", HttpStatus.OK.value());
+    }
+
+    private void validateBoardOwner(Board board, UserDetailsImpl userDetails) {
+        if (isAnonymous()) {
+            throw new ForbiddenException(NOT_FOUND_MEMBER);
+        }
+
+        if (!isBoardOwner(board, userDetails.getMemberId())) {
+            throw new ForbiddenException(UNABLE_DELETE_BOARD);
+        }    }
+
+    private boolean isBoardOwner(Board board, Long loginMemberId) {
+        return board.getMember().getId().equals(loginMemberId);
+    }
 
     private Board findBoardById(Long boardId) {
         return boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException(NOT_FOUND_BOARD));
@@ -91,6 +118,7 @@ public class BoardServiceImpl implements BoardService {
         boardRepository.updateHits(boardId);
     }
 
+
     private void validateBoardExists(Long boardId) {
         if (boardRepository.existsById(boardId)) {
             return;
@@ -98,19 +126,6 @@ public class BoardServiceImpl implements BoardService {
         throw new NotFoundException(NOT_FOUND_BOARD);
     }
 
-    @Override
-    public GlobalResultDto boardDeleteOne(Long boardId) {
-
-        //댓글
-        List<Reply> replies = replyRepository.findByBoardReplies(boardId);
-        //postLike
-        List<PostLike> postLikes = postLikeRepository.findByBoardId(boardId);
-
-        validateDeleteBoard(replies, postLikes);
-
-        boardRepository.deleteById(boardId);
-        return new GlobalResultDto("게시글 삭제 완료", HttpStatus.OK.value());
-    }
 
 
     //모집 구분 변경

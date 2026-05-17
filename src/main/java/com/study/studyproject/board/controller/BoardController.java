@@ -53,20 +53,18 @@ public class BoardController {
     //삭제
     @DeleteMapping("v1/board/member/{boardId}")
     @Operation(summary = "게시글 삭제 ", description = "해당 게시글 삭제")
-    public ResponseEntity<GlobalResultDto> deleteBoard(@PathVariable(name = "boardId", required = true) Long boardId) {
-        return ResponseEntity.ok(boardService.boardDeleteOne(boardId));
+    public ResponseEntity<GlobalResultDto> deleteBoard(@PathVariable(name = "boardId", required = true) Long boardId
+    ,@CurrentUser UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(boardService.boardDeleteOne(boardId,userDetails));
     }
 
 
     //글 조회 1개 -
     @GetMapping("v1/board/{boardId}")
     @Operation(summary = "게시글 상세 페이지 보기", description = "게시글 상세페이지")
-    public ResponseEntity<BoardOneResponseDto> getDetailBoard(@Parameter(description = "게시판 ID") @PathVariable(name = "boardId") Long boardId,
-                                                              @Parameter(hidden = true) @CurrentUser UserDetailsImpl userDetails
-            , HttpServletRequest request, HttpServletResponse response
-
+    public ResponseEntity<BoardOneResponseDto> getDetailBoard(@Parameter(description = "게시판 ID") @PathVariable(name = "boardId") Long boardId
     ) {
-        BoardOneResponseDto boardOneResponseDto = boardService.boardOne(boardId, userDetails);
+        BoardOneResponseDto boardOneResponseDto = boardService.detailBoard(boardId);
         return ResponseEntity.ok(boardOneResponseDto);
     }
 

@@ -3,7 +3,7 @@ package com.study.studyproject.global.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
 import com.study.studyproject.global.GlobalResultDto;
-import com.study.studyproject.global.Hash.HashUtil;
+import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.global.exception.ex.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
