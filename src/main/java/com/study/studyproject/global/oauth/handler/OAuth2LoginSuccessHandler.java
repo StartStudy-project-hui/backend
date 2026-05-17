@@ -1,7 +1,5 @@
 package com.study.studyproject.global.oauth.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.oauth2.sdk.TokenResponse;
 import com.study.studyproject.global.auth.UserDetailsImpl;
 import com.study.studyproject.global.jwt.JwtUtil;
 import com.study.studyproject.login.domain.RefreshToken;
@@ -11,7 +9,6 @@ import com.study.studyproject.login.repository.RefreshRepository;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,20 +18,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.crypto.spec.OAEPParameterSpec;
 import java.io.IOException;
 import java.util.Optional;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-//@Transactional
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
