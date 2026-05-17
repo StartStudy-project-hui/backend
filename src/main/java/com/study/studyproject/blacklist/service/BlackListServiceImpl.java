@@ -11,7 +11,7 @@ import com.study.studyproject.blacklist.dto.response.BlacklistResponseDto;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
 import com.study.studyproject.global.GlobalResultDto;
-import com.study.studyproject.global.Hash.HashUtil;
+import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.global.exception.ex.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

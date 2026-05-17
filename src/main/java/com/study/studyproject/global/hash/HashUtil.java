@@ -1,4 +1,4 @@
-package com.study.studyproject.global.Hash;
+package com.study.studyproject.global.hash;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

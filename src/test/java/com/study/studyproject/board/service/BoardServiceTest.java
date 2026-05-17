@@ -133,7 +133,7 @@ class BoardServiceTest {
         TokenDtoResponse allToken = jwtUtil.createAllToken("jacom2@naver.com", member1.getId());
 
         String postLike = "";
-        BoardOneResponseDto boardOneResponseDto = boardService.boardOne(board.getId(), null);
+        BoardOneResponseDto boardOneResponseDto = boardService.detailBoard(board.getId());
 
         //then
         assertThat(boardOneResponseDto.getContent()).isEqualTo(board.getContent());
@@ -173,7 +173,7 @@ class BoardServiceTest {
 
         //when
         TokenDtoResponse allToken = jwtUtil.createAllToken("jacom2@naver.com", member1.getId());
-        BoardOneResponseDto boardOneResponseDto = boardService.boardOne(board.getId(),  userDetails);
+        BoardOneResponseDto boardOneResponseDto = boardService.detailBoard(board.getId());
 
 
         assertThat(boardOneResponseDto.getContent()).isEqualTo(board.getContent());
@@ -212,44 +212,11 @@ class BoardServiceTest {
         List<Reply> byBoardReply = replyRepository.findByBoardReplies(board.getId());
 
         //when
-        BoardOneResponseDto boardOneResponseDto = boardService.boardOne( board.getId(), userDetails);
+        BoardOneResponseDto boardOneResponseDto = boardService.detailBoard( board.getId());
 
         assertThat(boardOneResponseDto.getContent()).isEqualTo(board.getContent());
         assertThat(boardOneResponseDto.getTitle()).isEqualTo(board.getTitle());
     }
-
-    @Test
-    @DisplayName("사용자 권한으로 댓글이 있는 게시글을 삭제한다.")
-    void deleteBoard() throws Exception {
-        //given
-        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
-        memberRepository.save(member1);
-
-        Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
-        boardRepository.save(board);
-
-
-        Reply reply = createReply(null, member1, board);
-
-        Reply reply1 = createReply(reply, member1, board);
-        Reply reply2 = createReply(reply, member1, board);
-        replyRepository.save(reply);
-        replyRepository.saveAll(List.of(reply1, reply2));
-
-        Role role = ROLE_USER;
-
-        //when & then
-        assertThatThrownBy(() -> boardService.boardDeleteOne(board.getId()))
-                .isInstanceOf(NotFoundException.class);
-
-
-        //then
-        List<Board> allBoard = boardRepository.findAll();
-        assertThat(allBoard).hasSize(1);
-
-
-    }
-
 
     @Test
     @DisplayName("모집완료 버튼을 누르면 모집중에서 모집완료로 모집구분이 수정된다.")

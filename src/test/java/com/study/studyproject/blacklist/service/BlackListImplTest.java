@@ -2,25 +2,22 @@ package com.study.studyproject.blacklist.service;
 
 import com.study.studyproject.blacklist.domain.BlackList;
 import com.study.studyproject.blacklist.domain.BlackType;
-import com.study.studyproject.blacklist.domain.BlacklistAction;
 import com.study.studyproject.blacklist.dto.request.BlackListCreateRequestDto;
 import com.study.studyproject.blacklist.dto.request.BlackListUpdateRequestDto;
 import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.global.GlobalResultDto;
-import com.study.studyproject.global.Hash.HashUtil;
+import com.study.studyproject.global.hash.HashUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.study.studyproject.blacklist.domain.BlackType.EMAIL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
