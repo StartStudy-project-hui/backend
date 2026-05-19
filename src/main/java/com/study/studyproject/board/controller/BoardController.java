@@ -8,16 +8,18 @@ import com.study.studyproject.board.service.BoardService;
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.global.auth.CurrentUser;
 import com.study.studyproject.global.auth.UserDetailsImpl;
+import com.study.studyproject.global.exception.ex.ForbiddenException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEMBER;
+import static com.study.studyproject.login.domain.Role.isAnonymous;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,7 +57,17 @@ public class BoardController {
     @Operation(summary = "게시글 삭제 ", description = "해당 게시글 삭제")
     public ResponseEntity<GlobalResultDto> deleteBoard(@PathVariable(name = "boardId", required = true) Long boardId
     ,@CurrentUser UserDetailsImpl userDetails) {
-        return ResponseEntity.ok(boardService.boardDeleteOne(boardId,userDetails));
+
+        Long loginMemberId = loginMemberId(userDetails);
+        return ResponseEntity.ok(boardService.boardDeleteOne(boardId,loginMemberId));
+    }
+
+    private static Long loginMemberId(UserDetailsImpl userDetails) {
+        if (isAnonymous()) {
+            throw new ForbiddenException(NOT_FOUND_MEMBER);
+        }
+
+        return userDetails.getMemberId();
     }
 
 
