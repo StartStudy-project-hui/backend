@@ -40,7 +40,7 @@ public class OAuthAttributes {
     }
 
 
-    static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
+    public static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
         return OAuthAttributes.builder()
                 .nameAttributeKey(userNameAttributeName)
                 .oauth2UserInfo(new KakaoOAuth2UserInfo(attributes))
@@ -49,7 +49,7 @@ public class OAuthAttributes {
 
 
     public static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
-        return OAuthAttributes.builder()
+        return com.study.studyproject.global.oauth.OAuthAttributes.builder()
                 .nameAttributeKey(userNameAttributeName)
                 .oauth2UserInfo(new NaverOAuth2UserInfo(attributes))
                 .build();

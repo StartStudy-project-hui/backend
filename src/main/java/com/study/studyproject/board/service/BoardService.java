@@ -18,7 +18,7 @@ public interface BoardService {
      BoardOneResponseDto detailBoard(Long boardId);
 
 
-     GlobalResultDto boardDeleteOne(Long boardId, UserDetailsImpl userDetails);
+     GlobalResultDto boardDeleteOne(Long boardId, Long memberId);
 
      GlobalResultDto changeRecruit(Long boardId);
 

@@ -6,34 +6,24 @@ import com.study.studyproject.board.dto.BoardReUpdateRequestDto;
 import com.study.studyproject.board.dto.BoardWriteRequestDto;
 import com.study.studyproject.board.repository.BoardRepository;
 import com.study.studyproject.global.GlobalResultDto;
-import com.study.studyproject.global.auth.UserDetailsImpl;
 import com.study.studyproject.global.exception.ex.ForbiddenException;
 import com.study.studyproject.global.exception.ex.NotFoundException;
-import com.study.studyproject.login.domain.Role;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.domain.PostLike;
-import com.study.studyproject.postlike.dto.PostLikeOneResponseDto;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
-import com.study.studyproject.postlike.service.PostLikeService;
 import com.study.studyproject.reply.domain.Reply;
 import com.study.studyproject.reply.repository.ReplyRepository;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 import static com.study.studyproject.board.domain.Board.validateDeleteBoard;
 import static com.study.studyproject.global.exception.ex.ErrorCode.*;
-import static com.study.studyproject.login.domain.Role.*;
-import static com.study.studyproject.login.domain.Role.isAdmin;
-import static com.study.studyproject.login.domain.Role.isAnonymous;
 
 @Transactional
 @RequiredArgsConstructor
@@ -71,6 +61,7 @@ public class BoardServiceImpl implements BoardService {
 
     //글 1개만 가져오기
     @Override
+    @Transactional(readOnly = true)
     public BoardOneResponseDto detailBoard(Long boardId) {
         Board board = findBoardById(boardId);
         return BoardOneResponseDto.of(board);
@@ -79,10 +70,9 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    @Transactional
-    public GlobalResultDto boardDeleteOne(Long boardId, UserDetailsImpl userDetails) {
+    public GlobalResultDto boardDeleteOne(Long boardId, Long memberId) {
         Board board = findBoardById(boardId);
-        validateBoardOwner(board, userDetails);
+        validateBoardOwner(board, memberId);
         List<Reply> replies = replyRepository.findByBoardReplies(boardId);
         List<PostLike> postLikes = postLikeRepository.findByBoardId(boardId);
 
@@ -93,17 +83,14 @@ public class BoardServiceImpl implements BoardService {
         return new GlobalResultDto("게시글 삭제 완료", HttpStatus.OK.value());
     }
 
-    private void validateBoardOwner(Board board, UserDetailsImpl userDetails) {
-        if (isAnonymous()) {
-            throw new ForbiddenException(NOT_FOUND_MEMBER);
-        }
-
-        if (!isBoardOwner(board, userDetails.getMemberId())) {
+    private void validateBoardOwner(Board board, Long memberId) {
+        if (isNotBoardOwner(board, memberId)) {
             throw new ForbiddenException(UNABLE_DELETE_BOARD);
-        }    }
+        }
+    }
 
-    private boolean isBoardOwner(Board board, Long loginMemberId) {
-        return board.getMember().getId().equals(loginMemberId);
+    private boolean isNotBoardOwner(Board board, Long loginMemberId) {
+        return !board.getMember().getId().equals(loginMemberId);
     }
 
     private Board findBoardById(Long boardId) {
@@ -111,9 +98,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
-
     @Transactional
-    public void updateView(Long boardId){
+    public void updateView(Long boardId) {
         validateBoardExists(boardId);
         boardRepository.updateHits(boardId);
     }
@@ -125,7 +111,6 @@ public class BoardServiceImpl implements BoardService {
         }
         throw new NotFoundException(NOT_FOUND_BOARD);
     }
-
 
 
     //모집 구분 변경
