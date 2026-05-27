@@ -1,6 +1,7 @@
 package com.study.studyproject.login.repository;
 
 import com.study.studyproject.login.domain.RefreshToken;
+import com.study.studyproject.member.domain.Email;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -71,7 +72,7 @@ class RefreshRepositoryTest {
             return RefreshToken.builder()
                     .refreshToken(Refresh_Token)
                     .accessToken(Access_Token)
-                    .email("jac")
+                    .email(new Email("jac"))
                     .build();
         }
 

@@ -1,6 +1,7 @@
 package com.study.studyproject.login.service;
 
 import com.study.studyproject.global.exception.ex.DuplicateException;
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.login.dto.LoginRequest;
@@ -85,7 +86,7 @@ class LoginServiceTest {
     void signTest() throws Exception {
         //given
 
-        SignRequest signRequest = new SignRequest("김하임", "jacom2@naver.com", "!12341234", "!12341234");
+        SignRequest signRequest = new SignRequest("김하임", new Email("jacom2@naver.com"), "!12341234", "!12341234");
 
 
         //when
@@ -134,7 +135,7 @@ class LoginServiceTest {
     
 
     private Member createMember
-            (String email, String password, String username, String nickname) {
+            (Email email, String password, String username, String nickname) {
         {
             return Member.builder()
                     .nickname(nickname)

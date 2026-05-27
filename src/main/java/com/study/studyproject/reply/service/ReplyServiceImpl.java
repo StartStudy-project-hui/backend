@@ -72,7 +72,6 @@ public class ReplyServiceImpl implements ReplyService {
             reply.updateParent(replyParent);
         }
 
-//문제
         reply.UpdateBoard(board);
         reply.updateWriter(member);
 

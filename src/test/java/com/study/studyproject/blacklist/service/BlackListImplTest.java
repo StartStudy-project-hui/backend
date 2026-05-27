@@ -8,6 +8,7 @@ import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.global.hash.HashUtil;
+import com.study.studyproject.member.domain.Email;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,12 +39,11 @@ class BlackListImplUnitTest {
     void register_shouldSaveBlacklist() throws NoSuchFieldException {
         // given
         BlackListCreateRequestDto dto = new BlackListCreateRequestDto();
-        dto.setRawValue("user@example.com");
+        dto.setRawValue(new Email("user@example.com"));
         dto.setReason("spam");
-        dto.setType(BlackType.EMAIL);
 
-        String hash = HashUtil.sha256(dto.getRawValue());
-        BlackList saved = BlackList.create(dto.getType(), dto.getRawValue(), dto.getReason());
+        String hash = HashUtil.sha256(dto.getRawValue().address());
+        BlackList saved = BlackList.create(hash, dto.getReason());
 
         when(blacklistRepository.save(any(BlackList.class))).thenReturn(saved);
 
@@ -65,7 +65,7 @@ class BlackListImplUnitTest {
     @Test
     @DisplayName("블랙리스트 수정 시 사유(reason)가 변경된다")
     void update_shouldChangeReason() {
-        BlackList blacklist = BlackList.create(EMAIL, "update@example.com", "spam");
+        BlackList blacklist = BlackList.create( "update@example.com", "spam");
 
         // findById 호출 시 Mock 객체 반환
         when(blacklistRepository.findById(blacklist.getId())).thenReturn(java.util.Optional.of(blacklist));
@@ -79,7 +79,7 @@ class BlackListImplUnitTest {
     @Test
     @DisplayName("블랙리스트 삭제 시 delete 호출됨")
     void delete_shouldCallDelete() {
-        BlackList blacklist = BlackList.create(EMAIL, "delete@example.com", "spam");
+        BlackList blacklist = BlackList.create( "delete@example.com", "spam");
 
         when(blacklistRepository.findById(blacklist.getId())).thenReturn(java.util.Optional.of(blacklist));
 

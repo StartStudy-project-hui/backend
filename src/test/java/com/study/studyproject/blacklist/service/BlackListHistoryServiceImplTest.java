@@ -58,12 +58,12 @@ class BlackListHistoryServiceImplTest {
         Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1", Role.ROLE_ADMIN);
         Member member2 = createMember("jacom3@naver.com", "1234", "사용자명2", "닉네임2", ROLE_USER);
         Member member3 = createMember("jacom4@naver.com", "1234", "사용자명3", "닉네임3", ROLE_USER);
-        String hash1 = HashUtil.sha256(member1.getEmail());
-        String hash2 = HashUtil.sha256(member2.getEmail());
-        String hash3 = HashUtil.sha256(member3.getEmail());
-        BlackListHistory blackListHistory = BlackListHistory  .save(REGISTER,null,hash1, BlackType.IP, "pishing", BlacklistStatus.ACTIVE);
-        BlackListHistory blackListHistory2 = BlackListHistory.save(REGISTER,null,hash2, BlackType.IP, "pishing", BlacklistStatus.ACTIVE);
-        BlackListHistory blackListHistory3 = BlackListHistory.save(REGISTER,null,hash3, BlackType.IP, "pishing", BlacklistStatus.ACTIVE);
+        String hash1 = HashUtil.sha256(member1.getEmail().address());
+        String hash2 = HashUtil.sha256(member2.getEmail().address());
+        String hash3 = HashUtil.sha256(member3.getEmail().address());
+        BlackListHistory blackListHistory = BlackListHistory  .save(REGISTER,null,hash1, BlackType.EMAIL, "pishing", BlacklistStatus.ACTIVE);
+        BlackListHistory blackListHistory2 = BlackListHistory.save(REGISTER,null,hash2, BlackType.EMAIL, "pishing", BlacklistStatus.ACTIVE);
+        BlackListHistory blackListHistory3 = BlackListHistory.save(REGISTER,null,hash3, BlackType.EMAIL, "pishing", BlacklistStatus.ACTIVE);
         BlackListHistory update1 = BlackListHistory.save(UPDATE,null,hash1, BlackType.EMAIL, "욕설", BlacklistStatus.PERMANENT);
         BlackListHistory update2 = BlackListHistory.save(UPDATE,null,hash2, BlackType.EMAIL, "욕설2", BlacklistStatus.PERMANENT);
         BlackListHistory update3 = BlackListHistory.save(UPDATE,null,hash3, BlackType.EMAIL, "욕설3", BlacklistStatus.PERMANENT);
@@ -87,8 +87,8 @@ class BlackListHistoryServiceImplTest {
     @DisplayName("특정 닉네임을 조회한 경우, 해당 히스토리를 가져온다.")
     void findByNickname() {
         Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1", Role.ROLE_ADMIN);
-        String hash1 = HashUtil.sha256(member1.getEmail());
-        BlackListHistory blackListHistory = BlackListHistory.save( REGISTER,null,hash1, BlackType.IP, "pishing", BlacklistStatus.ACTIVE);
+        String hash1 = HashUtil.sha256(member1.getEmail().address());
+        BlackListHistory blackListHistory = BlackListHistory.save( REGISTER,null,hash1, BlackType.EMAIL, "pishing", BlacklistStatus.ACTIVE);
         BlackListHistory update1 = BlackListHistory.save(UPDATE,null,hash1, BlackType.EMAIL, "욕설1", BlacklistStatus.PERMANENT);
         BlackListHistory update2 = BlackListHistory.save(UPDATE,null,hash1, BlackType.EMAIL, "욕설2", BlacklistStatus.PERMANENT);
         memberRepository.save(member1);

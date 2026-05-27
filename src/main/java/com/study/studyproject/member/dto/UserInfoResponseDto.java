@@ -1,5 +1,6 @@
 package com.study.studyproject.member.dto;
 
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.domain.SocialType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,7 +21,7 @@ public class UserInfoResponseDto {
     String nickname;
 
     @Schema(description = "사용자 이메일", defaultValue = "jac@naver.com")
-    String email;
+    Email email;
 
     @Schema(description = "사용자 역할", defaultValue = "ROLE_USER")
     String role;
@@ -29,7 +30,7 @@ public class UserInfoResponseDto {
     SocialType socialType;
 
     @Builder
-    public UserInfoResponseDto(Long seq, String username, String nickname, String email, String role,SocialType socialType) {
+    public UserInfoResponseDto(Long seq, String username, String nickname, Email email, String role,SocialType socialType) {
         this.seq = seq;
         this.username = username;
         this.nickname = nickname;

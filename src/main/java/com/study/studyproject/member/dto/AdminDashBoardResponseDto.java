@@ -1,5 +1,6 @@
 package com.study.studyproject.member.dto;
 
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.login.domain.Role;
 import com.study.studyproject.list.dto.ListResponseDto;
@@ -18,14 +19,14 @@ public class AdminDashBoardResponseDto {
     private String nickname;
 
     @Schema(description = "이메일", defaultValue = "admin@naver.com")
-    private String email;
+    private Email email;
     @Schema(description = "역할")
     private Role role;
     Page<ListResponseDto> listResponseDto;
 
 
     @Builder
-    public AdminDashBoardResponseDto(String name, String nickname, String email, Role role, Page<ListResponseDto> listResponseDto) {
+    public AdminDashBoardResponseDto(String name, String nickname, Email email, Role role, Page<ListResponseDto> listResponseDto) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;

@@ -1,5 +1,6 @@
 package com.study.studyproject.login.dto;
 
+import com.study.studyproject.member.domain.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
@@ -15,7 +16,7 @@ public class SignRequest {
     private String name;
 
     @NotBlank(message = "이메일을 입력해주세요")
-    private String email;
+    private com.study.studyproject.member.domain.Email email;
 
     @NotBlank(message = "비밀번호를 입력해주세요")
     private String pwd;
@@ -24,7 +25,7 @@ public class SignRequest {
     private String checkPwd;
 
     @Builder
-    public SignRequest(String name, String email, String pwd, String checkPwd) {
+    public SignRequest(String name, Email email, String pwd, String checkPwd) {
         this.name = name;
         this.email = email;
         this.pwd = pwd;

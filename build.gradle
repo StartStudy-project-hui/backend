@@ -89,6 +89,10 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
 
+    implementation 'net.datafaker:datafaker:2.2.2'
+
+    developmentOnly "org.springframework.boot:spring-boot-docker-compose"  // docker compose 자동 실행
+
 
 
 

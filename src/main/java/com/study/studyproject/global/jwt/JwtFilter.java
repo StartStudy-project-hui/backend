@@ -5,6 +5,7 @@ import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.global.exception.ex.ErrorCode;
+import com.study.studyproject.member.domain.Email;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,7 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
         // 3. 블랙리스트 확인
-        String email = jwtUtil.getEmailFromToken(accessToken);
+        Email email = jwtUtil.getEmailFromToken(accessToken);
         if (isBlacklisted(email)) {
             jwtExceptionHandler(response, ErrorCode.BLACKLIST_USER);
             return;
@@ -87,15 +88,15 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
 
-    private boolean isBlacklisted(String email) {
-        String hashValue = HashUtil.sha256(email);
+    private boolean isBlacklisted(Email email) {
+        String hashValue = HashUtil.sha256(email.address());
         return blackListRepository.findByHashValue(hashValue)
                 .map(blackList -> blackList.isBlocked())
                 .orElse(false);
     }
 
-    private void setAuthentication(String email) {
-        Authentication authentication = jwtUtil.createAuthentication(email);
+    private void setAuthentication(Email email) {
+        Authentication authentication = jwtUtil.createAuthentication(email.address());
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

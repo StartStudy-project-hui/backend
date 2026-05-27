@@ -40,7 +40,8 @@ public class BoardController {
 
     @PostMapping("v1/board/member")
     @Operation(summary = "글쓰기 작성", description = "글쓰기 작성")
-    public ResponseEntity<GlobalResultDto> writing(@RequestBody @Validated BoardWriteRequestDto boardWriteRequestDto, @Parameter(hidden = true) @CurrentUser UserDetailsImpl userDetails) {
+    public ResponseEntity<GlobalResultDto> writing(@RequestBody @Validated BoardWriteRequestDto boardWriteRequestDto,
+                                                   @Parameter(hidden = true) @CurrentUser UserDetailsImpl userDetails) {
         return ResponseEntity.ok(boardService.boardSave(boardWriteRequestDto, userDetails.getMemberId()));
 
     }

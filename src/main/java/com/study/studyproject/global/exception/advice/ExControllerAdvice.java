@@ -14,14 +14,12 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.study.studyproject.global.exception.ex.ErrorCode.INTERNAL_SEVER_ERROR;
-import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_BOARD;
 
 @Slf4j
 @RestControllerAdvice
@@ -60,11 +58,27 @@ public class ExControllerAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors()
-                .forEach(c -> errors.put(((FieldError) c).getField(), c.getDefaultMessage()));
+
+        Map<String, String> errors = extractValidationErrors(ex);
         return ResponseEntity.status(status.value()).body(errors);
     }
+
+    private Map<String, String> extractValidationErrors(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getBindingResult().getAllErrors()
+                .forEach(error -> {
+                    if (error instanceof FieldError fieldError) {
+                        errors.put(fieldError.getField(), fieldError.getDefaultMessage());
+                        return;
+                    }
+
+                    errors.put(error.getObjectName(), error.getDefaultMessage());
+                });
+
+        return errors;
+    }
+
 
     private ResponseEntity<ExceptionResponse> createErrorResponse(ErrorCode errorCode) {
         ExceptionResponse errorResponse = ExceptionResponse.builder()

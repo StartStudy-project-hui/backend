@@ -13,6 +13,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.NaturalIdCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +27,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString(of = {"id", "email", "password", "nickname", "username", "role"})
 @Table(name = "Member",indexes = @Index(name = "username_idx", columnList = "username"))
+@NaturalIdCache
 public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
-    private String email; // 아이디 
+
+
+    @NaturalId
+    private Email email;
     private String password; //비밀번호
 
     private String username;
@@ -56,7 +62,7 @@ public class Member extends BaseTimeEntity {
 
     @Builder
     public Member(String email, String password, String username, String nickname, Role role, SocialType socialType, String socialId) {
-        this.email = email;
+        this.email = new Email(email);
         this.password = password;
         this.username = username;
         this.nickname = nickname;

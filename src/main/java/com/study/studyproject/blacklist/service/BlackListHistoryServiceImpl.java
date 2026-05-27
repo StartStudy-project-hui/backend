@@ -6,6 +6,7 @@ import com.study.studyproject.blacklist.dto.response.BlacklistHistoryMemberRespo
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.global.exception.ex.NotFoundException;
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,8 +33,8 @@ public class BlackListHistoryServiceImpl implements BlackListHistoryService {
     @Override
     public Slice<BlacklistHistoryMemberResponseDto> findSliceBlackHistoryById(Long id, Pageable pageable) {
         // 해당 닉네임 가져와서
-        String email = memberRepository.findEmailById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
-        String hash = HashUtil.sha256(email);
+        Email email = memberRepository.findEmailById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
+        String hash = HashUtil.sha256(email.address());
         return blackListHistoryRepository.searchSliceByEmail(hash, pageable);
     }
 

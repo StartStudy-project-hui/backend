@@ -2,6 +2,7 @@ package com.study.studyproject.login.service;
 
 import com.study.studyproject.global.exception.ex.DuplicateException;
 import com.study.studyproject.global.exception.ex.TokenNotValidationException;
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.login.domain.RefreshToken;
 import com.study.studyproject.global.GlobalResultDto;
@@ -39,7 +40,7 @@ public class LoginService {
 
     public LoginResponseDto loginService(@Valid LoginRequest loginRequest, HttpServletResponse response) throws NotFoundException {
 
-        Member member = memberRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByEmail(loginRequest.getEmail().toString()).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
 
         if (!passwordEncoder.matches(loginRequest.getPwd(), member.getPassword())) {
             throw new NotFoundException(NOT_FOUND_PASSWORD);
@@ -94,7 +95,7 @@ public class LoginService {
         if (jwtUtil.isValidRefreshAndInValidAccess(accessToken, refreshToken)) { //accessToken에 문제가 있는경우
             log.info("AccessToken 재발급 문제 ");
 
-            String emailFromToken = jwtUtil.getEmailFromToken(refreshToken);
+            Email emailFromToken = jwtUtil.getEmailFromToken(refreshToken);
             Long idFromToken = jwtUtil.getIdFromToken(refreshToken);
 
             //재발급

@@ -46,9 +46,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public GlobalResultDto userInfoUpdate(Member member , MemberUpdateResDto memberUpdateResDto) {
 
-        if (memberRepository.existsByNickname(memberUpdateResDto.getNickname())) {
-            throw new DuplicateException(NICKNAME_DUPLICATED);
-        }
+        checkedDuplicateNickName(memberUpdateResDto);
         Member getMember = memberRepository
                 .findById(member.getId())
                 .orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
@@ -57,6 +55,12 @@ public class MemberServiceImpl implements MemberService{
         return new GlobalResultDto("사용자 수정 성공", HttpStatus.OK.value());
 
 
+    }
+
+    private void checkedDuplicateNickName(MemberUpdateResDto memberUpdateResDto) {
+        if (memberRepository.existsByNickname(memberUpdateResDto.getNickname())) {
+            throw new DuplicateException(NICKNAME_DUPLICATED);
+        }
     }
 
     @Override

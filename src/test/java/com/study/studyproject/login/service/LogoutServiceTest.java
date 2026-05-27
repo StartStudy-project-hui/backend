@@ -58,7 +58,7 @@ class LogoutServiceTest {
 
 
         //when
-        GlobalResultDto globalResultDto = logoutService.logoutService(member1.getEmail());
+        GlobalResultDto globalResultDto = logoutService.logoutService(member1.getEmail().address());
 
         //then
 

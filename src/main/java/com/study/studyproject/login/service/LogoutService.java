@@ -3,6 +3,7 @@ package com.study.studyproject.login.service;
 import com.study.studyproject.login.domain.RefreshToken;
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.login.repository.RefreshRepository;
+import com.study.studyproject.member.domain.Email;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
