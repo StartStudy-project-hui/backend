@@ -81,7 +81,7 @@ class JwtFilterTest {
         jwtFilter.doFilterInternal(request, response, filterChain);
 
         // then
-        Assertions.assertEquals(401,response.getBufferSize());
+        Assertions.assertEquals(401,response.getStatus());
         verify(filterChain, never()).doFilter(request, response);
     }
 

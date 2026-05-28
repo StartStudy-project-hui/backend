@@ -21,7 +21,7 @@ public class UserInfoResponseDto {
     String nickname;
 
     @Schema(description = "사용자 이메일", defaultValue = "jac@naver.com")
-    Email email;
+    String email;
 
     @Schema(description = "사용자 역할", defaultValue = "ROLE_USER")
     String role;
@@ -30,7 +30,7 @@ public class UserInfoResponseDto {
     SocialType socialType;
 
     @Builder
-    public UserInfoResponseDto(Long seq, String username, String nickname, Email email, String role,SocialType socialType) {
+    public UserInfoResponseDto(Long seq, String username, String nickname, String email, String role,SocialType socialType) {
         this.seq = seq;
         this.username = username;
         this.nickname = nickname;
@@ -47,7 +47,7 @@ public class UserInfoResponseDto {
                 .seq(member.getId())
                 .username(member.getUsername())
                 .nickname(member.getNickname())
-                .email(member.getEmail())
+                .email(member.getEmail().address())
                 .role(member.getRole().name())
                 .socialType(member.getSocialType())
                 .build();

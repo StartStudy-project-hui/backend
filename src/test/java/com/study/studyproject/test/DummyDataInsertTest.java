@@ -100,32 +100,30 @@ class DummyDataInsertTest {
                 }
 
                 String email = emailUsername + index + "@naver.com";
-//                String password = "$2a$10$rYm7K9PxXvB" + fakerKo.random().hex(20);
-                String password = "$2a$10$rYm7K9PxXvB";
+
+                /*
+                 * password 컬럼이 NOT NULL 이므로 소셜 회원도 null이면 안 됨.
+                 * 실제 로그인 검증까지 생각하면 BCrypt 형식 값을 넣는 것이 안전함.
+                 */
+                String password = "$2a$10$rYm7K9PxXvBgQmQnqYpJbOe9Pi4jHnQnZg5tvC6kOqGrfFrZxZp4y";
+
                 String username = getBulkName(index);
                 String nickname = fakerKo.funnyName().name().replace(" ", "") + index;
                 String role = index % 20 == 0 ? "ROLE_ADMIN" : "ROLE_USER";
 
-
-                String socialId;
-                String socialType;
-
+                String socialId = null;
+                String socialType = null;
 
                 boolean isKakaoMember = index % 10 == 3;
                 boolean isNaverMember = index % 10 == 5;
+
                 if (isKakaoMember) {
-                    password = null;
                     socialId = "kakao-" + index;
                     socialType = "KAKAO";
                 } else if (isNaverMember) {
-                    password = null;
                     socialId = "naver-" + index;
                     socialType = "NAVER";
-                } else {
-                    socialId = null;
-                    socialType = null;
                 }
-
 
                 ps.setString(1, email);
                 ps.setString(2, password);
@@ -136,7 +134,6 @@ class DummyDataInsertTest {
                 ps.setString(7, socialType);
                 ps.setTimestamp(8, now());
                 ps.setTimestamp(9, now());
-
             }
 
             @Override
@@ -255,10 +252,7 @@ class DummyDataInsertTest {
                     ps.setTimestamp(3, now());
                     ps.setTimestamp(4, now());
                     ps.setLong(5, memberId);
-
-                    // 일반 댓글
                     ps.setNull(6, java.sql.Types.BIGINT);
-
                     ps.setString(7, fakerKo.lorem().sentence());
                     ps.setString(8, fakerKo.name().username());
                 }
@@ -312,17 +306,11 @@ class DummyDataInsertTest {
                     ReplyParentInfo parentReply = pick(parentReplies);
 
                     ps.setBoolean(1, false);
-
-                    // 부모 댓글과 같은 게시글
                     ps.setLong(2, parentReply.boardId());
-
                     ps.setTimestamp(3, now());
                     ps.setTimestamp(4, now());
                     ps.setLong(5, memberId);
-
-                    // 대댓글 핵심
                     ps.setLong(6, parentReply.replyId());
-
                     ps.setString(7, fakerKo.lorem().sentence());
                     ps.setString(8, fakerKo.name().username());
                 }
@@ -342,6 +330,7 @@ class DummyDataInsertTest {
             Long boardId
     ) {
     }
+
     private void insertPostLikes() {
         List<Long> memberIds = findIds("member", "member_id");
         List<Long> boardIds = findIds("board", "board_id");
@@ -497,7 +486,7 @@ class DummyDataInsertTest {
     }
 
     private String randomBlackListType() {
-        return pick(List.of("IP", "EMAIL"));
+        return pick(List.of("EMAIL"));
     }
 
     private String randomBlackListStatus() {

@@ -35,7 +35,6 @@ public class JwtUtil {
     public static final String BEARER = "Bearer ";
     public static final String ID = "id";
     private final UserDetailsServiceImpl userDetailsService;
-    private final RefreshRepository refreshTokenRepository;
     private static final long ACCESS_TIME = 30 * 60 * 1000L;
     private static final long REFRESH_TIME =  24 * 60 * 60 * 1000L;
     public static final String ACCESS_TOKEN = "Access_Token";

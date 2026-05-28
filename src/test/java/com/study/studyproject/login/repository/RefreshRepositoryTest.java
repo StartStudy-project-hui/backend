@@ -72,7 +72,7 @@ class RefreshRepositoryTest {
             return RefreshToken.builder()
                     .refreshToken(Refresh_Token)
                     .accessToken(Access_Token)
-                    .email(new Email("jac"))
+                    .email("jac")
                     .build();
         }
 

@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.studyproject.blacklist.domain.BlackList;
 import com.study.studyproject.blacklist.domain.BlackType;
 import com.study.studyproject.blacklist.domain.BlacklistStatus;
+import com.study.studyproject.blacklist.domain.QBlackList;
 import com.study.studyproject.blacklist.dto.request.BlackListMainRequestDto;
 import com.study.studyproject.blacklist.dto.response.BlacklistResponseDto;
 import com.study.studyproject.blacklist.dto.response.QBlacklistResponseDto;

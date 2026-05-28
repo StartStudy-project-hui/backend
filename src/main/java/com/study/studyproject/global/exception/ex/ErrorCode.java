@@ -19,6 +19,10 @@ public enum ErrorCode {
     UNABLE_DELETE_BOARD("게시글을 삭제 할 수 없습니다.", CONFLICT),
     NOT_FOUND_REPLY("댓글을 찾을 수 없습니다.", NOT_FOUND),
 
+    // 이메일
+    NOT_FOUND_EMAIL("이메일은 필수입니다.", NOT_FOUND),
+    INVALID_EMAIL("이메일 형식이 올바르지 않습니다.", BAD_REQUEST),
+
     //관심글
     POST_LIKE_DUPLICATED("관심글이 이미 추가하였습니다.", BAD_REQUEST),
 
@@ -36,6 +40,7 @@ public enum ErrorCode {
     NOT_FOUND_PAGE("페이지가 없습니다.", NOT_FOUND ),
     NOT_FOUND_VALUE("값을 찾을 수 없습니다.",NOT_FOUND),
     INTERNAL_SEVER_ERROR("서버 에러가 발생하였습니다. 관리자에게 문의해 주세요.", INTERNAL_SERVER_ERROR );
+
 
     private final HttpStatus status;
     private final String message;

@@ -72,7 +72,7 @@ class LogoutServiceTest {
         return RefreshToken.builder()
                 .refreshToken(allToken.getRefreshToken())
                 .accessToken(allToken.getAccessToken())
-                .email(member1.getEmail())
+                .email(member1.getEmail().address())
                 .build();
     }
 

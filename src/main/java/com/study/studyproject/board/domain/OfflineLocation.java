@@ -15,6 +15,7 @@ public class OfflineLocation {
     protected OfflineLocation() {
     }
 
+
     @Builder
     public OfflineLocation(double x, double y) {
         this.x = x;

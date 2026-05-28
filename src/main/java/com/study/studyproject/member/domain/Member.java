@@ -2,6 +2,7 @@ package com.study.studyproject.member.domain;
 
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.global.oauth.provider.OAuth2UserInfo;
+import com.study.studyproject.login.domain.PasswordEncoder;
 import com.study.studyproject.postlike.domain.PostLike;
 import com.study.studyproject.reply.domain.Reply;
 import com.study.studyproject.login.domain.Role;
@@ -35,12 +36,18 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-
-    @NaturalId
+    @AttributeOverride(
+            name = "address",
+            column = @Column(name = "email", nullable = false, unique = true)
+    )
     private Email email;
+    @Column(nullable = false)
     private String password; //비밀번호
 
+
+    @Column(nullable = false)
     private String username;
+    @Column(nullable = false,unique = true)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
@@ -95,13 +102,15 @@ public class Member extends BaseTimeEntity {
                 .role(Role.ROLE_USER).build();
     }
 
+    public boolean verifyPassword(String password, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(password,this.password);
+    }
 
-
-    public static Member toEntity(SignRequest signRequest, String encodePwd) {
+    public static Member toEntity(SignRequest signRequest, PasswordEncoder passwordEncoder) {
         return Member.builder().role(Role.ROLE_USER)
                 .username(signRequest.getName())
                 .nickname(signRequest.getNickname())
-                .password(encodePwd)
+                .password(passwordEncoder.encode(signRequest.getPwd()))
                 .email(signRequest.getEmail()).build();
     }
 

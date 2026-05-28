@@ -39,10 +39,10 @@ class BlackListImplUnitTest {
     void register_shouldSaveBlacklist() throws NoSuchFieldException {
         // given
         BlackListCreateRequestDto dto = new BlackListCreateRequestDto();
-        dto.setRawValue(new Email("user@example.com"));
+        dto.setRawValue("user@example.com");
         dto.setReason("spam");
 
-        String hash = HashUtil.sha256(dto.getRawValue().address());
+        String hash = HashUtil.sha256(dto.getRawValue());
         BlackList saved = BlackList.create(hash, dto.getReason());
 
         when(blacklistRepository.save(any(BlackList.class))).thenReturn(saved);

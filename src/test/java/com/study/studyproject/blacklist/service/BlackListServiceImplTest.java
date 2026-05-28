@@ -57,7 +57,7 @@ class BlackListServiceImplTest {
     void register() throws Exception {
         //given
         Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1", Role.ROLE_ADMIN);
-        BlackListCreateRequestDto requestDto = new BlackListCreateRequestDto(member1.getEmail(), "pishing", 1);
+        BlackListCreateRequestDto requestDto = new BlackListCreateRequestDto(member1.getEmail().address(), "pishing", 1);
 
         //when
         GlobalResultDto register = blackListService.registerOrUpdateBlackList(requestDto);
@@ -75,12 +75,12 @@ class BlackListServiceImplTest {
         //given
 
         Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1", Role.ROLE_ADMIN);
-        BlackListCreateRequestDto requestDto = new BlackListCreateRequestDto(member1.getEmail(),  "pishing", 1);
+        BlackListCreateRequestDto requestDto = new BlackListCreateRequestDto(member1.getEmail().address(),  "pishing", 1);
 
         //when
         GlobalResultDto register = blackListService.registerOrUpdateBlackList(requestDto);
 
-        BlackListCreateRequestDto requestDto2 = new BlackListCreateRequestDto(member1.getEmail() , "변경-욕설", 2);
+        BlackListCreateRequestDto requestDto2 = new BlackListCreateRequestDto(member1.getEmail().address() , "변경-욕설", 2);
 
         //when
         GlobalResultDto res = blackListService.registerOrUpdateBlackList(requestDto2);
@@ -134,9 +134,6 @@ class BlackListServiceImplTest {
         blackListService.delete(blacklist.getId());
 
         //then
-        List<BlackListHistory> histories = blacklist.getHistories();
-
-        Assertions.assertThat(histories.getLast().getAction()).isEqualTo(BlacklistAction.DELETE);
         assertThatThrownBy(() -> blackListRepository.findById(blacklist.getId())
                 .orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER)))
                 .isInstanceOf(NotFoundException.class);

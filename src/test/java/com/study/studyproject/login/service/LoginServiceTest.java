@@ -10,6 +10,7 @@ import com.study.studyproject.login.dto.SignRequest;
 import com.study.studyproject.member.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import org.assertj.core.api.AbstractAtomicReferenceAssert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +53,7 @@ class LoginServiceTest {
         String pwd = "!12341234";
         Member member1 = createMember("jacom2@naver.com", passwordEncoder.encode(pwd), "사용자명1", "닉네임1");
         memberRepository.save(member1);
-        LoginRequest loginRequest = new LoginRequest(member1.getEmail(), pwd);
+        LoginRequest loginRequest = new LoginRequest(member1.getEmail().address(), pwd);
 
         //when
         LoginResponseDto loginResponseDto = loginService.loginService(loginRequest, response);
@@ -73,7 +74,7 @@ class LoginServiceTest {
         Member member1 = createMember("jacom2@naver.com", passwordEncoder.encode("!12341234"), "사용자명1", "닉네임1");
         memberRepository.save(member1);
 
-        LoginRequest loginRequest = new LoginRequest(member1.getEmail(), "wrongPwd");
+        LoginRequest loginRequest = new LoginRequest(member1.getEmail().address(), "wrongPwd");
 
 
         //when & then
@@ -84,25 +85,34 @@ class LoginServiceTest {
     @Test
     @DisplayName("비밀번호와 비밀번호 확인 일치하고 중복된 회원가입이 아닐 경우, 회원 가입 성공한다.")
     void signTest() throws Exception {
-        //given
+            // given
+            SignRequest signRequest = new SignRequest(
+                    "김하임",
+                    "jacom2@naver.com",
+                    "!12341234",
+                    "!12341234"
+            );
 
-        SignRequest signRequest = new SignRequest("김하임", new Email("jacom2@naver.com"), "!12341234", "!12341234");
+            // when
+            loginService.sign(signRequest);
 
+            // then
+            Member member = memberRepository.findByEmail(new Email(signRequest.getEmail()))
+                    .orElseThrow();
 
-        //when
-        loginService.sign(signRequest);
+            assertThat(member)
+                    .extracting(
+                            Member::getUsername,
+                            m -> m.getEmail().address(),
+                            Member::getNickname
+                    )
+                    .containsExactly(
+                            "김하임",
+                            "jacom2@naver.com",
+                            "jacom2"
+                    );
 
-        //then
-
-        Member member = memberRepository.findByEmail(signRequest.getEmail()).get();
-        System.out.println("member = " + member);
-
-        assertThat(member)
-                .extracting("username", "email", "nickname")
-                .containsExactly(
-                        "김하임", "jacom2@naver.com", "jacom2"
-                );
-    }
+        }
 
     @Test
     @DisplayName("비밀번호와 비밀번호 확인이 다른 경우, 회원 가입 실패한다.")
@@ -135,7 +145,7 @@ class LoginServiceTest {
     
 
     private Member createMember
-            (Email email, String password, String username, String nickname) {
+            (String email, String password, String username, String nickname) {
         {
             return Member.builder()
                     .nickname(nickname)

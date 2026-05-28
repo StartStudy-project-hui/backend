@@ -30,7 +30,7 @@ public class BlackListServiceImpl implements BlackListService {
     @Override
     public GlobalResultDto registerOrUpdateBlackList(BlackListCreateRequestDto request) {
 
-        String hash = HashUtil.sha256(request.getRawValue().address());
+        String hash = HashUtil.sha256(request.getRawValue());
         BlackList findByBlackList = blacklistRepository.findByHashValue(hash)
                 .orElseGet(() -> BlackList.create( hash, request.getReason()));
 

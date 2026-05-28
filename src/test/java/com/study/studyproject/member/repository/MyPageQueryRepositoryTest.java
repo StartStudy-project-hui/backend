@@ -10,6 +10,7 @@ import com.study.studyproject.member.dto.MemberListRequestDto;
 import com.study.studyproject.reply.repository.ReplyRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,13 @@ class MyPageQueryRepositoryTest {
     @Autowired
     JwtUtil jwtUtil;
 
+
+    @BeforeEach
+    void setUp() {
+        boardRepository.deleteAll();
+        memberRepository.deleteAll();
+    }
+
     @AfterEach
     void tearDown() {
         replyRepository.deleteAllInBatch();
@@ -58,12 +66,12 @@ class MyPageQueryRepositoryTest {
         memberRepository.save(member1);
 
 
-        Member member2 = createMember("jacom1@naver.com", "!kimkimkim", "사용자명1", "닉네임1");
+        Member member2 = createMember("jacom1@naver.com", "!kimkimkim", "사용자명1", "닉네임12");
         memberRepository.save(member2);
 
-        Board board = createBoard(member2, "제목1", "내용1", "닉네임1", CS);
-        Board board1 = createBoard(member2, "제목2", "내용2", "닉네임1", CS);
-        Board board2 = createBoard(member2, "제목3", "내용3", "닉네임1", 기타);
+        Board board = createBoard(member2, "제목1", "내용1", "닉네임2", CS);
+        Board board1 = createBoard(member2, "제목2", "내용2", "닉네임2", CS);
+        Board board2 = createBoard(member2, "제목3", "내용3", "닉네임2", 기타);
 
         List<Board> products = List.of(board, board1, board2);
         boardRepository.saveAll(products);

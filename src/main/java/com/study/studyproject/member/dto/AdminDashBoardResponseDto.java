@@ -19,14 +19,14 @@ public class AdminDashBoardResponseDto {
     private String nickname;
 
     @Schema(description = "이메일", defaultValue = "admin@naver.com")
-    private Email email;
+    private String email;
     @Schema(description = "역할")
     private Role role;
     Page<ListResponseDto> listResponseDto;
 
 
     @Builder
-    public AdminDashBoardResponseDto(String name, String nickname, Email email, Role role, Page<ListResponseDto> listResponseDto) {
+    public AdminDashBoardResponseDto(String name, String nickname, String email, Role role, Page<ListResponseDto> listResponseDto) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
@@ -39,7 +39,7 @@ public class AdminDashBoardResponseDto {
                 .name(member.getUsername())
                 .nickname(member.getNickname())
                 .role(member.getRole())
-                .email(member.getEmail())
+                .email(member.getEmail().address())
                 .listResponseDto(listResponseDtos)
                 .build();
 
