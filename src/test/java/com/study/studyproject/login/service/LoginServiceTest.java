@@ -142,7 +142,10 @@ class LoginServiceTest {
                 .isInstanceOf(DuplicateException.class);
 
     }
-    
+
+
+
+
 
     private Member createMember
             (String email, String password, String username, String nickname) {
