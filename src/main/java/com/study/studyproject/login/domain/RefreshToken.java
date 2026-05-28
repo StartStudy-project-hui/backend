@@ -2,6 +2,8 @@ package com.study.studyproject.login.domain;
 
 import com.study.studyproject.login.dto.LoginRequest;
 import com.study.studyproject.login.dto.TokenDtoResponse;
+import com.study.studyproject.member.domain.Email;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +12,7 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RedisHash(value = "refreshToken", timeToLive = 86400)
 public class  RefreshToken {
     @Id

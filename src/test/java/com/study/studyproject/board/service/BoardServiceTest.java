@@ -13,6 +13,7 @@ import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.global.jwt.JwtUtil;
 import com.study.studyproject.login.domain.Role;
 import com.study.studyproject.login.dto.TokenDtoResponse;
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.reply.domain.Reply;
@@ -130,7 +131,7 @@ class BoardServiceTest {
         List<Board> products = List.of(board, board1, board2);
         List<Board> boards = boardRepository.saveAll(products);
 
-        TokenDtoResponse allToken = jwtUtil.createAllToken("jacom2@naver.com", member1.getId());
+        TokenDtoResponse allToken = jwtUtil.createAllToken(new Email("jacom2@naver.com"), member1.getId());
 
         String postLike = "";
         BoardOneResponseDto boardOneResponseDto = boardService.detailBoard(board.getId());
@@ -172,7 +173,7 @@ class BoardServiceTest {
         List<Reply> byBoardReply = replyRepository.findByBoardReplies(board.getId());
 
         //when
-        TokenDtoResponse allToken = jwtUtil.createAllToken("jacom2@naver.com", member1.getId());
+        TokenDtoResponse allToken = jwtUtil.createAllToken(new Email("jacom2@naver.com"), member1.getId());
         BoardOneResponseDto boardOneResponseDto = boardService.detailBoard(board.getId());
 
 

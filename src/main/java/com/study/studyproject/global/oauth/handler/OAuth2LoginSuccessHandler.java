@@ -6,6 +6,7 @@ import com.study.studyproject.login.domain.RefreshToken;
 import com.study.studyproject.login.dto.LoginRequest;
 import com.study.studyproject.login.dto.TokenDtoResponse;
 import com.study.studyproject.login.repository.RefreshRepository;
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import jakarta.servlet.ServletException;

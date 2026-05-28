@@ -2,6 +2,7 @@ package com.study.studyproject.login.repository;
 
 
 import com.study.studyproject.login.domain.RefreshToken;
+import com.study.studyproject.member.domain.Email;
 import org.springframework.data.repository.CrudRepository;
 
 

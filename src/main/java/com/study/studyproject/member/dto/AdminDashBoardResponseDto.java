@@ -1,5 +1,6 @@
 package com.study.studyproject.member.dto;
 
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.login.domain.Role;
 import com.study.studyproject.list.dto.ListResponseDto;
@@ -38,7 +39,7 @@ public class AdminDashBoardResponseDto {
                 .name(member.getUsername())
                 .nickname(member.getNickname())
                 .role(member.getRole())
-                .email(member.getEmail())
+                .email(member.getEmail().address())
                 .listResponseDto(listResponseDtos)
                 .build();
 

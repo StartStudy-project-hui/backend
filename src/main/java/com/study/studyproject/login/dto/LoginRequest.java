@@ -1,5 +1,6 @@
 package com.study.studyproject.login.dto;
 
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.dto.UserInfoResponseDto;
 import jakarta.validation.constraints.NotBlank;
@@ -22,9 +23,9 @@ public class LoginRequest {
         this.pwd = pwd;
     }
 
-    public static LoginRequest from(String email, String pwd) {
+    public static LoginRequest from(Email email, String pwd) {
         return LoginRequest.builder()
-                .email(email)
+                .email(email.address())
                 .pwd(pwd)
                 .build();
     }

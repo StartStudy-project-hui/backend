@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,11 +60,11 @@ public class Board extends BaseTimeEntity {
 
 
     @OneToMany(mappedBy = "board") //지연로딩
-    private List<PostLike> postLikes;
+    private List<PostLike> postLikes = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "board") //지연로딩
-    private List<Reply> replies;
+    private List<Reply> replies = new ArrayList<>();
 
     public void ChangeBoardIsDeleted(Boolean deleted) {
         isDeleted = deleted;

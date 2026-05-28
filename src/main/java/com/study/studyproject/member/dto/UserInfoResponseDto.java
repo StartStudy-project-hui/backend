@@ -1,5 +1,6 @@
 package com.study.studyproject.member.dto;
 
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.domain.SocialType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,7 +47,7 @@ public class UserInfoResponseDto {
                 .seq(member.getId())
                 .username(member.getUsername())
                 .nickname(member.getNickname())
-                .email(member.getEmail())
+                .email(member.getEmail().address())
                 .role(member.getRole().name())
                 .socialType(member.getSocialType())
                 .build();

@@ -46,12 +46,17 @@ public class AdminServiceImpl implements AdminService{
     @Transactional
     @Override
     public GlobalResultDto adminDeleteBoard(Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_BOARD));
+        Board board = findByBoardId(boardId);
 
         board.changeAdminDeleteBoard();
 
         return new GlobalResultDto("관리자 권한으로 게시글 삭제 완료", HttpStatus.OK.value());
+    }
+
+    private Board findByBoardId(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_BOARD));
+        return board;
     }
 }
 

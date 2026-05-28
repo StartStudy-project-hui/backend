@@ -11,6 +11,7 @@ import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository
 import com.study.studyproject.global.exception.ex.ErrorCode;
 import com.study.studyproject.global.jwt.JwtFilter;
 import com.study.studyproject.global.jwt.JwtUtil;
+import com.study.studyproject.member.domain.Email;
 import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,7 +81,7 @@ class JwtFilterTest {
         jwtFilter.doFilterInternal(request, response, filterChain);
 
         // then
-        Assertions.assertEquals(401,response.getBufferSize());
+        Assertions.assertEquals(401,response.getStatus());
         verify(filterChain, never()).doFilter(request, response);
     }
 
@@ -94,7 +95,7 @@ class JwtFilterTest {
 
         given(jwtUtil.resolveToken(any())).willReturn(token);
         given(jwtUtil.AccessTokenValidation(token)).willReturn(true); // 토큰은 유효함
-        given(jwtUtil.getEmailFromToken(token)).willReturn(email);
+        given(jwtUtil.getEmailFromToken(token)).willReturn(new Email(email));
         given(mockBlackList.isBlocked()).willReturn(true);
 
         // 블랙리스트에 존재한다고 가정

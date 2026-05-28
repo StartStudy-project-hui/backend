@@ -1,5 +1,7 @@
 package com.study.studyproject.global.hash;
 
+import com.study.studyproject.member.domain.Email;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

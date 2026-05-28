@@ -2,6 +2,7 @@ package com.study.studyproject.blacklist.dto.request;
 
 import com.study.studyproject.blacklist.domain. BlackType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 @Data
@@ -10,11 +11,9 @@ import lombok.*;
 public class BlackListCreateRequestDto {
 
 
-    @Schema(description = "이메일/ip", example = "kimkim@gmail.com")
+    @Schema(description = "이메일", example = "kimkim@gmail.com")
+    @Email
     private String rawValue;
-
-    @Schema(description = "블랙리스트 타입", example = "EMAIL")
-    private BlackType type;
 
     @Schema(description = "블랙리스트 이유", example = "욕설")
     private String reason;

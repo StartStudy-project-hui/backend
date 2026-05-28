@@ -125,7 +125,7 @@ class LoginControllerTest {
         memberRepository.save(member1);
 
         LoginRequest loginRequest = LoginRequest.builder()
-                .email(member1.getEmail())
+                .email(member1.getEmail().address())
                 .pwd("!12341234")
                 .build();
 

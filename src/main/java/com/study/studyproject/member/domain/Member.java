@@ -2,6 +2,7 @@ package com.study.studyproject.member.domain;
 
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.global.oauth.provider.OAuth2UserInfo;
+import com.study.studyproject.login.domain.PasswordEncoder;
 import com.study.studyproject.postlike.domain.PostLike;
 import com.study.studyproject.reply.domain.Reply;
 import com.study.studyproject.login.domain.Role;
@@ -13,6 +14,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.NaturalIdCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,16 +28,26 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString(of = {"id", "email", "password", "nickname", "username", "role"})
 @Table(name = "Member",indexes = @Index(name = "username_idx", columnList = "username"))
+@NaturalIdCache
 public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
-    private String email; // 아이디 
+
+    @AttributeOverride(
+            name = "address",
+            column = @Column(name = "email", nullable = false, unique = true)
+    )
+    private Email email;
+    @Column(nullable = false)
     private String password; //비밀번호
 
+
+    @Column(nullable = false)
     private String username;
+    @Column(nullable = false,unique = true)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
@@ -56,7 +69,7 @@ public class Member extends BaseTimeEntity {
 
     @Builder
     public Member(String email, String password, String username, String nickname, Role role, SocialType socialType, String socialId) {
-        this.email = email;
+        this.email = new Email(email);
         this.password = password;
         this.username = username;
         this.nickname = nickname;
@@ -89,13 +102,15 @@ public class Member extends BaseTimeEntity {
                 .role(Role.ROLE_USER).build();
     }
 
+    public boolean verifyPassword(String password, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(password,this.password);
+    }
 
-
-    public static Member toEntity(SignRequest signRequest, String encodePwd) {
+    public static Member toEntity(SignRequest signRequest, PasswordEncoder passwordEncoder) {
         return Member.builder().role(Role.ROLE_USER)
                 .username(signRequest.getName())
                 .nickname(signRequest.getNickname())
-                .password(encodePwd)
+                .password(passwordEncoder.encode(signRequest.getPwd()))
                 .email(signRequest.getEmail()).build();
     }
 

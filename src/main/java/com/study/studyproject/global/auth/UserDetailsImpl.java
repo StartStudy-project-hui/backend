@@ -1,5 +1,6 @@
 package com.study.studyproject.global.auth;
 
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.login.domain.Role;
 import lombok.Getter;
@@ -19,7 +20,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
     private Long memberId;
     private  Member member;
     private Map<String, Object> attributes;
-    private String email;
+    private Email email;
 
 
     public UserDetailsImpl(Member member, Role authority, Long memberId) {
@@ -29,7 +30,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
     }
 
     //oAuth 로그인
-    public UserDetailsImpl(Member user, Long memberId, Role authority, String email) {
+    public UserDetailsImpl(Member user, Long memberId, Role authority, Email email) {
         this.member = user;
         this.memberId = memberId;
         this.authority = authority;
@@ -72,7 +73,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
         return member != null ? member.getNickname():null;
     }
 
-    public String getEmail() {
+    public Email getEmail() {
         return member != null ? member.getEmail():null;
     }
 

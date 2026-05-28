@@ -66,6 +66,7 @@ public class InitData {
                 .password(passwordEncoder.encode("Y@3r9o$7k"))
                 .build();
 
+
         memberRepository.save(user);
 
         Member admin = Member.builder()
@@ -92,9 +93,9 @@ public class InitData {
               user, admin, user2
         };
 
-        createBlackList(user.getEmail(), "피싱", BlacklistStatus.ACTIVE);
-        createBlackList(admin.getEmail(), "스팸", BlacklistStatus.PERMANENT);
-        createBlackList(user2.getEmail(), "욕설", BlacklistStatus.ACTIVE);
+//        createBlackList(user.getEmail(), "피싱", BlacklistStatus.ACTIVE);
+//        createBlackList(admin.getEmail(), "스팸", BlacklistStatus.PERMANENT);
+//        createBlackList(user2.getEmail(), "욕설", BlacklistStatus.ACTIVE);
 
         Category[] arr = {
                 Category.CS, Category.기타, Category.코테
@@ -178,7 +179,6 @@ public class InitData {
         }
 
         BlackList blackList = BlackList.create(
-                BlackType.EMAIL,
                 hashValue,
                 reason
         );

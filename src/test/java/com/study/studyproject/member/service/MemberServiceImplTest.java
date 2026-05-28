@@ -66,8 +66,7 @@ class MemberServiceImplTest {
         UserInfoResponseDto userInfoResponseDto = memberService.userInfoService(member1);
 
         //then
-        assertThat(userInfoResponseDto.getEmail()).isEqualTo(member1.getEmail());
-        assertThat(userInfoResponseDto.getEmail()).isEqualTo(member1.getEmail());
+        assertThat(userInfoResponseDto.getEmail()).isEqualTo(member1.getEmail().address());
         assertThat(userInfoResponseDto.getSeq()).isEqualTo(member1.getId());
 
     }

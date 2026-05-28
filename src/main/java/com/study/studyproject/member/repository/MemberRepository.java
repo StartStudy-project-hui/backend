@@ -1,6 +1,7 @@
 package com.study.studyproject.member.repository;
 
 
+import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.domain.SocialType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,13 +14,13 @@ import java.util.Optional;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
-    Optional<Member> findByEmail(String email);
+    Optional<Member> findByEmail(Email email);
     Optional<Member> findByNickname(String nickname);
 
     @Query("select m.email from Member m where m.nickname = :nickname")
     Optional<String> findEmailByNickname(@Param("nickname")  String nickname);
     @Query("select m.email from Member m where m.id = :id")
-    Optional<String> findEmailById(@Param("id") Long id);
+    Optional<Email> findEmailById(@Param("id") Long id);
 
 
     boolean existsByNickname(String nickname);

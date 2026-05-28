@@ -21,7 +21,6 @@ public class  BlackList {
     @Column(name = "blacklist_id")
     private Long id;
 
-    // EMAIL, PHONE
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BlackType type;
@@ -56,9 +55,9 @@ public class  BlackList {
 
 
 
-    public static BlackList create(BlackType type, String hashValue, String reason) {
+    public static BlackList create( String hashValue, String reason) {
         return BlackList.builder()
-                .type(type)
+                .type(BlackType.EMAIL)
                 .hashValue(hashValue)
                 .reason(reason)
                 .status(BlacklistStatus.ACTIVE)

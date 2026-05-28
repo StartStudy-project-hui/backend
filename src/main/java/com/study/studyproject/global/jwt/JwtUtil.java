@@ -4,6 +4,7 @@ import com.study.studyproject.global.auth.UserDetailsServiceImpl;
 import com.study.studyproject.global.exception.ex.TokenNotValidationException;
 import com.study.studyproject.login.dto.TokenDtoResponse;
 import com.study.studyproject.login.repository.RefreshRepository;
+import com.study.studyproject.member.domain.Email;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -34,7 +35,6 @@ public class JwtUtil {
     public static final String BEARER = "Bearer ";
     public static final String ID = "id";
     private final UserDetailsServiceImpl userDetailsService;
-    private final RefreshRepository refreshTokenRepository;
     private static final long ACCESS_TIME = 30 * 60 * 1000L;
     private static final long REFRESH_TIME =  24 * 60 * 60 * 1000L;
     public static final String ACCESS_TOKEN = "Access_Token";
@@ -100,20 +100,20 @@ public class JwtUtil {
 
 
     // 토큰 생성
-    public TokenDtoResponse createAllToken(String email, Long id) {
+    public TokenDtoResponse createAllToken(Email email, Long id) {
         String access = createToken(email, id, ACCESS_TOKEN);
         String refresh = createToken(email, id, REFRESH_TOKEN);
         return new TokenDtoResponse(access, refresh);
     }
 
-    public String createToken(String email,Long id, String type) {
+    public String createToken(Email email,Long id, String type) {
 
         Date date = new Date();
 
         long time = type.equals(ACCESS_TOKEN) ? ACCESS_TIME : REFRESH_TIME;
 
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(email.address())
                 .claim(ID, id)
                 .setExpiration(new Date(date.getTime() + time))
                 .setIssuedAt(date)
@@ -166,10 +166,16 @@ public class JwtUtil {
     }
 
     // 토큰에서 email 가져오는 기능
-    public String getEmailFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
-    }
+    public Email getEmailFromToken(String token) {
+        String subject = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
 
+        return new Email(subject);
+    }
     // 토큰에서 id 가져오는 기능
     public Long getIdFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get(ID,Long.class);
