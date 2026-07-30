@@ -27,7 +27,7 @@ public class CorsConfig  {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "https://www.startstudy.shop/"
+        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "https://www.startstudy.store/"
                 ,"http://localhost:8080"));
         config.addAllowedHeader(ALL);
         config.addAllowedMethod(ALL);

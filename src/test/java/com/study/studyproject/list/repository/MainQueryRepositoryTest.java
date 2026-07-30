@@ -53,7 +53,7 @@ class MainQueryRepositoryTest {
         Member member = createMember("jacom1@naver.com", "!112341234", "사용자명1", "닉네임1");
         Board board = createBoard(member, "꿈나라", "내용1", "닉네임1", CS);
         Board board1 = createBoard(member, "제목2", "내용2", "닉네임1", CS);
-        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", 기타);
+        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", ETC);
         memberRepository.save(member);
         boardRepository.saveAll(List.of(board, board1, board2));
 
@@ -86,7 +86,7 @@ class MainQueryRepositoryTest {
         Member member = createMember("jacom1@naver.com", "!112341234", "사용자명1", "닉네임1");
         Board board = createBoard(member, "꿈나라", "내용1", "닉네임1", CS);
         Board board1 = createBoard(member, "제목2", "내용2", "닉네임1", CS);
-        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", 기타);
+        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", ETC);
         memberRepository.save(member);
         boardRepository.saveAll(List.of(board, board1, board2));
         MainRequestDto listRequestDto = new MainRequestDto(CS,1,null);
@@ -108,17 +108,17 @@ class MainQueryRepositoryTest {
         Member member = createMember("jacom1@naver.com", "!112341234", "사용자명1", "닉네임1");
         Board board = createBoard(member, "꿈나라", "내용1", "닉네임1", CS);
         Board board1 = createBoard(member, "제목2", "내용2", "닉네임1", CS);
-        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", 기타);
+        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", ETC);
         memberRepository.save(member);
         boardRepository.saveAll(List.of(board, board1, board2));
         MainRequestDto listRequestDto = new MainRequestDto(CS,1,null);
         String contents = "꿈나라";
 
         //when
-        JPAQuery<Board> total = mainQueryRepository.getTotal(contents, listRequestDto);
+        JPAQuery<Long> total = mainQueryRepository.getTotal(contents, listRequestDto);
 
         //thne
-        List<Board> fetch = total.fetch();
+        List<Long> fetch = total.fetch();
         assertThat(fetch).hasSize(1);
 
     }

@@ -55,6 +55,10 @@ public class InitData {
     @PostConstruct
     void init() {
 
+        if (memberRepository.count() > 0) {
+            return;
+        }
+
         String encode1 = passwordEncoder.encode("Y@3r9o$7k");
         String encode2 = passwordEncoder.encode("Y@3r9o$7aaak");
         String encode3 = passwordEncoder.encode("Y@3r9o$7kff");
@@ -98,7 +102,7 @@ public class InitData {
 //        createBlackList(user2.getEmail(), "욕설", BlacklistStatus.ACTIVE);
 
         Category[] arr = {
-                Category.CS, Category.기타, Category.코테
+                Category.CS, Category.ETC, Category.CODING_TEST
         };
 
 

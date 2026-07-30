@@ -30,8 +30,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 
-import static com.study.studyproject.board.domain.Category.CS;
-import static com.study.studyproject.board.domain.Category.기타;
+import static com.study.studyproject.board.domain.Category.*;
 import static com.study.studyproject.login.domain.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -181,7 +180,7 @@ class MemberControllerTest {
         Member member = createMember("jacom1@naver.com", passwordEncoder.encode("!112341234"), "사용자명1", "닉네임1");
         Board board = createBoard(member, "제목1", "내용1", "닉네임1", CS);
         Board board1 = createBoard(member, "제목2", "내용2", "닉네임1", CS);
-        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", 기타);
+        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", ETC);
         memberRepository.save(member);
         boardRepository.saveAll(List.of(board, board1, board2));
         TokenDtoResponse allToken = jwtUtil.createAllToken(member.getEmail(), member.getId());
@@ -209,7 +208,7 @@ class MemberControllerTest {
         Member member = createMember("jacom1@naver.com", passwordEncoder.encode("!112341234"), "사용자명1", "닉네임1");
         Board board = createBoard(member, "제목1", "내용1", "닉네임1", CS);
         Board board1 = createBoard(member, "제목2", "내용2", "닉네임1", CS);
-        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", 기타);
+        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", ETC);
         memberRepository.save(member);
         boardRepository.saveAll(List.of(board, board1, board2));
         TokenDtoResponse allToken = jwtUtil.createAllToken(member.getEmail(), member.getId());
@@ -239,7 +238,7 @@ class MemberControllerTest {
         Member member = createMember("jacom1@naver.com", passwordEncoder.encode("!112341234"), "사용자명1", "닉네임1");
         Board board = createBoard(member, "제목1", "내용1", "닉네임1", CS);
         Board board1 = createBoard(member, "제목2", "내용2", "닉네임1", CS);
-        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", 기타);
+        Board board2 = createBoard(member, "제목3", "내용3", "닉네임1", ETC);
         PostLike postLike1 = PostLike.create(member, board);
         PostLike postLike2 = PostLike.create(member, board1);
         PostLike postLike3 = PostLike.create(member, board2);

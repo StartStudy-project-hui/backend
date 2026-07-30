@@ -13,34 +13,68 @@ public class KakaoOAuth2UserInfo implements OAuth2UserInfo {
 
     @Override
     public String getId() {
-        return String.valueOf(attributes.get("id"));
+        return getStringValue(attributes, "id");
     }
 
 
     @Override
     public String getEmail() {
-        Map<String, Object> account = (Map<String, Object>) attributes.get("kakao_account");
-        return String.valueOf(account.get("email"));
+        Map<String, Object> account = getKakaoAccount();
+
+        if (account == null) {
+            return null;
+        }
+
+        return getStringValue(account, "email");
     }
 
     @Override
     public String getName() {
-        Map<String, Object> account = (Map<String, Object>) attributes.get("kakao_account");
-        Map<String, Object> profile = (Map<String, Object>) account.get("profile");
-        if (account == null || profile == null) {
-            return null;
-        }
-        return (String) profile.get("nickname");
+        return getNickname();
     }
 
     @Override
     public String getNickname() {
-        Map<String, Object> account = (Map<String, Object>) attributes.get("kakao_account");
-        Map<String, Object> profile = (Map<String, Object>) account.get("profile");
-        if (account == null || profile == null) {
+        Map<String, Object> profile = getProfile();
+        if (profile == null) {
             return null;
         }
-        return (String) profile.get("nickname");
 
+        return getStringValue(profile, "nickname");
     }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getProfile() {
+        Map<String, Object> account = getKakaoAccount();
+        if (account == null) {
+            return null;
+        }
+
+        Object profile = account.get("profile");
+
+        if (!(profile instanceof Map)) {
+            return null;
+        }
+
+        return (Map<String, Object>) profile;
+    }
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getKakaoAccount() {
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        if (!(kakaoAccount instanceof Map)) {
+            return null;
+        }
+        return (Map<String, Object>) kakaoAccount;
+    }
+
+    private String getStringValue(Map<String, Object> source, String key) {
+        Object value = source.get(key);
+
+        if (value == null) {
+            return null;
+        }
+
+        return String.valueOf(value);
+    }
+
 }

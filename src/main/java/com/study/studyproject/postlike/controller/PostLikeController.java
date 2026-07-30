@@ -47,8 +47,8 @@ public class PostLikeController {
 
     @Operation(summary = "관심글 삭제", description = "사용자의 관심글 삭제합니다.")
     @DeleteMapping("v1/post-like/{postLikeId}")
-    public ResponseEntity<GlobalResultDto> postLikeDelete(@PathVariable(name = "postLikeId") Long postLikeId) {
-        return ResponseEntity.ok(postLikeService.postLikeDelete(postLikeId));
+    public ResponseEntity<GlobalResultDto> postLikeDelete(@PathVariable(name = "postLikeId") Long postLikeId, @Parameter(hidden = true) @CurrentUser UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(postLikeService.postLikeDelete(postLikeId, userDetails.getMember()));
     }
 
 

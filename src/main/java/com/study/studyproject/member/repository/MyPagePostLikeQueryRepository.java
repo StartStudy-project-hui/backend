@@ -9,7 +9,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.board.domain.ConnectionType;
-import com.study.studyproject.board.domain.Recruit;
+import com.study.studyproject.board.domain.RecruitStatus;
 import com.study.studyproject.list.dto.ListResponseDto;
 import com.study.studyproject.list.dto.QListResponseDto;
 import com.study.studyproject.member.dto.MemberListRequestDto;
@@ -52,7 +52,7 @@ public class  MyPagePostLikeQueryRepository{
                         new QListResponseDto(
                                 board.member.nickname,
                                 board.id.intValue(),
-                                board.recruit.stringValue(),
+                                board.recruitStatus.stringValue(),
                                 board.category.stringValue(),
                                 board.connectionType.stringValue(),
                                 board.content,
@@ -69,7 +69,7 @@ public class  MyPagePostLikeQueryRepository{
                 .innerJoin(board).fetchJoin()
                 .on(postLike.board.id.eq(board.id))
                 .where(
-                        getType(condition.getRecruit()), //모집여부
+                        getType(condition.getRecruitStatus()), //모집여부
                         getPostLikeMember(memeberId), //사용자 아이디 유무
                         getCategory(condition.getCategory()),
                         getConnectionType(condition.getConnectionType()),
@@ -91,7 +91,7 @@ public class  MyPagePostLikeQueryRepository{
             return null;
         }
 
-        return category.equals(Category.전체) ? null : board.category.eq(category);
+        return category.equals(Category.ALL) ? null : board.category.eq(category);
     }
 
     public JPAQuery<Board> getTotal(Long memeberId, MemberListRequestDto condition) {
@@ -101,7 +101,7 @@ public class  MyPagePostLikeQueryRepository{
                 )
                 .from(board)
                 .where(
-                        getType(condition.getRecruit()), //모집여부
+                        getType(condition.getRecruitStatus()), //모집여부
                         getPostLikeMember(memeberId), //사용자 이메일
                         getCategory(condition.getCategory()),
                         getConnectionType(condition.getConnectionType()),
@@ -110,21 +110,21 @@ public class  MyPagePostLikeQueryRepository{
     }
 
     private Predicate getConnectionType(ConnectionType connectionType) {
-        if (isEmpty(connectionType)) {
+        if (connectionType == null) {
             return null;
         }
         return  connectionType.equals(ONLINE) ? board.connectionType.eq(ONLINE) :board.connectionType.eq(OFFLINE);
     }
 
-    private BooleanExpression getType(Recruit type) {
+    private BooleanExpression getType(RecruitStatus type) {
 
-        return isEmpty(type) ? null : board.recruit.eq(type);
+        return type == null ? null : board.recruitStatus.eq(type);
     }
 
 
 
     private BooleanExpression getPostLikeMember(Long userId) {
-        return isEmpty(userId) ? null : postLike.member.id.eq(userId);
+        return userId == null ? null : postLike.member.id.eq(userId);
     }
 
     private OrderSpecifier<?> getOrder(int num) {

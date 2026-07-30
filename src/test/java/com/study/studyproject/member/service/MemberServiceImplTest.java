@@ -2,7 +2,7 @@ package com.study.studyproject.member.service;
 
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.board.domain.Category;
-import com.study.studyproject.board.domain.Recruit;
+import com.study.studyproject.board.domain.RecruitStatus;
 import com.study.studyproject.board.repository.BoardRepository;
 import com.study.studyproject.global.jwt.JwtUtil;
 import com.study.studyproject.list.dto.ListResponseDto;
@@ -24,8 +24,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
-import static com.study.studyproject.board.domain.Category.CS;
-import static com.study.studyproject.board.domain.Category.기타;
+import static com.study.studyproject.board.domain.Category.*;
 import static com.study.studyproject.login.domain.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.*;
 
@@ -95,7 +94,7 @@ class MemberServiceImplTest {
         Member member1 = createMember("jacom2@naver.com", "!12341234", "사용자명1", "닉네임0");
         Board board = createBoard(member1, "제목1", "내용1",  CS);
         Board board1 = createBoard(member1, "제목2", "내용2",  CS);
-        Board board2 = createBoard(member1, "제목3", "내용3", 기타);
+        Board board2 = createBoard(member1, "제목3", "내용3", ETC);
         memberRepository.save(member1);
         boardRepository.save(board);
         boardRepository.save(board1);
@@ -127,13 +126,13 @@ class MemberServiceImplTest {
         Member member1 = createMember("jacom2@naver.com", "!12341234", "사용자명1", "닉네임0");
         Board board = createBoard(member1, "제목1", "내용1",  CS);
         Board board1 = createBoard(member1, "제목2", "내용2",  CS);
-        Board board2 = createBoard(member1, "제목3", "내용3", 기타);
+        Board board2 = createBoard(member1, "제목3", "내용3", ETC);
         memberRepository.save(member1);
         boardRepository.save(board);
         boardRepository.save(board1);
         boardRepository.save(board2);
         PageRequest pageRequest = PageRequest.of(0, 10);
-        MemberListRequestDto memberListRequestDto = new MemberListRequestDto(Recruit.모집중, CS,0,null);
+        MemberListRequestDto memberListRequestDto = new MemberListRequestDto(RecruitStatus.RECRUITING, CS,0,null);
 
         //when
         Page<ListResponseDto> listResponseDtos = memberService.listMember(member1.getId(), memberListRequestDto, pageRequest);
@@ -158,7 +157,7 @@ class MemberServiceImplTest {
         Member member1 = createMember("jacom2@naver.com", "!12341234", "사용자명1", "닉네임0");
         Board board = createBoard(member1, "제목1", "내용1",  CS);
         Board board1 = createBoard(member1, "제목2", "내용2",  CS);
-        Board board2 = createBoard(member1, "제목3", "내용3", 기타);
+        Board board2 = createBoard(member1, "제목3", "내용3", ETC);
         memberRepository.save(member1);
         boardRepository.save(board);
         boardRepository.save(board1);

@@ -2,14 +2,13 @@ package com.study.studyproject.board.service;
 
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.board.domain.Category;
-import com.study.studyproject.board.domain.Recruit;
+import com.study.studyproject.board.domain.RecruitStatus;
 import com.study.studyproject.board.dto.BoardOneResponseDto;
 import com.study.studyproject.board.dto.BoardReUpdateRequestDto;
 import com.study.studyproject.board.dto.BoardWriteRequestDto;
 import com.study.studyproject.board.repository.BoardRepository;
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.global.auth.UserDetailsImpl;
-import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.global.jwt.JwtUtil;
 import com.study.studyproject.login.domain.Role;
 import com.study.studyproject.login.dto.TokenDtoResponse;
@@ -31,7 +30,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 
 import static com.study.studyproject.board.domain.Category.CS;
-import static com.study.studyproject.board.domain.Category.기타;
+import static com.study.studyproject.board.domain.Category.ETC;
 import static com.study.studyproject.login.domain.Role.ROLE_ADMIN;
 import static com.study.studyproject.login.domain.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.*;
@@ -101,7 +100,7 @@ class BoardServiceTest {
         Board boardCreate = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         boardRepository.save(boardCreate);
 
-        BoardReUpdateRequestDto boardReUpdateRequestDto = upddateBoard(boardCreate.getId(), "수정된 내용", Category.코테, "수정된 타이틀");
+        BoardReUpdateRequestDto boardReUpdateRequestDto = upddateBoard(boardCreate.getId(), "수정된 내용", Category.CODING_TEST, "수정된 타이틀");
 
         //when
         boardService.updateWrite(boardReUpdateRequestDto);
@@ -125,7 +124,7 @@ class BoardServiceTest {
 
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         Board board1 = createBoard(member1, "제목2", "내용2", "닉네임1", CS);
-        Board board2 = createBoard(member1, "제목3", "내용3", "닉네임1", 기타);
+        Board board2 = createBoard(member1, "제목3", "내용3", "닉네임1", ETC);
 
 
         List<Board> products = List.of(board, board1, board2);
@@ -233,7 +232,7 @@ class BoardServiceTest {
 
         //then
         Board board1 = boardRepository.findById(board.getId()).get();
-        assertThat(board1.getRecruit()).isEqualTo(Recruit.모집완료);
+        assertThat(board1.getRecruitStatus()).isEqualTo(RecruitStatus.COMPLETED);
 
     }
 

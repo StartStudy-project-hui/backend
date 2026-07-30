@@ -160,7 +160,7 @@ class DummyDataInsertTest {
                     category,
                     connection_type,
                     content,
-                    recruit,
+                    recruit_status,
                     title
                 ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
@@ -474,7 +474,7 @@ class DummyDataInsertTest {
     }
 
     private String randomCategory() {
-        return pick(List.of("기타", "CS", "전체", "코테", "프로젝트"));
+        return pick(List.of("ETC", "CS", "ALL", "CODING_TEST", "PROJECT"));
     }
 
     private String randomConnectionType() {
@@ -482,7 +482,7 @@ class DummyDataInsertTest {
     }
 
     private String randomRecruit() {
-        return pick(List.of("모집중", "모집완료"));
+        return pick(List.of("RECRUITING", "COMPLETED"));
     }
 
     private String randomBlackListType() {

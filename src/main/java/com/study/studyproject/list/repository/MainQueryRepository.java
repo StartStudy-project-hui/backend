@@ -9,7 +9,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.board.domain.ConnectionType;
-import com.study.studyproject.board.domain.Recruit;
+import com.study.studyproject.board.domain.RecruitStatus;
 import com.study.studyproject.list.dto.ListResponseDto;
 import com.study.studyproject.list.dto.MainRequestDto;
 import com.study.studyproject.list.dto.QListResponseDto;
@@ -39,9 +39,12 @@ public class MainQueryRepository  {
     public Page<ListResponseDto> getBoardListPage(String findContent, MainRequestDto condition, Pageable pageable) {
 
         List<ListResponseDto> content = getContent(findContent,condition, pageable);
-        JPAQuery<Board> countQuery = getTotal(findContent,condition);
+        JPAQuery<Long> countQuery = getTotal(findContent,condition);
 
-        return PageableExecutionUtils.getPage(content,pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(content,pageable,   () -> {
+            Long count = countQuery.fetchOne();
+            return count != null ? count : 0L;
+        });
     }
 
     public List<ListResponseDto> getContent(String findContent, MainRequestDto condition, Pageable pageable) {
@@ -51,7 +54,7 @@ public class MainQueryRepository  {
                         new QListResponseDto(
                                 board.member.nickname,
                                 board.id.intValue(),
-                                board.recruit.stringValue(),
+                                board.recruitStatus.stringValue(),
                                 board.category.stringValue(),
                                 board.connectionType.stringValue(),
                                 board.content,
@@ -67,7 +70,7 @@ public class MainQueryRepository  {
                 )
                 .from(board)
                 .where(
-                        board.recruit.eq(Recruit.모집중),
+                        board.recruitStatus.eq(RecruitStatus.RECRUITING),
                         getCategory(condition.getCategory()),
                         getFindContent(findContent),
                         getConnectionType(condition.getConnectionType()),
@@ -95,17 +98,17 @@ public class MainQueryRepository  {
             return null;
         }
 
-        return category.equals(Category.전체) ? null : board.category.eq(category);
+        return category.equals(Category.ALL) ? null : board.category.eq(category);
     }
 
-    public JPAQuery<Board> getTotal(String findContent, MainRequestDto condition) {
+    public JPAQuery<Long> getTotal(String findContent, MainRequestDto condition) {
         return queryFactory
                 .select(
-                        board
+                        board.count()
                 )
                 .from(board)
                 .where(
-                        board.recruit.eq(Recruit.모집중),
+                        board.recruitStatus.eq(RecruitStatus.RECRUITING),
                         getCategory(condition.getCategory()),
                         getFindContent(findContent),
                         getConnectionType(condition.getConnectionType()),

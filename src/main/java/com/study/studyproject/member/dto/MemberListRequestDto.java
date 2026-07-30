@@ -2,7 +2,7 @@ package com.study.studyproject.member.dto;
 
 import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.board.domain.ConnectionType;
-import com.study.studyproject.board.domain.Recruit;
+import com.study.studyproject.board.domain.RecruitStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -11,7 +11,7 @@ import lombok.*;
 public class MemberListRequestDto  {
 
     @Schema(description = "모집구분", defaultValue = "모집중")
-    Recruit recruit;   // 모집중
+    RecruitStatus recruitStatus;   // 모집중
 
     @Schema(description = "카테고리", defaultValue = "CS")
     Category category;   // cs
@@ -25,8 +25,8 @@ public class MemberListRequestDto  {
 
     
     @Builder
-    public MemberListRequestDto(Recruit recruit, Category category, int order,ConnectionType connectionType) {
-        this.recruit = recruit;
+    public MemberListRequestDto(RecruitStatus recruitStatus, Category category, int order, ConnectionType connectionType) {
+        this.recruitStatus = recruitStatus;
         this.category = category;
         this.order = order;
         this.connectionType = connectionType;

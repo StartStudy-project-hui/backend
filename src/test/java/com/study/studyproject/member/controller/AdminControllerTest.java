@@ -21,8 +21,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 
-import static com.study.studyproject.board.domain.Category.CS;
-import static com.study.studyproject.board.domain.Category.기타;
+import static com.study.studyproject.board.domain.Category.*;
 import static com.study.studyproject.login.domain.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -118,7 +117,7 @@ class AdminControllerTest {
         Member member1 = createMember("jacom2@naver.com", "!12341234", "사용자명1", "닉네임0");
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         Board board1 = createBoard(member1, "제목2", "내용2", "닉네임2", CS);
-        Board board2 = createBoard(member1, "제목3", "내용3", "닉네임3", 기타);
+        Board board2 = createBoard(member1, "제목3", "내용3", "닉네임3", ETC);
 
         memberRepository.saveAll(List.of(adminOne,member1));
         boardRepository.save(board);

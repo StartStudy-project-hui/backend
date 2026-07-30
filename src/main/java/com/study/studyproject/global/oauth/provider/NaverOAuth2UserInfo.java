@@ -14,23 +14,34 @@ public class NaverOAuth2UserInfo implements OAuth2UserInfo {
         this.attributes = attributes;
     }
 
+
     @Override
     public String getId() {
-        return  (String) attributes.get("id");
+        return getStringValue("id");
     }
 
     @Override
     public String getEmail() {
-        return (String) attributes.get("email");
+        return getStringValue("email");
     }
 
     @Override
     public String getName() {
-        return (String) attributes.get("name");
+        return getStringValue("name");
     }
 
     @Override
     public String getNickname() {
-        return (String) attributes.get("nickname");
+        return getStringValue("nickname");
+    }
+
+    private String getStringValue(String key) {
+        Object value = attributes.get(key);
+
+        if (value == null) {
+            return null;
+        }
+
+        return String.valueOf(value);
     }
 }

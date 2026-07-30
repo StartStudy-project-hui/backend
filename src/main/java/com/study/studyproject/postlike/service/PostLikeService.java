@@ -7,6 +7,7 @@ import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.postlike.domain.PostLike;
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.global.exception.ex.BadRequestException;
+import com.study.studyproject.global.exception.ex.ForbiddenException;
 import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.postlike.domain.PostLikeState;
 import com.study.studyproject.postlike.dto.PostLikeOneResponseDto;
@@ -64,7 +65,12 @@ public class PostLikeService {
         return new GlobalResultDto("관심글이 추가되었습니다.", HttpStatus.OK.value());
     }
 
-    public GlobalResultDto postLikeDelete(Long postLikeId) {
+    public GlobalResultDto postLikeDelete(Long postLikeId, Member member) {
+        PostLike postLike = postLikeRepository.findById(postLikeId)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_VALUE));
+        if (!postLike.getMember().getId().equals(member.getId())) {
+            throw new ForbiddenException(UNABLE_ACCESS);
+        }
         postLikeRepository.deleteById(postLikeId);
         return new GlobalResultDto("관심글이 삭제되었습니다.", HttpStatus.OK.value());
     }

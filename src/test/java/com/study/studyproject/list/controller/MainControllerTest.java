@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.study.studyproject.board.domain.Category.*;
-import static com.study.studyproject.board.domain.Category.코테;
 import static com.study.studyproject.board.domain.ConnectionType.OFFLINE;
 import static com.study.studyproject.board.domain.ConnectionType.ONLINE;
 import static com.study.studyproject.login.domain.Role.ROLE_USER;
@@ -60,7 +59,7 @@ class MainControllerTest {
         Member member1 = createMember("jacom2@naver.com", "!12341234", "사용자명1", "닉네임0");
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS,ONLINE);
         Board board1 = createBoard(member1, "제목2", "내용2", "닉네임2", CS,ONLINE);
-        Board board2 = createBoard(member1, "제목3", "내용3", "닉네임3", 기타,ONLINE);
+        Board board2 = createBoard(member1, "제목3", "내용3", "닉네임3", ETC,ONLINE);
 
         memberRepository.save(member1);
         boardRepository.save(board);
@@ -82,7 +81,7 @@ class MainControllerTest {
         Member member1 = createMember("jacom2@naver.com", "!12341234", "사용자명1", "닉네임0");
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS,ONLINE);
         Board board1 = createBoard(member1, "제목2", "내용2", "닉네임2", CS,ONLINE);
-        Board board2 = createBoard(member1, "제목3", "내용3", "닉네임3", 기타,OFFLINE);
+        Board board2 = createBoard(member1, "제목3", "내용3", "닉네임3", ETC,OFFLINE);
 
         memberRepository.saveAll(List.of(member1));
         boardRepository.save(board);
@@ -109,9 +108,9 @@ class MainControllerTest {
         Member member1 = createMember("jacom2@naver.com", "!12341234", "사용자명1", "닉네임0");
         Board board0 = createBoard(member1, "제목1", "내용1", "닉네임1", CS, ONLINE);
         Board board1 = createBoard(member1, "제목2", "내용2", "닉네임2", CS,ONLINE);
-        Board board2 = createBoard(member1, "자바공부 풀 사람1", "내용3", "닉네임3", 기타,ONLINE);
-        Board board3 = createBoard(member1, "제목15", "내용3", "닉네임3", 코테,ONLINE);
-        Board board4 = createBoard(member1, "타이틀1", "내용3", "닉네임3", 코테,ONLINE);
+        Board board2 = createBoard(member1, "자바공부 풀 사람1", "내용3", "닉네임3", ETC,ONLINE);
+        Board board3 = createBoard(member1, "제목15", "내용3", "닉네임3", CODING_TEST,ONLINE);
+        Board board4 = createBoard(member1, "타이틀1", "내용3", "닉네임3", CODING_TEST,ONLINE);
 
         memberRepository.save((member1));
         List<Board> products = List.of(board0, board1, board2,board3,board4);
@@ -140,9 +139,9 @@ class MainControllerTest {
         Member member1 = createMember("jacom2@naver.com", "!12341234", "사용자명1", "닉네임0");
         Board board0 = createBoard(member1, "제목1", "내용1", "닉네임1", CS,ONLINE);
         Board board1 = createBoard(member1, "제목2", "내용2", "닉네임2", CS,ONLINE);
-        Board board2 = createBoard(member1, "자바공부 풀 사람1", "내용3", "닉네임3", 기타,OFFLINE);
+        Board board2 = createBoard(member1, "자바공부 풀 사람1", "내용3", "닉네임3", ETC,OFFLINE);
         Board board3 = createBoard(member1, "제목15", "내용3", "닉네임3", CS,OFFLINE);
-        Board board4 = createBoard(member1, "타이틀1", "내용3", "닉네임3", 코테,OFFLINE);
+        Board board4 = createBoard(member1, "타이틀1", "내용3", "닉네임3", CODING_TEST,OFFLINE);
 
         memberRepository.save((member1));
         boardRepository.save(board0);

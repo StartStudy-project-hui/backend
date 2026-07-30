@@ -51,7 +51,7 @@ class ListServiceTest {
 
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         Board board1 = createBoard(member1, "제목2", "내용2", "닉네임2", CS);
-        Board board2 = createBoard(member1, "자바공부 풀 사람1", "내용3", "닉네임3", 기타);
+        Board board2 = createBoard(member1, "자바공부 풀 사람1", "내용3", "닉네임3", ETC);
         Board board4 = createBoard(member1, "타이틀1", "내용3", "닉네임3", CS);
 
          boardRepository.save(board);
@@ -88,8 +88,8 @@ class ListServiceTest {
 
         Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         Board board1 = createBoard(member1, "제목2", "내용2", "닉네임2", CS);
-        Board board2 = createBoard(member1, "자바공부 풀 사람1", "내용3", "닉네임3", 기타);
-        Board board3 = createBoard(member1, "제목15", "내용3", "닉네임3", 코테);
+        Board board2 = createBoard(member1, "자바공부 풀 사람1", "내용3", "닉네임3", ETC);
+        Board board3 = createBoard(member1, "제목15", "내용3", "닉네임3", CODING_TEST);
         Board board4 = createBoard(member1, "타이틀1", "내용3", "닉네임3", CS);
         List<Board> products = List.of( board2,board3,board4);
 
@@ -122,9 +122,9 @@ class ListServiceTest {
 
         Board board0 = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
         Board board1 = createBoard(member1, "제목2", "내용2", "닉네임2", CS);
-        Board board2 = createBoard(member1, "자바공부 풀 사람1", "내용3", "닉네임3", 기타);
-        Board board3 = createBoard(member1, "제목15", "내용3", "닉네임3", 코테);
-        Board board4 = createBoard(member1, "타이틀1", "내용3", "닉네임3", 코테);
+        Board board2 = createBoard(member1, "자바공부 풀 사람1", "내용3", "닉네임3", ETC);
+        Board board3 = createBoard(member1, "제목15", "내용3", "닉네임3", CODING_TEST);
+        Board board4 = createBoard(member1, "타이틀1", "내용3", "닉네임3", CODING_TEST);
 
         //조회수 증가
         board0.updateViewCnt();

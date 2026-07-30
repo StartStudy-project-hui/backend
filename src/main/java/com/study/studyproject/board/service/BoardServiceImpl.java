@@ -117,7 +117,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public GlobalResultDto changeRecruit(Long boardId) {
         Board board = findBoardById(boardId);
-        board.changeRecuritBoard();
+        board.changeRecruitStateBoard();
         return new GlobalResultDto("모집 구분 변경 완료", HttpStatus.OK.value());
     }
 }

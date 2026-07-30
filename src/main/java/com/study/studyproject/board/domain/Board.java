@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.study.studyproject.board.domain.Recruit.*;
+import static com.study.studyproject.board.domain.RecruitStatus.*;
 import static com.study.studyproject.global.exception.ex.ErrorCode.UNABLE_DELETE_BOARD;
 import static com.study.studyproject.postlike.domain.PostLike.isPostLikes;
 import static com.study.studyproject.reply.domain.Reply.isReplies;
@@ -22,7 +22,7 @@ import static com.study.studyproject.reply.domain.Reply.isReplies;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = {"id", "title", "viewCount","content","category","recruit"})
+@ToString(of = {"id", "title", "viewCount","content","category","recruitStatus"})
 public class Board extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,7 +52,7 @@ public class Board extends BaseTimeEntity {
     private Category category;
 
     @Enumerated(EnumType.STRING)
-    private Recruit recruit;
+    private RecruitStatus recruitStatus;
 
     @ColumnDefault("FALSE")
     @Column(nullable = false)
@@ -98,7 +98,7 @@ public class Board extends BaseTimeEntity {
         this.category = category;
         this.connectionType = connectionType;
         this.offlineLocation = offlineLocation;
-        this.recruit = 모집중;
+        this.recruitStatus = RECRUITING;
         this.isDeleted = false;
 
     }
@@ -112,8 +112,8 @@ public class Board extends BaseTimeEntity {
         return this;
     }
 
-    public void changeRecuritBoard(){
-        this.recruit = this.getRecruit().equals(모집중) ? 모집완료 : 모집중;
+    public void changeRecruitStateBoard(){
+        this.recruitStatus = this.getRecruitStatus().equals(RECRUITING) ? COMPLETED: RECRUITING;
     }
 
 

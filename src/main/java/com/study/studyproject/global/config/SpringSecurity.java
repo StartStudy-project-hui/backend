@@ -7,6 +7,7 @@ import com.study.studyproject.global.jwt.JwtAccessDeniedHandler;
 import com.study.studyproject.global.jwt.JwtAuthenticationEntryPoint;
 import com.study.studyproject.global.jwt.JwtFilter;
 import com.study.studyproject.global.jwt.JwtUtil;
+import com.study.studyproject.global.oauth.CookieOAuth2AuthorizationRequestRepository;
 import com.study.studyproject.global.oauth.CustomOAuth2UserService;
 import com.study.studyproject.global.oauth.handler.OAuth2LoginFailureHandler;
 import com.study.studyproject.global.oauth.handler.OAuth2LoginSuccessHandler;
@@ -81,6 +82,11 @@ public class SpringSecurity {
 
 
     @Bean
+    public CookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationRequestRepository() {
+        return new CookieOAuth2AuthorizationRequestRepository();
+    }
+
+    @Bean
     public AnonymousAuthenticationFilter anonymousAuthenticationFilter() {
         return new AnonymousAuthenticationFilter("anonymousKey", "anonymousUser",
                 AuthorityUtils.createAuthorityList("ROLE_GUEST"));
@@ -101,7 +107,9 @@ public class SpringSecurity {
                 );
 
         http.oauth2Login(
-                oauth2 -> oauth2.userInfoEndpoint(userInfoEndpointConfig ->
+                oauth2 -> oauth2.authorizationEndpoint(endpoint ->
+                                endpoint.authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository()))
+                        .userInfoEndpoint(userInfoEndpointConfig ->
                                 userInfoEndpointConfig.userService(customOAuth2UserService))
                         .successHandler(loginSuccessHandler())
                         .failureHandler(loginFailureHandler()));

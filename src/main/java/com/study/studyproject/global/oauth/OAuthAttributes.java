@@ -30,7 +30,6 @@ public class OAuthAttributes {
                                      String userNameAttributeName, Map<String, Object> attributes) {
 
         if (socialType.equals(NAVER)) {
-
             return ofNaver(userNameAttributeName, (Map<String, Object>)attributes.get(userNameAttributeName));
         }
         if (socialType.equals(KAKAO)) {

@@ -23,20 +23,18 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
     @Override
     public List<Reply> findByBoardReply(Long boardId) {
 
-        List<Reply> comments = queryFactory.selectFrom(reply)
+        return queryFactory.selectFrom(reply)
                 .where(reply.board.id.eq(boardId))
                 .orderBy(reply.parent.id.asc().nullsFirst(),
                         reply.createdDate.asc())
                 .fetch();
-        return comments;
     }
 
     @Override
     public List<Reply> findByBoardReplies(Long boardId) {
-        List<Reply> comments = queryFactory.selectFrom(reply)
+        return queryFactory.selectFrom(reply)
                 .where(reply.board.id.eq(boardId))
                 .fetch();
-        return comments;
 
 
     }

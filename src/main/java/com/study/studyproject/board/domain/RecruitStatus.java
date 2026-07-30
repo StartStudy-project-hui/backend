@@ -2,11 +2,12 @@ package com.study.studyproject.board.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
 @Getter
 @RequiredArgsConstructor
-public enum Recruit {
+public enum RecruitStatus {
 
-    모집중, 모집완료
+    RECRUITING("모집중"),
+    COMPLETED("모집완료");
 
+    private final String description;
 }

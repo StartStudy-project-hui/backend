@@ -1,4 +1,4 @@
-location: http://localhost:3000/
+location: http://localhost:5173/
 server:
   port: 8080
 

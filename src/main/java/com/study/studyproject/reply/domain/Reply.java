@@ -106,8 +106,8 @@ public class Reply extends BaseTimeEntity {
         }
     }
 
-    public void ChangeIsDeleted(Boolean deleted) {
-        isDeleted = deleted;
+    public void markAsDeleted() {
+        this.isDeleted = true;
     }
 
     public static boolean isReplies(List<Reply> replies) {

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardOneResponseDto {
 
-    Recruit recruit;
+    String recruitStatus;
     @Schema(description = "현재 닉네임", defaultValue = "jacom!!")
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     String currentNickname;
@@ -35,7 +35,7 @@ public class BoardOneResponseDto {
     @Schema(description = "게시글 내용", defaultValue = "내요내용")
     String content;
 
-    Category category;
+    String category;
     
     @Schema(description = "조회수", defaultValue = "3")
     int viewCnt;
@@ -47,8 +47,8 @@ public class BoardOneResponseDto {
     OfflineLocation offlineLocation;
 
     @Builder
-    public BoardOneResponseDto(Recruit recruit, String currentNickname, String title, String boardWriteNickname, LocalDateTime updateTime, LocalDateTime createTime, String content, Category category, int viewCnt,ConnectionType type, OfflineLocation offlineLocation) {
-        this.recruit = recruit;
+    public BoardOneResponseDto(String recruitStatus, String currentNickname, String title, String boardWriteNickname, LocalDateTime updateTime, LocalDateTime createTime, String content, String category, int viewCnt, ConnectionType type, OfflineLocation offlineLocation) {
+        this.recruitStatus = recruitStatus;
         this.currentNickname = currentNickname;
         this.title = title;
         this.boardWriteNickname = boardWriteNickname;
@@ -69,13 +69,13 @@ public class BoardOneResponseDto {
                 .updateTime(board.getLastModifiedDate())
                 .createTime(board.getCreatedDate())
                 .title(board.getTitle())
-                .recruit(board.getRecruit())
+                .recruitStatus(board.getRecruitStatus().getDescription())
                 .content(board.getContent())
                 .viewCnt(Math.toIntExact(board.getViewCount()))
                 .boardWriteNickname(board.getMember().getNickname())
                 .type(board.getConnectionType())
                 .offlineLocation(board.getOfflineLocation())
-                .category(board.getCategory())
+                .category(board.getCategory().getDescription())
                 .build();
     }
     

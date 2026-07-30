@@ -12,8 +12,6 @@ services:
       - local-springboot-mysql-net
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
     networks:
       - local-springboot-mysql-net
   springboot:
@@ -29,9 +27,10 @@ services:
     ports:
       - 8080:8080
     environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://db:1521/bookstore
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://db:1521/opt/h2-data/bookstore
       SPRING_DATASOURCE_USERNAME: sa
       SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.H2Dialect
+      SPRING_DATA_REDIS_HOST: redis
     networks:
       - local-springboot-mysql-net
   prometheus:

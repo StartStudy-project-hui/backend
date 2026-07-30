@@ -10,7 +10,7 @@ import com.study.studyproject.board.domain.ConnectionType;
 import com.study.studyproject.list.dto.ListResponseDto;
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.board.domain.Category;
-import com.study.studyproject.board.domain.Recruit;
+import com.study.studyproject.board.domain.RecruitStatus;
 import com.study.studyproject.list.dto.QListResponseDto;
 import com.study.studyproject.member.dto.MemberListRequestDto;
 import jakarta.persistence.EntityManager;
@@ -53,7 +53,7 @@ public class MyPageQueryRepository {
                         new QListResponseDto(
                                 member.nickname,
                                 board.id.intValue(),
-                                board.recruit.stringValue(),
+                                board.recruitStatus.stringValue(),
                                 board.category.stringValue(),
                                 board.connectionType.stringValue(),
                                 board.content,
@@ -69,7 +69,7 @@ public class MyPageQueryRepository {
                 .from(board)
                 .join(board.member, member)
                 .where(
-                        getType(condition.getRecruit()), //모집여부
+                        getType(condition.getRecruitStatus()), //모집여부
                         getUser(memeberId), //사용자 아이디 유무
                         getCategory(condition.getCategory()),
                         getConnectionType(condition.getConnectionType()),
@@ -95,7 +95,7 @@ public class MyPageQueryRepository {
             return null;
         }
 
-        return category.equals(Category.전체) ? null : board.category.eq(category);
+        return category.equals(Category.ALL) ? null : board.category.eq(category);
     }
 
     public JPAQuery<Board> getTotal(Long memeberId, MemberListRequestDto condition, String getRole) {
@@ -105,7 +105,7 @@ public class MyPageQueryRepository {
                 )
                 .from(board)
                 .where(
-                        getType(condition.getRecruit()), //모집여부
+                        getType(condition.getRecruitStatus()), //모집여부
                         getUser(memeberId), //사용자 이메일
                         getCategory(condition.getCategory()),
                         getConnectionType(condition.getConnectionType()),
@@ -122,10 +122,10 @@ public class MyPageQueryRepository {
         return  connectionType.equals(ONLINE) ? board.connectionType.eq(ONLINE) :board.connectionType.eq(OFFLINE);
     }
 
-    private BooleanExpression getType(Recruit type) {
+    private BooleanExpression getType(RecruitStatus type) {
 
 
-        return isEmpty(type) ? null : board.recruit.eq(type);
+        return isEmpty(type) ? null : board.recruitStatus.eq(type);
     }
 
 

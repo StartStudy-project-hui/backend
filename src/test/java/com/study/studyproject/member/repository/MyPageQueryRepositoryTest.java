@@ -20,8 +20,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
-import static com.study.studyproject.board.domain.Category.CS;
-import static com.study.studyproject.board.domain.Category.기타;
+import static com.study.studyproject.board.domain.Category.*;
 import static com.study.studyproject.login.domain.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,7 +70,7 @@ class MyPageQueryRepositoryTest {
 
         Board board = createBoard(member2, "제목1", "내용1", "닉네임2", CS);
         Board board1 = createBoard(member2, "제목2", "내용2", "닉네임2", CS);
-        Board board2 = createBoard(member2, "제목3", "내용3", "닉네임2", 기타);
+        Board board2 = createBoard(member2, "제목3", "내용3", "닉네임2", ETC);
 
         List<Board> products = List.of(board, board1, board2);
         boardRepository.saveAll(products);

@@ -107,25 +107,29 @@ public class ReplyServiceImpl implements ReplyService {
     public void deleteReply(Long num) { //댓글 num
         Reply reply = replyRepository.findCommentByIdWithParent(num)
                 .orElseThrow(() -> new NotFoundException(NOT_FOUND_REPLY));
+
         if (reply.hasChildrenReplies()) { //자식이 있는 상태
-            reply.ChangeIsDeleted(true);
-        } else { //삭제 가능한 조상 댓글
-            replyRepository.delete(getDelete(reply));
+            reply.markAsDeleted();
+            return;
         }
+
+        Reply deleteTarget = findDeleteTarget(reply);
+        replyRepository.delete(deleteTarget);
 
     }
 
 
-    private Reply getDelete(Reply reply) {
+    private Reply findDeleteTarget(Reply reply) {
         Reply parent = reply.getParent();
-        if (isDeleteReply(parent)) {
-            return getDelete(parent);
+
+        if (canDeleteParent(parent)) {
+            return findDeleteTarget(parent);
         }
         return reply;
     }
 
-    private static boolean isDeleteReply(Reply parent) {
-        return parent != null && parent.getChildren().size() == 1 && parent.getIsDeleted();
+    private static boolean canDeleteParent(Reply parent) {
+        return parent != null && parent.getIsDeleted() &&  parent.getChildren().size() == 1 ;
     }
 
 

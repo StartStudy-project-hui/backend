@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Category {
 
-    기타,
-    CS,
-    전체,
-    코테,
-    프로젝트;
+    ETC("기타"),
+    CS("CS"),
+    ALL("전체"),
+    CODING_TEST("코테"),
+    PROJECT("프로젝트");
+
+    private final String description;
 }
