@@ -38,6 +38,9 @@ public class BlackListHistoryServiceImpl implements BlackListHistoryService {
         return blackListHistoryRepository.searchSliceByEmail(hash, pageable);
     }
 
-
+    @Override
+    public Page<BlacklistHistoryAdminResponseDto> findHistoryByBlacklistId(Long blacklistId, Pageable pageable) {
+        return blackListHistoryRepository.findPageByBlacklistId(blacklistId, pageable);
+    }
 
 }

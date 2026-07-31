@@ -87,6 +87,12 @@ public class  BlackList {
         this.reason = reason;
     }
 
+    // 관리자가 즉시 영구정지로 전환
+    public void makePermanent() {
+        this.expireAt = null;
+        this.status = BlacklistStatus.PERMANENT;
+    }
+
     public BlacklistStatus setDuration(int months, long violationCount) {
         if (violationCount >= 3 || months <= 0) { // 누적 4회 이상 또는 기간 0개월이면 영구정지
             this.expireAt = null;
@@ -110,9 +116,9 @@ public class  BlackList {
                 && expireAt != null;
     }
 
-    //  현재 차단 상태인지 한 번에 체크
+    //  현재 차단 상태인지 한 번에 체크 (누적 4회 이상, 즉 영구정지 상태일 때만 사이트 이용 차단)
     public boolean isBlocked() {
-        return isPermanent() || isActive();
+        return isPermanent();
     }
 
 

@@ -6,7 +6,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.studyproject.blacklist.domain.BlackList;
 import com.study.studyproject.blacklist.domain.BlackType;
 import com.study.studyproject.blacklist.domain.BlacklistStatus;
-import com.study.studyproject.blacklist.domain.QBlackList;
 import com.study.studyproject.blacklist.dto.request.BlackListMainRequestDto;
 import com.study.studyproject.blacklist.dto.response.BlacklistResponseDto;
 import com.study.studyproject.blacklist.dto.response.QBlacklistResponseDto;
@@ -28,15 +27,15 @@ public class BlackListRepositoryImpl implements BlackListRepositoryCustom {
 
 
     @Override
-    public Page<BlacklistResponseDto> blackListSearchPageMainList(BlackListMainRequestDto condition, Pageable pageable) {
-        List<BlacklistResponseDto> content = getContent(condition, pageable);
-        JPAQuery<BlackList> countQuery = getTotal(condition);
+    public Page<BlacklistResponseDto> blackListSearchPageMainList(BlackListMainRequestDto condition, String hashedEmail, Pageable pageable) {
+        List<BlacklistResponseDto> content = getContent(condition, hashedEmail,pageable);
+        JPAQuery<BlackList> countQuery = getTotal(condition,hashedEmail);
 
         return PageableExecutionUtils.getPage(content,pageable, () -> countQuery.select(blackList.count()).fetchOne());
     }
 
 
-    private List<BlacklistResponseDto> getContent(BlackListMainRequestDto condition, Pageable pageable) {
+    private List<BlacklistResponseDto> getContent(BlackListMainRequestDto condition, String hashedEmail, Pageable pageable) {
 
         return queryFactory.
                 select(new QBlacklistResponseDto(blackList.id,blackList.type
@@ -45,7 +44,8 @@ public class BlackListRepositoryImpl implements BlackListRepositoryCustom {
                 .where(
                         idEq(condition.getId()),
                         typeEq(condition.getType()),
-                        statusEq(condition.getStatus())
+                        statusEq(condition.getStatus()),
+                        hashEmailEq(hashedEmail)
                 )
                 .orderBy(blackList.createdAt.desc())
                 .offset(pageable.getOffset())
@@ -53,15 +53,21 @@ public class BlackListRepositoryImpl implements BlackListRepositoryCustom {
     }
 
 
-    private JPAQuery<BlackList> getTotal(BlackListMainRequestDto condition) {
+
+    private JPAQuery<BlackList> getTotal(BlackListMainRequestDto condition, String hashedEmail) {
         return queryFactory
                 .selectFrom(blackList)
                 .where(
                         idEq(condition.getId()),
                         typeEq(condition.getType()),
-                        statusEq(condition.getStatus())
+                        statusEq(condition.getStatus()),
+                        hashEmailEq(hashedEmail)
 
                 );
+    }
+    private BooleanExpression hashEmailEq(String hashValue) {
+        return isEmpty(hashValue) ? null : blackList.hashValue.eq(hashValue);
+
     }
 
     private BooleanExpression idEq(Long id) {

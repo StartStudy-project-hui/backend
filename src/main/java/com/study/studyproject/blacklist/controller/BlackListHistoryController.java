@@ -4,6 +4,9 @@ import com.study.studyproject.blacklist.dto.request.BlackListHistoryMainRequestD
 import com.study.studyproject.blacklist.dto.response.BlacklistHistoryAdminResponseDto;
 import com.study.studyproject.blacklist.dto.response.BlacklistHistoryMemberResponseDto;
 import com.study.studyproject.blacklist.service.BlackListHistoryService;
+import com.study.studyproject.global.auth.CurrentUser;
+import com.study.studyproject.global.auth.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +36,21 @@ public class BlackListHistoryController {
     }
 
 
-    // 사용자가 조회시
-    @GetMapping("{id}")
-    public Slice<BlacklistHistoryMemberResponseDto> findSliceBlackListHistoryById(@PathVariable Long id,
-                                                                                  @PageableDefault(size = 15) Pageable pageable) {
-        return blackListHistoryService.findSliceBlackHistoryById(id, pageable);
+    // 관리자 - 특정 블랙리스트 대상의 상태 변경 이력 조회
+    @GetMapping("admin/{blacklistId}")
+    public ResponseEntity<Page<BlacklistHistoryAdminResponseDto>> findPageBlackListHistoryByBlacklistId(
+            @PathVariable Long blacklistId,
+            @PageableDefault(size = 15) Pageable pageable
+    ) {
+        return ResponseEntity.ok(blackListHistoryService.findHistoryByBlacklistId(blacklistId, pageable));
+    }
+
+    // 사용자 본인의 블랙리스트 이력 조회 (마이페이지)
+    @GetMapping("me")
+    public Slice<BlacklistHistoryMemberResponseDto> findSliceMyBlackListHistory(
+            @Parameter(hidden = true) @CurrentUser UserDetailsImpl userDetails,
+            @PageableDefault(size = 15) Pageable pageable) {
+        return blackListHistoryService.findSliceBlackHistoryById(userDetails.getMemberId(), pageable);
 
     }
 }

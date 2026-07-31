@@ -1,13 +1,22 @@
 package com.study.studyproject.test;
 
+import com.study.studyproject.global.hash.HashUtil;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -32,6 +41,14 @@ class DummyDataInsertTest {
     // !!!!!!!!!!!!!!내가 세팅 필요: 한 번에 insert할 배치 크기
     private static final int BATCH_SIZE = 5_000;
 
+    private static final String FILE_PATH = "다운로드/dummy_data.sql";
+
+    private static final DateTimeFormatter TS_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+    // 이번 실행에서 만든 SQL 텍스트를 파일에 적기 위한 writer
+    private BufferedWriter sqlWriter;
+
     private static final List<String> LAST_NAMES = List.of(
             "김", "이", "박", "최", "정", "강", "조", "윤", "장", "임",
             "한", "오", "서", "신", "권", "황", "안", "송", "전", "홍",
@@ -52,23 +69,35 @@ class DummyDataInsertTest {
     );
 
     @Test
-    void 더미데이터_전체생성() {
+    void 더미데이터_전체생성() throws IOException {
         long startTime = System.currentTimeMillis();
 
-        insertMembers();
-        insertBoards();
-        insertReplies();
-        insertPostLikes();
-        insertBlackLists();
-        insertBlackListHistories();
+        Path path = Path.of(FILE_PATH);
+        if (path.getParent() != null) {
+            Files.createDirectories(path.getParent());
+        }
+
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+            this.sqlWriter = writer;
+
+            insertMembers();
+            insertBoards();
+            insertReplies();
+            insertPostLikes();
+            insertBlackLists();
+            insertBlackListHistories();
+        }
 
         long endTime = System.currentTimeMillis();
 
         System.out.println("=========================================");
         System.out.println("더미 데이터 생성 완료");
+        System.out.println("SQL 파일 저장 위치: " + path.toAbsolutePath());
         System.out.println("총 소요 시간: " + (endTime - startTime) / 1000.0 + "초");
         System.out.println("=========================================");
     }
+
+    // ===================== member =====================
 
     private void insertMembers() {
         String sql = """
@@ -85,65 +114,69 @@ class DummyDataInsertTest {
             ) values (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
-        jdbcTemplate.batchUpdate(sql, new org.springframework.jdbc.core.BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(java.sql.PreparedStatement ps, int i) throws java.sql.SQLException {
-                int index = i + 1;
+        List<Object[]> batchArgs = new ArrayList<>();
 
-                String emailUsername = fakerEn.internet()
-                        .username()
-                        .replaceAll("[^a-zA-Z0-9]", "")
-                        .toLowerCase();
+        for (int i = 0; i < MEMBER_COUNT; i++) {
+            int index = i + 1;
 
-                if (emailUsername.isBlank()) {
-                    emailUsername = "user";
-                }
+            String emailUsername = fakerEn.internet()
+                    .username()
+                    .replaceAll("[^a-zA-Z0-9]", "")
+                    .toLowerCase();
 
-                String email = emailUsername + index + "@naver.com";
-
-                /*
-                 * password 컬럼이 NOT NULL 이므로 소셜 회원도 null이면 안 됨.
-                 * 실제 로그인 검증까지 생각하면 BCrypt 형식 값을 넣는 것이 안전함.
-                 */
-                String password = "$2a$10$rYm7K9PxXvBgQmQnqYpJbOe9Pi4jHnQnZg5tvC6kOqGrfFrZxZp4y";
-
-                String username = getBulkName(index);
-                String nickname = fakerKo.funnyName().name().replace(" ", "") + index;
-                String role = index % 20 == 0 ? "ROLE_ADMIN" : "ROLE_USER";
-
-                String socialId = null;
-                String socialType = null;
-
-                boolean isKakaoMember = index % 10 == 3;
-                boolean isNaverMember = index % 10 == 5;
-
-                if (isKakaoMember) {
-                    socialId = "kakao-" + index;
-                    socialType = "KAKAO";
-                } else if (isNaverMember) {
-                    socialId = "naver-" + index;
-                    socialType = "NAVER";
-                }
-
-                ps.setString(1, email);
-                ps.setString(2, password);
-                ps.setString(3, username);
-                ps.setString(4, nickname);
-                ps.setString(5, role);
-                ps.setString(6, socialId);
-                ps.setString(7, socialType);
-                ps.setTimestamp(8, now());
-                ps.setTimestamp(9, now());
+            if (emailUsername.isBlank()) {
+                emailUsername = "user";
             }
 
-            @Override
-            public int getBatchSize() {
-                return MEMBER_COUNT;
+            String email = emailUsername + index + "@naver.com";
+
+            /*
+             * password 컬럼이 NOT NULL 이므로 소셜 회원도 null이면 안 됨.
+             * 실제 로그인 검증까지 생각하면 BCrypt 형식 값을 넣는 것이 안전함.
+             */
+            String password = "$2a$10$rYm7K9PxXvBgQmQnqYpJbOe9Pi4jHnQnZg5tvC6kOqGrfFrZxZp4y";
+
+            String username = getBulkName(index);
+            String nickname = fakerKo.funnyName().name().replace(" ", "") + index;
+            String role = index % 20 == 0 ? "ROLE_ADMIN" : "ROLE_USER";
+
+            String socialId = null;
+            String socialType = null;
+
+            boolean isKakaoMember = index % 10 == 3;
+            boolean isNaverMember = index % 10 == 5;
+
+            if (isKakaoMember) {
+                socialId = "kakao-" + index;
+                socialType = "KAKAO";
+            } else if (isNaverMember) {
+                socialId = "naver-" + index;
+                socialType = "NAVER";
             }
-        });
+
+            Timestamp createdDate = now();
+            Timestamp lastModifiedDate = createdDate;
+
+            batchArgs.add(new Object[]{
+                    email, password, username, nickname, role,
+                    socialId, socialType, createdDate, lastModifiedDate
+            });
+
+            writeSql(
+                    "insert into member (email, password, username, nickname, role, social_id, social_type, created_date, last_modified_date) values (%s, %s, %s, %s, %s, %s, %s, %s, %s);"
+                            .formatted(
+                                    sqlStr(email), sqlStr(password), sqlStr(username), sqlStr(nickname), sqlStr(role),
+                                    sqlStr(socialId), sqlStr(socialType), sqlTimestamp(createdDate), sqlTimestamp(lastModifiedDate)
+                            )
+            );
+        }
+
+        executeBatched(sql, batchArgs);
 
         System.out.println("member 생성 완료: " + MEMBER_COUNT + "건");
     }
+
+    // ===================== board =====================
 
     private void insertBoards() {
         List<Long> memberIds = findIds("member", "member_id");
@@ -165,39 +198,42 @@ class DummyDataInsertTest {
                 ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        for (int start = 0; start < BOARD_COUNT; start += BATCH_SIZE) {
-            int currentBatchSize = Math.min(BATCH_SIZE, BOARD_COUNT - start);
+        List<Object[]> batchArgs = new ArrayList<>();
 
-            jdbcTemplate.batchUpdate(sql, new org.springframework.jdbc.core.BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(java.sql.PreparedStatement ps, int i) throws java.sql.SQLException {
-                    Long memberId = pick(memberIds);
+        for (int i = 0; i < BOARD_COUNT; i++) {
+            Long memberId = pick(memberIds);
+            double x = randomCoordinate();
+            double y = randomCoordinate();
+            Timestamp createdDate = now();
+            Timestamp lastModifiedDate = createdDate;
+            long viewCount = random.nextLong(0, 1000);
+            String category = randomCategory();
+            String connectionType = randomConnectionType();
+            String content = fakerKo.lorem().sentence();
+            String recruitStatus = randomRecruit();
+            String title = fakerKo.book().title();
 
-                    ps.setBoolean(1, false);
-                    ps.setDouble(2, randomCoordinate());
-                    ps.setDouble(3, randomCoordinate());
-                    ps.setTimestamp(4, now());
-                    ps.setTimestamp(5, now());
-                    ps.setLong(6, memberId);
-                    ps.setLong(7, random.nextLong(0, 1000));
-                    ps.setString(8, randomCategory());
-                    ps.setString(9, randomConnectionType());
-                    ps.setString(10, fakerKo.lorem().sentence());
-                    ps.setString(11, randomRecruit());
-                    ps.setString(12, fakerKo.book().title());
-                }
-
-                @Override
-                public int getBatchSize() {
-                    return currentBatchSize;
-                }
+            batchArgs.add(new Object[]{
+                    false, x, y, createdDate, lastModifiedDate, memberId,
+                    viewCount, category, connectionType, content, recruitStatus, title
             });
 
-            System.out.println("board 생성 진행: " + Math.min(start + BATCH_SIZE, BOARD_COUNT) + "건");
+            writeSql(
+                    "insert into board (is_deleted, x, y, created_date, last_modified_date, member_id, view_count, category, connection_type, content, recruit_status, title) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+                            .formatted(
+                                    sqlBool(false), sqlNum(x), sqlNum(y), sqlTimestamp(createdDate), sqlTimestamp(lastModifiedDate),
+                                    sqlNum(memberId), sqlNum(viewCount), sqlStr(category), sqlStr(connectionType),
+                                    sqlStr(content), sqlStr(recruitStatus), sqlStr(title)
+                            )
+            );
         }
+
+        executeBatched(sql, batchArgs);
 
         System.out.println("board 생성 완료: " + BOARD_COUNT + "건");
     }
+
+    // ===================== reply =====================
 
     private void insertReplies() {
         List<Long> memberIds = findIds("member", "member_id");
@@ -224,8 +260,7 @@ class DummyDataInsertTest {
         System.out.println("reply 생성 완료: " + REPLY_COUNT + "건");
     }
 
-    private void insertParentReplies(List<Long> memberIds, List<Long> boardIds, int count) {
-        String sql = """
+    private static final String REPLY_INSERT_SQL = """
             insert into reply (
                 is_deleted,
                 board_id,
@@ -238,33 +273,33 @@ class DummyDataInsertTest {
             ) values (?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
-        for (int start = 0; start < count; start += BATCH_SIZE) {
-            int currentBatchSize = Math.min(BATCH_SIZE, count - start);
+    private void insertParentReplies(List<Long> memberIds, List<Long> boardIds, int count) {
+        List<Object[]> batchArgs = new ArrayList<>();
 
-            jdbcTemplate.batchUpdate(sql, new org.springframework.jdbc.core.BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(java.sql.PreparedStatement ps, int i) throws java.sql.SQLException {
-                    Long memberId = pick(memberIds);
-                    Long boardId = pick(boardIds);
+        for (int i = 0; i < count; i++) {
+            Long memberId = pick(memberIds);
+            Long boardId = pick(boardIds);
+            Timestamp createdDate = now();
+            Timestamp lastModifiedDate = createdDate;
+            String content = fakerKo.lorem().sentence();
+            String nickname = fakerKo.name().username();
 
-                    ps.setBoolean(1, false);
-                    ps.setLong(2, boardId);
-                    ps.setTimestamp(3, now());
-                    ps.setTimestamp(4, now());
-                    ps.setLong(5, memberId);
-                    ps.setNull(6, java.sql.Types.BIGINT);
-                    ps.setString(7, fakerKo.lorem().sentence());
-                    ps.setString(8, fakerKo.name().username());
-                }
-
-                @Override
-                public int getBatchSize() {
-                    return currentBatchSize;
-                }
+            batchArgs.add(new Object[]{
+                    false, boardId, createdDate, lastModifiedDate, memberId, null, content, nickname
             });
 
-            System.out.println("일반 댓글 생성 진행: " + Math.min(start + BATCH_SIZE, count) + "건");
+            writeSql(
+                    "insert into reply (is_deleted, board_id, created_date, last_modified_date, member_id, parent_id, content, nickname) values (%s, %s, %s, %s, %s, %s, %s, %s);"
+                            .formatted(
+                                    sqlBool(false), sqlNum(boardId), sqlTimestamp(createdDate), sqlTimestamp(lastModifiedDate),
+                                    sqlNum(memberId), "NULL", sqlStr(content), sqlStr(nickname)
+                            )
+            );
         }
+
+        executeBatched(REPLY_INSERT_SQL, batchArgs);
+
+        System.out.println("일반 댓글 생성 완료: " + count + "건");
     }
 
     private List<ReplyParentInfo> findParentReplies() {
@@ -283,46 +318,33 @@ class DummyDataInsertTest {
     }
 
     private void insertChildReplies(List<Long> memberIds, List<ReplyParentInfo> parentReplies, int count) {
-        String sql = """
-            insert into reply (
-                is_deleted,
-                board_id,
-                created_date,
-                last_modified_date,
-                member_id,
-                parent_id,
-                content,
-                nickname
-            ) values (?, ?, ?, ?, ?, ?, ?, ?)
-            """;
+        List<Object[]> batchArgs = new ArrayList<>();
 
-        for (int start = 0; start < count; start += BATCH_SIZE) {
-            int currentBatchSize = Math.min(BATCH_SIZE, count - start);
+        for (int i = 0; i < count; i++) {
+            Long memberId = pick(memberIds);
+            ReplyParentInfo parentReply = pick(parentReplies);
+            Timestamp createdDate = now();
+            Timestamp lastModifiedDate = createdDate;
+            String content = fakerKo.lorem().sentence();
+            String nickname = fakerKo.name().username();
 
-            jdbcTemplate.batchUpdate(sql, new org.springframework.jdbc.core.BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(java.sql.PreparedStatement ps, int i) throws java.sql.SQLException {
-                    Long memberId = pick(memberIds);
-                    ReplyParentInfo parentReply = pick(parentReplies);
-
-                    ps.setBoolean(1, false);
-                    ps.setLong(2, parentReply.boardId());
-                    ps.setTimestamp(3, now());
-                    ps.setTimestamp(4, now());
-                    ps.setLong(5, memberId);
-                    ps.setLong(6, parentReply.replyId());
-                    ps.setString(7, fakerKo.lorem().sentence());
-                    ps.setString(8, fakerKo.name().username());
-                }
-
-                @Override
-                public int getBatchSize() {
-                    return currentBatchSize;
-                }
+            batchArgs.add(new Object[]{
+                    false, parentReply.boardId(), createdDate, lastModifiedDate, memberId,
+                    parentReply.replyId(), content, nickname
             });
 
-            System.out.println("대댓글 생성 진행: " + Math.min(start + BATCH_SIZE, count) + "건");
+            writeSql(
+                    "insert into reply (is_deleted, board_id, created_date, last_modified_date, member_id, parent_id, content, nickname) values (%s, %s, %s, %s, %s, %s, %s, %s);"
+                            .formatted(
+                                    sqlBool(false), sqlNum(parentReply.boardId()), sqlTimestamp(createdDate), sqlTimestamp(lastModifiedDate),
+                                    sqlNum(memberId), sqlNum(parentReply.replyId()), sqlStr(content), sqlStr(nickname)
+                            )
+            );
         }
+
+        executeBatched(REPLY_INSERT_SQL, batchArgs);
+
+        System.out.println("대댓글 생성 완료: " + count + "건");
     }
 
     private record ReplyParentInfo(
@@ -330,6 +352,8 @@ class DummyDataInsertTest {
             Long boardId
     ) {
     }
+
+    // ===================== post_like =====================
 
     private void insertPostLikes() {
         List<Long> memberIds = findIds("member", "member_id");
@@ -344,34 +368,57 @@ class DummyDataInsertTest {
                 ) values (?, ?, ?, ?)
                 """;
 
-        for (int start = 0; start < POST_LIKE_COUNT; start += BATCH_SIZE) {
-            int currentBatchSize = Math.min(BATCH_SIZE, POST_LIKE_COUNT - start);
+        List<Object[]> batchArgs = new ArrayList<>();
 
-            jdbcTemplate.batchUpdate(sql, new org.springframework.jdbc.core.BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(java.sql.PreparedStatement ps, int i) throws java.sql.SQLException {
-                    Long memberId = pick(memberIds);
-                    Long boardId = pick(boardIds);
+        for (int i = 0; i < POST_LIKE_COUNT; i++) {
+            Long memberId = pick(memberIds);
+            Long boardId = pick(boardIds);
+            Timestamp createdDate = now();
+            Timestamp lastModifiedDate = createdDate;
 
-                    ps.setLong(1, boardId);
-                    ps.setTimestamp(2, now());
-                    ps.setTimestamp(3, now());
-                    ps.setLong(4, memberId);
-                }
+            batchArgs.add(new Object[]{boardId, createdDate, lastModifiedDate, memberId});
 
-                @Override
-                public int getBatchSize() {
-                    return currentBatchSize;
-                }
-            });
-
-            System.out.println("post_like 생성 진행: " + Math.min(start + BATCH_SIZE, POST_LIKE_COUNT) + "건");
+            writeSql(
+                    "insert into post_like (board_id, created_date, last_modified_date, member_id) values (%s, %s, %s, %s);"
+                            .formatted(sqlNum(boardId), sqlTimestamp(createdDate), sqlTimestamp(lastModifiedDate), sqlNum(memberId))
+            );
         }
+
+        executeBatched(sql, batchArgs);
 
         System.out.println("post_like 생성 완료: " + POST_LIKE_COUNT + "건");
     }
 
+    // ===================== black_list =====================
+
+    private record BlackListRecord(
+            String hashValue,
+            String reason,
+            String status,
+            String type,
+            Timestamp createdAt,
+            Timestamp expireAt
+    ) {
+    }
+
+    // black_list_history에서 재사용하기 위해 이번 실행에서 생성한 값들을 보관
+    private List<BlackListRecord> generatedBlackLists = new ArrayList<>();
+
     private void insertBlackLists() {
+        List<String> memberEmails = findMemberEmails();
+
+        if (memberEmails.isEmpty()) {
+            throw new IllegalStateException("블랙리스트에 넣을 회원 이메일 데이터가 없습니다.");
+        }
+
+        // 1. memberEmails에서 중복 없이 고유한 해시값 목록을 미리 생성
+        // (요청한 BLACKLIST_COUNT 개수와 실제 이메일 총개수 중 작은 값만큼 추출)
+        List<String> uniqueHashValues = memberEmails.stream()
+                .distinct()
+                .limit(BLACKLIST_COUNT)
+                .map(HashUtil::sha256)
+                .toList();
+
         String sql = """
                 insert into black_list (
                     created_at,
@@ -383,34 +430,55 @@ class DummyDataInsertTest {
                 ) values (?, ?, ?, ?, ?, ?)
                 """;
 
-        jdbcTemplate.batchUpdate(sql, new org.springframework.jdbc.core.BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(java.sql.PreparedStatement ps, int i) throws java.sql.SQLException {
-                int index = i + 1;
+        List<Object[]> batchArgs = new ArrayList<>();
+        generatedBlackLists = new ArrayList<>();
 
-                String type = randomBlackListType();
-                String hashValue = type.toLowerCase() + "-hash-" + index;
+        for (String hashValue : uniqueHashValues) {
+            Timestamp createdAt = now();
+            Timestamp expireAt = randomExpireAt();
+            String reason = randomReason();
+            String status = randomBlackListStatus();
+            String type = randomBlackListType();
 
-                ps.setTimestamp(1, now());
-                ps.setTimestamp(2, randomExpireAt());
-                ps.setString(3, hashValue);
-                ps.setString(4, randomReason());
-                ps.setString(5, randomBlackListStatus());
-                ps.setString(6, type);
-            }
+            batchArgs.add(new Object[]{createdAt, expireAt, hashValue, reason, status, type});
+            generatedBlackLists.add(new BlackListRecord(hashValue, reason, status, type, createdAt, expireAt));
 
-            @Override
-            public int getBatchSize() {
-                return BLACKLIST_COUNT;
-            }
-        });
+            writeSql(
+                    "insert into black_list (created_at, expire_at, hash_value, reason, status, type) values (%s, %s, %s, %s, %s, %s);"
+                            .formatted(
+                                    sqlTimestamp(createdAt), sqlTimestamp(expireAt), sqlStr(hashValue),
+                                    sqlStr(reason), sqlStr(status), sqlStr(type)
+                            )
+            );
+        }
 
-        System.out.println("black_list 생성 완료: " + BLACKLIST_COUNT + "건");
+        executeBatched(sql, batchArgs);
+
+        System.out.println("black_list 생성 완료: " + uniqueHashValues.size() + "건");
     }
+
+    // 이메일 목록을 조회하는 도우미 메서드
+    private List<String> findMemberEmails() {
+        return jdbcTemplate.queryForList(
+                "select email from member",
+                String.class
+        );
+    }
+
+    // ===================== black_list_history =====================
 
     private void insertBlackListHistories() {
         List<Long> blackListIds = findIds("black_list", "blacklist_id");
 
+        if (blackListIds.size() != generatedBlackLists.size()) {
+            System.out.println(
+                    "경고: black_list ID 개수(" + blackListIds.size()
+                            + ")와 생성된 레코드 개수(" + generatedBlackLists.size()
+                            + ")가 다릅니다. SQL 파일 내용이 실제 DB와 다를 수 있습니다."
+            );
+        }
+
+        // DB 실행은 기존과 동일하게 insert...select 방식 유지 (FK 무결성 보장)
         String sql = """
                 insert into black_list_history (
                     blacklist_id,
@@ -435,30 +503,45 @@ class DummyDataInsertTest {
                 where blacklist_id = ?
                 """;
 
-        jdbcTemplate.batchUpdate(sql, new org.springframework.jdbc.core.BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(java.sql.PreparedStatement ps, int i) throws java.sql.SQLException {
-                Long blackListId = blackListIds.get(i);
+        List<Object[]> batchArgs = new ArrayList<>();
 
-                ps.setString(1, "REGISTER");
-                ps.setString(2, "SYSTEM");
-                ps.setLong(3, blackListId);
-            }
+        int count = Math.min(blackListIds.size(), generatedBlackLists.size());
 
-            @Override
-            public int getBatchSize() {
-                return blackListIds.size();
-            }
-        });
+        for (int i = 0; i < count; i++) {
+            Long blackListId = blackListIds.get(i);
+            BlackListRecord record = generatedBlackLists.get(i);
 
-        System.out.println("black_list_history 생성 완료: " + blackListIds.size() + "건");
+            batchArgs.add(new Object[]{"REGISTER", "SYSTEM", blackListId});
+
+            // insert...select 대신, 실제 값을 그대로 채운 리터럴 insert문으로 파일에 기록
+            writeSql(
+                    "insert into black_list_history (blacklist_id, create_at, action, create_by, hash_value, reason, status, type) values (%s, %s, %s, %s, %s, %s, %s, %s);"
+                            .formatted(
+                                    sqlNum(blackListId), sqlTimestamp(record.createdAt()), sqlStr("REGISTER"), sqlStr("SYSTEM"),
+                                    sqlStr(record.hashValue()), sqlStr(record.reason()), sqlStr(record.status()), sqlStr(record.type())
+                            )
+            );
+        }
+
+        executeBatched(sql, batchArgs);
+
+        System.out.println("black_list_history 생성 완료: " + count + "건");
     }
+
+    // ===================== 공통 유틸 =====================
 
     private List<Long> findIds(String tableName, String idColumnName) {
         return jdbcTemplate.queryForList(
                 "select " + idColumnName + " from " + tableName,
                 Long.class
         );
+    }
+
+    private void executeBatched(String sql, List<Object[]> batchArgs) {
+        for (int start = 0; start < batchArgs.size(); start += BATCH_SIZE) {
+            int end = Math.min(start + BATCH_SIZE, batchArgs.size());
+            jdbcTemplate.batchUpdate(sql, batchArgs.subList(start, end));
+        }
     }
 
     private Timestamp now() {
@@ -516,5 +599,42 @@ class DummyDataInsertTest {
         }
 
         return values.get(random.nextInt(values.size()));
+    }
+
+    // ===================== SQL 텍스트 생성 유틸 =====================
+
+    private void writeSql(String sql) {
+        try {
+            sqlWriter.write(sql);
+            sqlWriter.newLine();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    private String sqlStr(String value) {
+        if (value == null) {
+            return "NULL";
+        }
+        return "'" + value.replace("'", "''") + "'";
+    }
+
+    private String sqlNum(Number value) {
+        if (value == null) {
+            return "NULL";
+        }
+        return value.toString();
+    }
+
+    private String sqlBool(boolean value) {
+        // DB가 MySQL(tinyint) 계열이면 0/1, PostgreSQL이면 true/false로 바꿔서 사용
+        return value ? "1" : "0";
+    }
+
+    private String sqlTimestamp(Timestamp value) {
+        if (value == null) {
+            return "NULL";
+        }
+        return "'" + value.toLocalDateTime().format(TS_FORMATTER) + "'";
     }
 }

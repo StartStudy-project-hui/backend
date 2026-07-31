@@ -113,6 +113,28 @@ public class BlackListHistoryRepositoryImpl implements BlackListHistoryRepositor
         return checkNext(result, pageable);
     }
 
+    @Override
+    public Page<BlacklistHistoryAdminResponseDto> findPageByBlacklistId(Long blacklistId, Pageable pageable) {
+        List<BlacklistHistoryAdminResponseDto> content = queryFactory
+                .select(new QBlacklistHistoryAdminResponseDto(
+                        blackListHistory.id
+                        , blackListHistory.reason, blackListHistory.createAt, blackListHistory.type
+                        , blackListHistory.createBy, blackListHistory.status,
+                        blackListHistory.action, blackListHistory.hashValue
+                        )
+                ).from(blackListHistory)
+                .where(blackListHistory.blacklist.id.eq(blacklistId))
+                .orderBy(blackListHistory.createAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize()).fetch();
+
+        JPAQuery<BlackListHistory> countQuery = queryFactory
+                .selectFrom(blackListHistory)
+                .where(blackListHistory.blacklist.id.eq(blacklistId));
+
+        return PageableExecutionUtils.getPage(content, pageable, () -> countQuery.select(blackListHistory.count()).fetchOne());
+    }
+
     private Slice<BlacklistHistoryMemberResponseDto> checkNext(List<BlacklistHistoryMemberResponseDto> result, Pageable pageable) {
         boolean hasNext = false;
 

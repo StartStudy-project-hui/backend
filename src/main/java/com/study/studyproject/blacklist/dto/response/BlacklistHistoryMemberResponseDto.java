@@ -20,6 +20,7 @@ public class BlacklistHistoryMemberResponseDto {
     @Schema(description = "블랙리스트 히스토리 이유", defaultValue = "욕설")
     private String reason;
 
+
     @Schema(description = "블랙리스트 히스토리 생성일", defaultValue = "2019-01-21:11:22")
     private LocalDateTime createdAt;
 

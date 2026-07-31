@@ -42,6 +42,12 @@ public class BlackListController {
         return ResponseEntity.ok(blackListService.delete(id));
     }
 
+    // 즉시 영구정지 전환
+    @PatchMapping("/{id}/permanent")
+    public ResponseEntity<GlobalResultDto> makePermanent(@PathVariable Long id) {
+        return ResponseEntity.ok(blackListService.makePermanent(id));
+    }
+
     // 조회 - 페이징 처리, 해당 닉네임
     @GetMapping
     public ResponseEntity<Page<BlacklistResponseDto>> findPageAllBlackList(

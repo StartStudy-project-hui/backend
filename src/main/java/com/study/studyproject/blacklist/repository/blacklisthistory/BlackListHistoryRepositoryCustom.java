@@ -10,6 +10,7 @@ import org.springframework.data.domain.Slice;
 public interface BlackListHistoryRepositoryCustom {
     Page<BlacklistHistoryAdminResponseDto>  blackListHistorySearchPageMainList(BlackListHistoryMainRequestDto blackListHistoryMainRequestDto, Pageable pageable);
     Slice<BlacklistHistoryMemberResponseDto> searchSliceByEmail(String email, Pageable pageable);
+    Page<BlacklistHistoryAdminResponseDto> findPageByBlacklistId(Long blacklistId, Pageable pageable);
 
 
 }

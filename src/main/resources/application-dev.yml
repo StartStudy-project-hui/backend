@@ -21,6 +21,10 @@ spring:
         format_sql: true
         show_sql: true
     defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+
   data:
     redis:
       host: localhost

@@ -9,7 +9,7 @@ spring:
       enabled: true
       force: true
   datasource:
-    url: jdbc:h2:tcp://localhost:1521/opt/h2-data/bookstore
+    url: jdbc:h2:tcp://localhost:1521/opt/h2-data/bookstore;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password:
     hikari:
@@ -35,7 +35,12 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+        use_sql_comments: true
     defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+
   data:
     redis:
       host: localhost

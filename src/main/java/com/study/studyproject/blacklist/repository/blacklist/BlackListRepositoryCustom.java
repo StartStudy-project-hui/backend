@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface BlackListRepositoryCustom {
-    Page<BlacklistResponseDto> blackListSearchPageMainList(BlackListMainRequestDto blackListMainRequestDto, Pageable pageable);
+    Page<BlacklistResponseDto> blackListSearchPageMainList(BlackListMainRequestDto blackListMainRequestDto, String hashedEmail, Pageable pageable);
 
 
 }

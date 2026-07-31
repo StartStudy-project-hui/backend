@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Getter
 @NoArgsConstructor
@@ -22,6 +23,8 @@ public class BlackListMainRequestDto {
 
     @Schema(description = "블랙리스트  상태", example = "ACTIVE")
     private BlacklistStatus status;
+
+    private String email;
 
 
 }

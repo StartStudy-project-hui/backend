@@ -9,12 +9,8 @@ spring:
   profiles:
     activate:
       on-profile: local
-  sql:
-    init:
-      mode: always
-      platform: local          # data-local.sql 을 찾도록 지정
-  jpa:
-    defer-datasource-initialization: true   # 테이블 생성 후 data-local.sql 실행되도록
+
+
 
 
 ---
@@ -28,6 +24,7 @@ spring:
   profiles:
     activate:
       on-profile: dev
+
 ---
 jwt:
   secret: ${JWT_SECRET}

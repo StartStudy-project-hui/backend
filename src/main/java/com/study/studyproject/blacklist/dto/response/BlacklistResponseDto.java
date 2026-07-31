@@ -20,6 +20,7 @@ public class BlacklistResponseDto {
     @Schema(description = "블랙리스트 히스토리 이유", example= "욕설")
     private String reason;
 
+
     @Schema(description = "블랙리스트 히스토리 생성일", defaultValue = "2019-01-21:11:22")
     private LocalDateTime createdAt;
 
@@ -27,7 +28,7 @@ public class BlacklistResponseDto {
     private BlacklistStatus status;
 
     @QueryProjection
-    public BlacklistResponseDto(Long id, BlackType type, String reason, LocalDateTime createdAt, BlacklistStatus status) {
+    public BlacklistResponseDto(Long id,  BlackType type, String reason, LocalDateTime createdAt, BlacklistStatus status) {
         this.id = id;
         this.type = type;
         this.reason = reason;

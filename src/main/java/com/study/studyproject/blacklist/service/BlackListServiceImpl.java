@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import static com.study.studyproject.blacklist.domain.BlacklistAction.*;
 import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEMBER;
@@ -80,11 +81,28 @@ public class BlackListServiceImpl implements BlackListService {
         return new GlobalResultDto("블랙리스트 삭제 완료", HttpStatus.OK.value());
     }
 
+    @Override
+    public GlobalResultDto makePermanent(Long id) {
+        BlackList blacklist = blacklistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
+
+        blacklist.makePermanent();
+        BlackListHistory save = BlackListHistory.save(BlacklistAction.EXTEND, blacklist, blacklist.getHashValue(), BlackType.EMAIL, blacklist.getReason(), blacklist.getStatus());
+        blackListHistoryRepository.save(save);
+
+        return new GlobalResultDto("영구정지로 변경되었습니다", HttpStatus.OK.value());
+    }
+
     // 페이징 처리
     @Override
     @Transactional(readOnly = true)
     public Page<BlacklistResponseDto> findPageBlackList(BlackListMainRequestDto blackListMainRequestDto, Pageable pageable) {
-        return blacklistRepository.blackListSearchPageMainList(blackListMainRequestDto, pageable);
+
+        String hashedEmail = StringUtils.hasText(blackListMainRequestDto.getEmail())
+                ? HashUtil.sha256(blackListMainRequestDto.getEmail().trim())
+                : null;
+
+        return blacklistRepository.blackListSearchPageMainList(blackListMainRequestDto, hashedEmail,pageable);
 
     }
 

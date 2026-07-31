@@ -15,4 +15,7 @@ public interface BlackListHistoryService {
 
     Slice<BlacklistHistoryMemberResponseDto> findSliceBlackHistoryById(Long id, Pageable pageable);
 
+    // 특정 블랙리스트 대상의 상태 변경 이력 조회 (관리자)
+    Page<BlacklistHistoryAdminResponseDto> findHistoryByBlacklistId(Long blacklistId, Pageable pageable);
+
 }

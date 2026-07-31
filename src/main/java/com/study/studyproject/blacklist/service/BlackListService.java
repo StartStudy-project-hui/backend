@@ -15,6 +15,8 @@ public interface BlackListService {
 
     GlobalResultDto delete(Long id);
 
+    GlobalResultDto makePermanent(Long id);
+
     Page<BlacklistResponseDto> findPageBlackList(BlackListMainRequestDto blackListMainRequestDto, Pageable pageable);
 
 
