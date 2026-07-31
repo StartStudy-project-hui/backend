@@ -12,6 +12,8 @@ services:
       - local-springboot-mysql-net
   redis:
     image: redis:alpine
+    ports:
+      - "6380:6379"
     networks:
       - local-springboot-mysql-net
   springboot:

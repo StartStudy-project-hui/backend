@@ -74,7 +74,7 @@ class MainQueryRepositoryTest {
         assertThat(content).extracting("content", "title", "nickname", "recurit")
                 .containsExactlyInAnyOrder(
                         tuple(
-                        "내용", "꿈나라", "닉네임1", "모집중"));
+                        "내용", "꿈나라", "닉네임1", "RECRUITING"));
 
 
     }

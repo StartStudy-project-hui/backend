@@ -132,7 +132,7 @@ class AdminServiceImplTest {
                 .containsExactlyInAnyOrder(
                         tuple("제목1", "CS"),
                         tuple("제목2", "CS"),
-                        tuple("제목3", "기타")
+                        tuple("제목3", "ETC")
                 );
 
     }

@@ -7,6 +7,8 @@ import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.postlike.domain.PostLike;
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.global.exception.ex.BadRequestException;
+import com.study.studyproject.global.exception.ex.ForbiddenException;
+import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
 import jakarta.transaction.Transactional;
@@ -92,14 +94,15 @@ class PostLikeServiceTest {
         postLikeRepository.save(postLike1);
 
         //when
-        GlobalResultDto globalResultDto = postLikeService.postLikeDelete(postLike1.getId());
+        GlobalResultDto globalResultDto = postLikeService.postLikeDelete(postLike1.getId(), member1);
 
         //then
         assertThat(globalResultDto.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
     }
+
     @Test
-    @DisplayName("사용자가 관심글을 삭제한다.")
+    @DisplayName("존재하지 않는 관심글을 삭제하려고 하면 예외가 발생한다.")
     void deletePostLikeWrong() throws Exception {
         //given
         Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
@@ -109,9 +112,27 @@ class PostLikeServiceTest {
         PostLike postLike1 = PostLike.create(member1, boardCreate);
         postLikeRepository.save(postLike1);
 
-        //when
-        GlobalResultDto globalResultDto = postLikeService.postLikeDelete(322L);
+        //when & then
+        assertThatThrownBy(() -> postLikeService.postLikeDelete(322L, member1))
+                .isInstanceOf(NotFoundException.class);
+    }
 
+    @Test
+    @DisplayName("다른 사용자의 관심글은 삭제할 수 없다.")
+    void deletePostLikeOfOtherMember() throws Exception {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        Member member2 = createMember("jacom3@naver.com", "1234", "사용자명2", "닉네임2");
+        Board boardCreate = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        boardRepository.save(boardCreate);
+        PostLike postLike1 = PostLike.create(member1, boardCreate);
+        postLikeRepository.save(postLike1);
+
+        //when & then
+        assertThatThrownBy(() -> postLikeService.postLikeDelete(postLike1.getId(), member2))
+                .isInstanceOf(ForbiddenException.class);
     }
 
         private Member createMember

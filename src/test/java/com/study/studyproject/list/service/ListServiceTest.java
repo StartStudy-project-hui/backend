@@ -147,7 +147,7 @@ class ListServiceTest {
                 .containsExactly(
                         tuple("제목1", "내용1","CS"),
                         tuple("제목2", "내용2","CS"),
-                        tuple("제목15", "내용3","코테")
+                        tuple("제목15", "내용3","CODING_TEST")
                 );
 
     }
