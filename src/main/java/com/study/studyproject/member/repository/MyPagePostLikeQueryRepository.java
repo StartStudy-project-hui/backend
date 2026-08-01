@@ -3,7 +3,6 @@ package com.study.studyproject.member.repository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.studyproject.board.domain.Board;
@@ -59,15 +58,12 @@ public class  MyPagePostLikeQueryRepository{
                                 board.title,
                                 board.createdDate,
                                 board.viewCount.intValue(),
-                                JPAExpressions
-                                        .select(reply.count())
-                                        .from(reply)
-                                        .where(reply.isDeleted.eq(false)
-                                                .and(reply.board.id.eq(board.id)))
+                                reply.count()
                         ))
                 .from(postLike)
                 .innerJoin(board).fetchJoin()
                 .on(postLike.board.id.eq(board.id))
+                .leftJoin(reply).on(reply.board.id.eq(board.id).and(reply.isDeleted.eq(false)))
                 .where(
                         getType(condition.getRecruitStatus()), //모집여부
                         getPostLikeMember(memeberId), //사용자 아이디 유무
@@ -75,10 +71,10 @@ public class  MyPagePostLikeQueryRepository{
                         getConnectionType(condition.getConnectionType()),
                         board.isDeleted.eq(false)
                 )
+                .groupBy(board)
                 .orderBy(
                         getOrder(condition.getOrder()) // 순서
                 )
-                .groupBy(board)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

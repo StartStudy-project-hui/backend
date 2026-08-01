@@ -1,8 +1,6 @@
 package com.study.studyproject.global.oauth.provider;
 
-import java.util.Map;
-
-public interface  OAuth2UserInfo {
+public interface OAuth2UserInfo {
 
     String getId();
 

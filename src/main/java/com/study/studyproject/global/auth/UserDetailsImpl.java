@@ -5,11 +5,12 @@ import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.login.domain.Role;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -18,23 +19,12 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
 
     private Role authority;
     private Long memberId;
-    private  Member member;
-    private Map<String, Object> attributes;
-    private Email email;
+    private Member member;
 
-
-    public UserDetailsImpl(Member member, Role authority, Long memberId) {
+    public UserDetailsImpl(Member member, Long memberId, Role authority) {
         this.member = member;
-        this.authority = authority;
-        this.memberId = memberId;
-    }
-
-    //oAuth 로그인
-    public UserDetailsImpl(Member user, Long memberId, Role authority, Email email) {
-        this.member = user;
         this.memberId = memberId;
         this.authority = authority;
-        this.email = email;
     }
 
 
@@ -45,18 +35,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collection = new ArrayList<>();
-
-        collection.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() { //권한주는
-                return authority.name();
-            }
-
-        })
-        ;
-
-        return collection;
+        return List.of(new SimpleGrantedAuthority(authority.name()));
     }
 
     @Override

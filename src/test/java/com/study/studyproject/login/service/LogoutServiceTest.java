@@ -58,12 +58,12 @@ class LogoutServiceTest {
 
 
         //when
-        GlobalResultDto globalResultDto = logoutService.logoutService(member1.getEmail().address());
+        GlobalResultDto globalResultDto = logoutService.logoutService(JwtUtil.BEARER + allToken.getAccessToken());
 
         //then
-
         Assertions.assertThat(globalResultDto.getMessage()).isEqualTo("로그아웃 되었습니다.");
         Assertions.assertThat(globalResultDto.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+        Assertions.assertThat(refreshRepository.findByAccessToken(allToken.getAccessToken())).isEmpty();
     }
 
 

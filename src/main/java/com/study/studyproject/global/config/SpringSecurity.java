@@ -11,12 +11,13 @@ import com.study.studyproject.global.oauth.CookieOAuth2AuthorizationRequestRepos
 import com.study.studyproject.global.oauth.CustomOAuth2UserService;
 import com.study.studyproject.global.oauth.handler.OAuth2LoginFailureHandler;
 import com.study.studyproject.global.oauth.handler.OAuth2LoginSuccessHandler;
-import com.study.studyproject.login.repository.RefreshRepository;
+import com.study.studyproject.login.service.RefreshTokenService;
 import com.study.studyproject.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -41,11 +42,12 @@ public class SpringSecurity {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final MemberRepository memberRepository;
-    private final RefreshRepository refreshRepository;
+    private final RefreshTokenService refreshTokenService;
     private final CorsFilter filter;
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final BlackListRepository blackListRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -60,7 +62,7 @@ public class SpringSecurity {
 
     @Bean
     public JwtFilter jwtFilter() {
-        return new JwtFilter(objectMapper,jwtUtil,blackListRepository); // JwtFilter를 빈으로 등록
+        return new JwtFilter(objectMapper,jwtUtil,blackListRepository,redisTemplate); // JwtFilter를 빈으로 등록
     }
 
 
@@ -69,7 +71,7 @@ public class SpringSecurity {
      */
     @Bean
     public OAuth2LoginSuccessHandler loginSuccessHandler() {
-        return new OAuth2LoginSuccessHandler(jwtUtil, memberRepository, refreshRepository);
+        return new OAuth2LoginSuccessHandler(jwtUtil, memberRepository, refreshTokenService);
     }
 
     /**
@@ -117,10 +119,10 @@ public class SpringSecurity {
 
         http.authorizeHttpRequests(authorize ->
                 authorize
+                        .requestMatchers("/api/v*/board/member/**", "/api/v*/user/**", "/api/v*/postLike/**", "/api/v*/reply/**", "/api/v*/back-list-history/me").authenticated()
+                        .requestMatchers("/api/v*/admin/**", "/api/v*/back-list/admin/**", "/api/v*/back-list-history/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v*/reply/view/**", "/api/v*/", "/api/renew-token"
                                 , "/api/v*/auth/**", "/api/v*/board/**", "/api/v*/view/post-like/**").permitAll()
-                        .requestMatchers("api/v*/board/member/**", "/api/v*/user/**", "/api/v*/postLike/**", "/api/v*/reply/**", "/api/v*/back-list-history/me").authenticated()
-                        .requestMatchers("api/v*/admin/**","api/v*/back-list/admin/**", "api/v*/back-list-history/admin/**").hasRole("ADMIN")
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().permitAll()
         );

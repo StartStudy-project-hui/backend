@@ -16,7 +16,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RedisUtils {
+public class
+RedisUtils {
     private final RedisTemplate<String, Object> redisTemplate;
 
     public void setValues(String key, String data) {

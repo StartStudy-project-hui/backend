@@ -113,7 +113,9 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags 'manual'
+    }
     finalizedBy jacocoTestReport
 
 }

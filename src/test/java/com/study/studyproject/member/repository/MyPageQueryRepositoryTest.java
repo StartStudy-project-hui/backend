@@ -7,6 +7,7 @@ import com.study.studyproject.global.jwt.JwtUtil;
 import com.study.studyproject.list.dto.ListResponseDto;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.dto.MemberListRequestDto;
+import com.study.studyproject.postlike.repository.PostLikeRepository;
 import com.study.studyproject.reply.repository.ReplyRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -43,15 +44,21 @@ class MyPageQueryRepositoryTest {
     @Autowired
     JwtUtil jwtUtil;
 
+    @Autowired
+    PostLikeRepository postLikeRepository;
+
 
     @BeforeEach
     void setUp() {
+        postLikeRepository.deleteAll();
+        replyRepository.deleteAll();
         boardRepository.deleteAll();
         memberRepository.deleteAll();
     }
 
     @AfterEach
     void tearDown() {
+        postLikeRepository.deleteAllInBatch();
         replyRepository.deleteAllInBatch();
         boardRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();

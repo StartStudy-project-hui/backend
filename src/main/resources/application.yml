@@ -30,11 +30,13 @@ jwt:
   secret: ${JWT_SECRET}
   token-validity-in-seconds: 86400
 
-
-spring :
+spring:
   output:
     ansi:
       enabled: always
+  sql:
+    init:
+      encoding: UTF-8
 
 dotenv:
   enabled: true

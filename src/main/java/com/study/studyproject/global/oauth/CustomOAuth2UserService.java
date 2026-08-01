@@ -25,7 +25,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        log.info("----- OAuth2.0 로그인 ----------");
+        log.info("OAuth2 로그인 시작");
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         String registrationId = getRegistrationId(userRequest);
@@ -37,15 +37,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuthAttributes extractAttributes = of(socialType, userNameAttributeName, attributes);
         Member member = memberService.getOrCreateUser(extractAttributes, socialType);
 
-        return new UserDetailsImpl(member,
-                member.getId(),member.getRole(),member.getEmail());
+        return new UserDetailsImpl(member, member.getId(), member.getRole());
     }
 
     private static String getRegistrationId(OAuth2UserRequest userRequest) {
         return userRequest.getClientRegistration().getRegistrationId();
     }
 
-    private  String getUserNameAttributeName(OAuth2UserRequest userRequest) {
+    private static String getUserNameAttributeName(OAuth2UserRequest userRequest) {
         return userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
     }

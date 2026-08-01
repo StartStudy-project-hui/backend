@@ -9,6 +9,7 @@ import com.study.studyproject.reply.domain.Reply;
 import com.study.studyproject.global.jwt.JwtUtil;
 import com.study.studyproject.login.dto.TokenDtoResponse;
 import com.study.studyproject.member.repository.MemberRepository;
+import com.study.studyproject.postlike.repository.PostLikeRepository;
 import com.study.studyproject.reply.dto.ReplyRequestDto;
 import com.study.studyproject.reply.dto.UpdateReplyRequest;
 import com.study.studyproject.reply.repository.ReplyRepository;
@@ -61,8 +62,12 @@ class ReplyControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    PostLikeRepository postLikeRepository;
+
     @AfterEach
     void tearDown() {
+        postLikeRepository.deleteAllInBatch();
         replyRepository.deleteAllInBatch();
         boardRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();

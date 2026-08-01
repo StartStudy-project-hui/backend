@@ -10,6 +10,7 @@ import com.study.studyproject.board.repository.BoardRepository;
 import com.study.studyproject.login.dto.TokenDtoResponse;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
+import com.study.studyproject.postlike.repository.PostLikeRepository;
 import com.study.studyproject.reply.repository.ReplyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,6 +42,8 @@ class BoardControllerTest  {
     BoardRepository boardRepository;
     @Autowired
     ReplyRepository replyRepository;
+    @Autowired
+    PostLikeRepository postLikeRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,9 +55,10 @@ class BoardControllerTest  {
 
     @AfterEach
     void tearDown() {
+        postLikeRepository.deleteAllInBatch();
+        replyRepository.deleteAllInBatch();
         boardRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
-        replyRepository.deleteAllInBatch();
 
     }
 

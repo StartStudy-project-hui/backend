@@ -15,6 +15,7 @@ import com.study.studyproject.login.dto.TokenDtoResponse;
 import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
+import com.study.studyproject.postlike.repository.PostLikeRepository;
 import com.study.studyproject.reply.domain.Reply;
 import com.study.studyproject.reply.repository.ReplyRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,6 +51,9 @@ class BoardServiceTest {
     ReplyRepository replyRepository;
 
     @Autowired
+    PostLikeRepository postLikeRepository;
+
+    @Autowired
     BoardService boardService;
 
     @Autowired
@@ -63,6 +67,7 @@ class BoardServiceTest {
 
     @AfterEach
     void tearDown() {
+        postLikeRepository.deleteAllInBatch();
         replyRepository.deleteAllInBatch();
         boardRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
@@ -165,7 +170,7 @@ class BoardServiceTest {
         replyRepository.saveAll(replies);
 
 
-        UserDetailsImpl userDetails = new UserDetailsImpl(member1, ROLE_USER, member1.getId());
+        UserDetailsImpl userDetails = new UserDetailsImpl(member1, member1.getId(), ROLE_USER);
 
 
         //when
@@ -207,7 +212,7 @@ class BoardServiceTest {
 
 
 
-        UserDetailsImpl userDetails = new UserDetailsImpl(member1, ROLE_ADMIN, member1.getId());
+        UserDetailsImpl userDetails = new UserDetailsImpl(member1, member1.getId(), ROLE_ADMIN);
         //when
         List<Reply> byBoardReply = replyRepository.findByBoardReplies(board.getId());
 

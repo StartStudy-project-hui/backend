@@ -22,6 +22,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -38,6 +40,12 @@ class JwtFilterTest {
 
     @Mock
     private BlackListRepository blackListRepository;
+
+    @Mock
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Mock
+    private ValueOperations<String, Object> valueOperations;
 
     @Mock
     private FilterChain filterChain;
@@ -69,13 +77,13 @@ class JwtFilterTest {
 
 
     @Test
-    @DisplayName("만료된 토큰(isNotInvalidToken)인 경우 401 에러를 반환해야 한다")
+    @DisplayName("만료된 토큰(isInvalidToken)인 경우 401 에러를 반환해야 한다")
     void invalidTokenResponse() throws Exception {
         // given
         String token = "expired.token.here";
         given(jwtUtil.getHeaderToken(any(), any())).willReturn("Bearer " + token);
         given(jwtUtil.resolveToken(any())).willReturn(token);
-        given(jwtUtil.AccessTokenValidation(token)).willReturn(false); // 유효하지 않음
+        given(jwtUtil.isAccessTokenValid(token)).willReturn(false); // 유효하지 않음
 
         // when
         jwtFilter.doFilterInternal(request, response, filterChain);
@@ -94,9 +102,13 @@ class JwtFilterTest {
         BlackList mockBlackList = mock(BlackList.class);
 
         given(jwtUtil.resolveToken(any())).willReturn(token);
-        given(jwtUtil.AccessTokenValidation(token)).willReturn(true); // 토큰은 유효함
+        given(jwtUtil.isAccessTokenValid(token)).willReturn(true); // 토큰은 유효함
         given(jwtUtil.getEmailFromToken(token)).willReturn(new Email(email));
         given(mockBlackList.isBlocked()).willReturn(true);
+
+        // 캐시 미스 상황을 가정
+        given(redisTemplate.opsForValue()).willReturn(valueOperations);
+        given(valueOperations.get(any())).willReturn(null);
 
         // 블랙리스트에 존재한다고 가정
         given(blackListRepository.findByHashValue(any()))
@@ -107,6 +119,30 @@ class JwtFilterTest {
         // then
         Assertions.assertEquals(403,response.getStatus());
 
+    }
+
+    @Test
+    @DisplayName("블랙리스트 캐시가 존재하면 DB 조회 없이 캐시된 값으로 403 에러를 반환해야 한다")
+    void blacklistedUserResponse_cacheHit() throws Exception {
+        // given
+        String token = "valid.token.here";
+        String email = "test@test.com";
+
+        given(jwtUtil.resolveToken(any())).willReturn(token);
+        given(jwtUtil.isAccessTokenValid(token)).willReturn(true); // 토큰은 유효함
+        given(jwtUtil.getEmailFromToken(token)).willReturn(new Email(email));
+
+        // 캐시 히트 상황을 가정
+        given(redisTemplate.opsForValue()).willReturn(valueOperations);
+        given(valueOperations.get(any())).willReturn("true");
+
+        // when
+        jwtFilter.doFilterInternal(request, response, filterChain);
+
+        // then
+        Assertions.assertEquals(403, response.getStatus());
+        verify(blackListRepository, never()).findByHashValue(any());
+        verify(valueOperations, never()).set(any(), any(), any());
     }
 
 

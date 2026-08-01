@@ -2,6 +2,8 @@ package com.study.studyproject.test;
 
 import com.study.studyproject.global.hash.HashUtil;
 import net.datafaker.Faker;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +23,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+// 수동 실행 전용 더미 데이터 시딩 유틸. @Transactional이 없어 커밋되므로 자동 테스트 스위트에서 제외한다.
+// 직접 실행하려면 아래 @Disabled를 잠시 지우고 실행할 것.
+@Disabled("수동 더미데이터 시딩 유틸 - 커밋되므로 자동 실행 금지")
+@Tag("manual")
 @SpringBootTest
 class DummyDataInsertTest {
 

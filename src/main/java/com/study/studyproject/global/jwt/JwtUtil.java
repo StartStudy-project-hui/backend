@@ -3,7 +3,6 @@ package com.study.studyproject.global.jwt;
 import com.study.studyproject.global.auth.UserDetailsServiceImpl;
 import com.study.studyproject.global.exception.ex.TokenNotValidationException;
 import com.study.studyproject.login.dto.TokenDtoResponse;
-import com.study.studyproject.login.repository.RefreshRepository;
 import com.study.studyproject.member.domain.Email;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -20,7 +19,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.security.Key;
 import java.util.*;
 
@@ -42,9 +40,6 @@ public class JwtUtil {
 
 
 
-    @Value("${location}")
-    private String serverIp;
-
     @Value("${jwt.secret}")
     private String secretKey;
     private Key key;
@@ -62,16 +57,6 @@ public class JwtUtil {
         return type.equals(ACCESS_TOKEN) ? request.getHeader(ACCESS_TOKEN) : request.getHeader(REFRESH_TOKEN);
     }
 
-
-    private void setTokenResponse(HttpServletResponse response, String accessToken, String refreshToken) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put(ACCESS_TOKEN, accessToken);
-        result.put(REFRESH_TOKEN, refreshToken);
-
-    }
 
      public void setHeader(HttpServletResponse response, TokenDtoResponse tokensDto) {
         response.addHeader(JwtUtil.ACCESS_TOKEN, JwtUtil.BEARER + tokensDto.getAccessToken());
@@ -124,18 +109,18 @@ public class JwtUtil {
 
 
     // 토큰 검증
-    public Boolean AccessTokenValidation(String token) throws ExpiredJwtException, TokenNotValidationException {
+    public Boolean isAccessTokenValid(String token) throws ExpiredJwtException, TokenNotValidationException {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.error("잘못된 JWT 서명입니다.SecurityException");
+            log.error("잘못된 JWT 서명입니다.", e);
         } catch (ExpiredJwtException e) {
-            log.error("잘못된 JWT 서명입니다.ExpiredJwtException");
+            log.error("만료된 JWT 토큰입니다.", e);
         } catch (UnsupportedJwtException e) {
             log.error("지원되지 않는 JWT 토큰입니다.", e);
         } catch (IllegalArgumentException e) {
-            log.error("잘못된 JWT 서명입니다. IllegalArgumentException");
+            log.error("잘못된 형식의 JWT 토큰입니다.", e);
         }
         return false;
     }
@@ -151,10 +136,10 @@ public class JwtUtil {
         }
     }
 
-    public boolean isValidRefreshAndInValidAccess(String accessToken, String refreshToken) {
+    // 리프레시 토큰은 유효하지만 액세스 토큰은 만료되어 재발급이 필요한 경우
+    public boolean needsAccessTokenReissue(String accessToken, String refreshToken) {
         validateRefreshToken(refreshToken);
-        if(AccessTokenValidation(accessToken)) return false;
-        return true;
+        return !isAccessTokenValid(accessToken);
     }
 
 
@@ -182,17 +167,6 @@ public class JwtUtil {
     }
 
 
-    // 어세스 토큰 헤더 설정
-    public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
-        response.setHeader(ACCESS_TOKEN,BEARER+accessToken);
-    }
-
-    // 리프레시 토큰 헤더 설정
-    public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
-        response.setHeader(REFRESH_TOKEN,BEARER+refreshToken);
-    }
-
-
     public  String resolveToken(String token) {
 
         if (StringUtils.hasText(token) && token.startsWith(BEARER)) {
@@ -204,13 +178,13 @@ public class JwtUtil {
     }
 
 
-    public boolean isValidRefreshAndValidAccess(String accessToken, String refreshToken) {
+    // 리프레시, 액세스 토큰 모두 유효하여 기존 액세스 토큰을 그대로 쓸 수 있는 경우
+    public boolean canUseExistingAccessToken(String accessToken, String refreshToken) {
         try {
             validateRefreshToken(refreshToken);
-            AccessTokenValidation(accessToken);
-            return true;
-        } catch (final JwtException e) {
+        } catch (final TokenNotValidationException e) {
             return false;
         }
+        return isAccessTokenValid(accessToken);
     }
 }

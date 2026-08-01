@@ -9,6 +9,7 @@ import com.study.studyproject.global.jwt.JwtUtil;
 import com.study.studyproject.login.dto.TokenDtoResponse;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
+import com.study.studyproject.reply.repository.ReplyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,9 +48,13 @@ class PostLikeControllerTest {
     @Autowired
     private  JwtUtil jwtUtil;
 
+    @Autowired
+    private ReplyRepository replyRepository;
+
     @AfterEach
     void tearDown() {
         postLikeRepository.deleteAllInBatch();
+        replyRepository.deleteAllInBatch();
         boardRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
 

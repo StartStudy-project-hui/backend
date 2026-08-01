@@ -2,7 +2,6 @@ package com.study.studyproject.global.auth;
 
 import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
-import com.study.studyproject.login.domain.Role;
 import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return memberRepository.findByEmail(new Email(email))
-                .map(member -> new UserDetailsImpl(member, member.getRole(), member.getId()))
+                .map(member -> new UserDetailsImpl(member, member.getId(), member.getRole()))
                 .orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
     }
 }

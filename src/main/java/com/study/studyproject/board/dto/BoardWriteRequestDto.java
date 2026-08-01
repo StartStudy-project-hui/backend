@@ -14,7 +14,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-//Member member, String title, Long viewCount, String content, String nickname, Category category
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardWriteRequestDto {
@@ -53,10 +52,12 @@ public class BoardWriteRequestDto {
     }
 
     @Builder
-    public BoardWriteRequestDto(String content, Category category, String title) {
+    public BoardWriteRequestDto(String content, Category category, String title, ConnectionType connectionType, OfflineLocation offlineLocation) {
         this.content = content;
         this.category = category;
         this.title = title;
+        this.connectionType = connectionType;
+        this.offlineLocation = offlineLocation;
     }
 
 

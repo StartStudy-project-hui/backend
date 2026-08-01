@@ -17,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,9 @@ class BlackListServiceImplTest {
 
     @Autowired
     BlackListRepository blackListRepository;
+
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
 
     @AfterEach
     void tearDown() {
@@ -140,6 +144,25 @@ class BlackListServiceImplTest {
 
     }
 
+
+    @Test
+    @DisplayName("블랙리스트 등록 시 캐시가 삭제되어 다음 조회에서 최신 상태를 반영한다")
+    void register_evictsCache() throws Exception {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1", Role.ROLE_ADMIN);
+        String hash = HashUtil.sha256(member1.getEmail().address());
+        String cacheKey = BlackList.BLACKLIST_CACHE_KEY_PREFIX + hash;
+
+        // 이전 요청에서 "차단 아님"으로 캐시되어 있다고 가정
+        redisTemplate.opsForValue().set(cacheKey, "false");
+        BlackListCreateRequestDto requestDto = new BlackListCreateRequestDto(member1.getEmail().address(), "pishing", 1);
+
+        //when
+        blackListService.registerOrUpdateBlackList(requestDto);
+
+        //then
+        assertThat(redisTemplate.hasKey(cacheKey)).isFalse();
+    }
 
     private Member createMember
             (String email, String password, String username, String nickname, Role role) {

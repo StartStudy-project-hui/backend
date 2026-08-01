@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import static com.study.studyproject.blacklist.domain.BlackType.EMAIL;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +33,9 @@ class BlackListImplUnitTest {
 
     @Mock
     private BlackListHistoryRepository blackListHistoryRepository;
+
+    @Mock
+    private RedisTemplate<String, Object> redisTemplate;
 
 
     @Test

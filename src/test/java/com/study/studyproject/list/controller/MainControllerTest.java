@@ -9,7 +9,9 @@ import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.list.dto.MainRequestDto;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
+import com.study.studyproject.postlike.repository.PostLikeRepository;
 import com.study.studyproject.reply.dto.ReplyRequestDto;
+import com.study.studyproject.reply.repository.ReplyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,8 +48,16 @@ class MainControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private ReplyRepository replyRepository;
+
+    @Autowired
+    private PostLikeRepository postLikeRepository;
+
     @AfterEach
     void tearDown() {
+        postLikeRepository.deleteAllInBatch();
+        replyRepository.deleteAllInBatch();
         boardRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
     }

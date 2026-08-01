@@ -3,7 +3,6 @@ package com.study.studyproject.list.repository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.studyproject.board.domain.Board;
@@ -61,14 +60,11 @@ public class MainQueryRepository  {
                                 board.title,
                                 board.createdDate,
                                 board.viewCount.intValue(),
-                                JPAExpressions
-                                        .select(reply.count())
-                                        .from(reply)
-                                        .where(reply.isDeleted.eq(false)
-                                                .and(reply.board.id.eq(board.id)))
+                                reply.count()
                         )
                 )
                 .from(board)
+                .leftJoin(reply).on(reply.board.id.eq(board.id).and(reply.isDeleted.eq(false)))
                 .where(
                         board.recruitStatus.eq(RecruitStatus.RECRUITING),
                         getCategory(condition.getCategory()),
@@ -76,10 +72,10 @@ public class MainQueryRepository  {
                         getConnectionType(condition.getConnectionType()),
                         board.isDeleted.eq(false)
                 )
+                .groupBy(board)
                 .orderBy(
                         getOrder(condition.getOrder()) // 순서
                 )
-                .groupBy(board)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

@@ -13,6 +13,7 @@ import com.study.studyproject.member.dto.UserInfoResponseDto;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.domain.PostLike;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
+import com.study.studyproject.reply.repository.ReplyRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,9 +47,13 @@ class MemberServiceImplTest {
     @Autowired
     PostLikeRepository postLikeRepository;
 
+    @Autowired
+    ReplyRepository replyRepository;
+
     @AfterEach
     void tearDown() {
         postLikeRepository.deleteAllInBatch();
+        replyRepository.deleteAllInBatch();
         boardRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
 

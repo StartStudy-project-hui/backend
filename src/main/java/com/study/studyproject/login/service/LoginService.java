@@ -32,6 +32,7 @@ import static com.study.studyproject.global.exception.ex.ErrorCode.*;
 public class LoginService {
 
     private final RefreshRepository refreshRepository;
+    private final RefreshTokenService refreshTokenService;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -44,7 +45,7 @@ public class LoginService {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
         verifyPassword(loginRequest, member);
 
-        TokenDtoResponse tokensDto = saveOrUpdateRefreshToken(loginRequest, email, member);
+        TokenDtoResponse tokensDto = saveOrUpdateRefreshToken(email, member);
         setTokenHeader(response, tokensDto);
 
         return new LoginResponseDto("로그인 되었습니다.", HttpStatus.OK.value(), member.getNickname());
@@ -55,13 +56,9 @@ public class LoginService {
         jwtUtil.setHeader(response, tokensDto);
     }
 
-    private TokenDtoResponse saveOrUpdateRefreshToken(LoginRequest loginRequest, Email email, Member member) {
+    private TokenDtoResponse saveOrUpdateRefreshToken(Email email, Member member) {
         TokenDtoResponse tokensDto = jwtUtil.createAllToken(email, member.getId());
-        refreshRepository.findByAccessToken(tokensDto.getAccessToken())
-                .ifPresentOrElse(
-                        token -> refreshRepository.save(token.updateToken(tokensDto.getRefreshToken())), // 존재한다면
-                        () -> refreshRepository.save(RefreshToken.toEntity(tokensDto, loginRequest)) //존재하지 않으면
-                );
+        refreshTokenService.saveOrUpdate(email.address(), tokensDto);
         return tokensDto;
     }
 
@@ -103,13 +100,13 @@ public class LoginService {
 
 
         //AT 문제가 둘다 없는 경우
-        if (jwtUtil.isValidRefreshAndValidAccess(accessToken, refreshToken)) {
+        if (jwtUtil.canUseExistingAccessToken(accessToken, refreshToken)) {
             log.info("둘다 문제 없는 경우");
             return accessToken;
         }
 
 
-        if (jwtUtil.isValidRefreshAndInValidAccess(accessToken, refreshToken)) {
+        if (jwtUtil.needsAccessTokenReissue(accessToken, refreshToken)) {
             log.info("AccessToken 만료, RefreshToken 정상 - AccessToken 재발급");
             return reissueAccessToken(refreshToken, response);
         }
@@ -131,7 +128,7 @@ public class LoginService {
 
         validateRefreshTokenMatch(savedRefreshToken, refreshToken);
         String renewAccessToken = jwtUtil.createToken(emailFromToken, idFromToken, ACCESS_TOKEN); //엑세스 토큰 재생성
-        savedRefreshToken.updateAccessToken(renewAccessToken); // 갱신
+        refreshRepository.save(savedRefreshToken.updateAccessToken(renewAccessToken)); // 갱신 후 Redis에 반영
         setTokenHeader(response, TokenDtoResponse.of(renewAccessToken, refreshToken));
         return renewAccessToken;
     }

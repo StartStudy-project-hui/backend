@@ -6,6 +6,7 @@ import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.reply.domain.Reply;
 import com.study.studyproject.member.repository.MemberRepository;
+import com.study.studyproject.postlike.repository.PostLikeRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,8 +33,12 @@ class ReplyRepositoryImplTest {
     @Autowired
     BoardRepository boardRepository;
 
+    @Autowired
+    PostLikeRepository postLikeRepository;
+
     @AfterEach
     void tearDown() {
+        postLikeRepository.deleteAllInBatch();
         replyRepository.deleteAllInBatch();
         boardRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();

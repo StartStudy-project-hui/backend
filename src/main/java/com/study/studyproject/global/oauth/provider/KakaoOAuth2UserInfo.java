@@ -60,7 +60,7 @@ public class KakaoOAuth2UserInfo implements OAuth2UserInfo {
     }
     @SuppressWarnings("unchecked")
     private Map<String, Object> getKakaoAccount() {
-        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        Object kakaoAccount = attributes.get("kakao_account");
         if (!(kakaoAccount instanceof Map)) {
             return null;
         }

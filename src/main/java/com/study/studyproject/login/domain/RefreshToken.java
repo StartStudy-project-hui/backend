@@ -1,6 +1,5 @@
 package com.study.studyproject.login.domain;
 
-import com.study.studyproject.login.dto.LoginRequest;
 import com.study.studyproject.login.dto.TokenDtoResponse;
 import com.study.studyproject.member.domain.Email;
 import lombok.AccessLevel;
@@ -32,11 +31,11 @@ public class  RefreshToken {
     }
 
 
-    public static RefreshToken toEntity(TokenDtoResponse tokensDto, LoginRequest loginRequest) {
+    public static RefreshToken toEntity(TokenDtoResponse tokensDto, String email) {
         return RefreshToken.builder()
                 .refreshToken(tokensDto.getRefreshToken())
                 .accessToken(tokensDto.getAccessToken())
-                .email(loginRequest.getEmail()).build();
+                .email(email).build();
     }
 
 

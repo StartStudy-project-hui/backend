@@ -13,11 +13,13 @@ import com.study.studyproject.global.exception.ex.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import static com.study.studyproject.blacklist.domain.BlackList.BLACKLIST_CACHE_KEY_PREFIX;
 import static com.study.studyproject.blacklist.domain.BlacklistAction.*;
 import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEMBER;
 
@@ -27,6 +29,11 @@ import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEM
 public class BlackListServiceImpl implements BlackListService {
     private final BlackListRepository blacklistRepository;
     private final BlackListHistoryRepository blackListHistoryRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private void evictBlacklistCache(String hash) {
+        redisTemplate.delete(BLACKLIST_CACHE_KEY_PREFIX + hash);
+    }
 
     @Override
     public GlobalResultDto registerOrUpdateBlackList(BlackListCreateRequestDto request) {
@@ -50,6 +57,7 @@ public class BlackListServiceImpl implements BlackListService {
 
         BlackListHistory blackListHistory = BlackListHistory.save(BlacklistAction.REGISTER, findByBlackList,hash,BlackType.EMAIL , request.getReason(), blacklistStatus);
         blackListHistoryRepository.save(blackListHistory);
+        evictBlacklistCache(hash);
 
         return new GlobalResultDto("블랙리스트 등록 완료", HttpStatus.OK.value());
     }
@@ -77,6 +85,7 @@ public class BlackListServiceImpl implements BlackListService {
         BlackListHistory save = BlackListHistory.save(BlacklistAction.DELETE,blacklist,blacklist.getHashValue(),  BlackType.EMAIL,blacklist.getReason(), BlacklistStatus.EXPIRED);
         blackListHistoryRepository.save(save);
         blacklistRepository.delete(blacklist);
+        evictBlacklistCache(blacklist.getHashValue());
 
         return new GlobalResultDto("블랙리스트 삭제 완료", HttpStatus.OK.value());
     }
@@ -89,6 +98,7 @@ public class BlackListServiceImpl implements BlackListService {
         blacklist.makePermanent();
         BlackListHistory save = BlackListHistory.save(BlacklistAction.EXTEND, blacklist, blacklist.getHashValue(), BlackType.EMAIL, blacklist.getReason(), blacklist.getStatus());
         blackListHistoryRepository.save(save);
+        evictBlacklistCache(blacklist.getHashValue());
 
         return new GlobalResultDto("영구정지로 변경되었습니다", HttpStatus.OK.value());
     }

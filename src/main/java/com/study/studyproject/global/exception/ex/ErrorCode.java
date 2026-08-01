@@ -31,6 +31,7 @@ public enum ErrorCode {
     UNABLE_ACCESS( "접근 권한이 없습니다.", FORBIDDEN),
     EXPIRED_PERIOD_TOKEN("토큰이 만료되었습니다. 다시 로그인해주세요. ", UNAUTHORIZED ),
     INVALID_REFRESH_TOKEN("올바르지 않은 형식의 RefreshToken입니다 다시 로그인해주세요. ", UNAUTHORIZED ),
+    UNAUTHORIZED_MEMBER("인증이 필요합니다. 로그인 후 이용해주세요.", UNAUTHORIZED),
 
     //블랙리스트
     BLACKLIST_USER("블랙리스 사용자입니다. 사이트를 이용할 수 없습니다.",HttpStatus.FORBIDDEN),

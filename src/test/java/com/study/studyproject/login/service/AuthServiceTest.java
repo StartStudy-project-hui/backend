@@ -53,7 +53,7 @@ class AuthServiceTest {
         when(jwtUtil.resolveToken(accessTokenRequest)).thenReturn(accessToken);
         when(jwtUtil.resolveToken(refreshTokenRequest)).thenReturn(refreshToken);
 
-        when(jwtUtil.isValidRefreshAndValidAccess(accessToken, refreshToken))
+        when(jwtUtil.canUseExistingAccessToken(accessToken, refreshToken))
                 .thenReturn(true);
 
         // when
@@ -68,9 +68,9 @@ class AuthServiceTest {
 
         verify(jwtUtil).resolveToken(accessTokenRequest);
         verify(jwtUtil).resolveToken(refreshTokenRequest);
-        verify(jwtUtil).isValidRefreshAndValidAccess(accessToken, refreshToken);
+        verify(jwtUtil).canUseExistingAccessToken(accessToken, refreshToken);
 
-        verify(jwtUtil, never()).isValidRefreshAndInValidAccess(anyString(), anyString());
+        verify(jwtUtil, never()).needsAccessTokenReissue(anyString(), anyString());
         verify(refreshRepository, never()).findById(anyString());
     }
 
@@ -87,10 +87,10 @@ class AuthServiceTest {
         when(jwtUtil.resolveToken(accessTokenRequest)).thenReturn(accessToken);
         when(jwtUtil.resolveToken(refreshTokenRequest)).thenReturn(refreshToken);
 
-        when(jwtUtil.isValidRefreshAndValidAccess(accessToken, refreshToken))
+        when(jwtUtil.canUseExistingAccessToken(accessToken, refreshToken))
                 .thenReturn(false);
 
-        when(jwtUtil.isValidRefreshAndInValidAccess(accessToken, refreshToken))
+        when(jwtUtil.needsAccessTokenReissue(accessToken, refreshToken))
                 .thenReturn(true);
 
         when(jwtUtil.getEmailFromToken(refreshToken)).thenReturn(email);
@@ -124,10 +124,10 @@ class AuthServiceTest {
         when(jwtUtil.resolveToken(accessTokenRequest)).thenReturn(accessToken);
         when(jwtUtil.resolveToken(refreshTokenRequest)).thenReturn(refreshToken);
 
-        when(jwtUtil.isValidRefreshAndValidAccess(accessToken, refreshToken))
+        when(jwtUtil.canUseExistingAccessToken(accessToken, refreshToken))
                 .thenReturn(false);
 
-        when(jwtUtil.isValidRefreshAndInValidAccess(accessToken, refreshToken))
+        when(jwtUtil.needsAccessTokenReissue(accessToken, refreshToken))
                 .thenReturn(false);
 
         // when & then
@@ -148,10 +148,10 @@ class AuthServiceTest {
         when(jwtUtil.resolveToken(accessTokenRequest)).thenReturn(accessToken);
         when(jwtUtil.resolveToken(refreshTokenRequest)).thenReturn(refreshToken);
 
-        when(jwtUtil.isValidRefreshAndValidAccess(accessToken, refreshToken))
+        when(jwtUtil.canUseExistingAccessToken(accessToken, refreshToken))
                 .thenReturn(false);
 
-        when(jwtUtil.isValidRefreshAndInValidAccess(accessToken, refreshToken))
+        when(jwtUtil.needsAccessTokenReissue(accessToken, refreshToken))
                 .thenReturn(true);
 
         when(jwtUtil.getEmailFromToken(refreshToken)).thenReturn(email);
@@ -184,10 +184,10 @@ class AuthServiceTest {
         when(jwtUtil.resolveToken(accessTokenRequest)).thenReturn(accessToken);
         when(jwtUtil.resolveToken(refreshTokenRequest)).thenReturn(refreshToken);
 
-        when(jwtUtil.isValidRefreshAndValidAccess(accessToken, refreshToken))
+        when(jwtUtil.canUseExistingAccessToken(accessToken, refreshToken))
                 .thenReturn(false);
 
-        when(jwtUtil.isValidRefreshAndInValidAccess(accessToken, refreshToken))
+        when(jwtUtil.needsAccessTokenReissue(accessToken, refreshToken))
                 .thenReturn(true);
 
         when(jwtUtil.getEmailFromToken(refreshToken)).thenReturn(email);

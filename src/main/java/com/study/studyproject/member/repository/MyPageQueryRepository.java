@@ -3,7 +3,6 @@ package com.study.studyproject.member.repository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.studyproject.board.domain.ConnectionType;
@@ -60,14 +59,11 @@ public class MyPageQueryRepository {
                                 board.title,
                                 board.createdDate,
                                 board.viewCount.intValue(),
-                                JPAExpressions
-                                        .select(reply.count())
-                                        .from(reply)
-                                        .where(reply.isDeleted.eq(false)
-                                                .and(reply.board.id.eq(board.id)))
+                                reply.count()
                         ))
                 .from(board)
                 .join(board.member, member)
+                .leftJoin(reply).on(reply.board.id.eq(board.id).and(reply.isDeleted.eq(false)))
                 .where(
                         getType(condition.getRecruitStatus()), //모집여부
                         getUser(memeberId), //사용자 아이디 유무
@@ -76,10 +72,10 @@ public class MyPageQueryRepository {
                         getAdminPage(getRole)
 
                 )
+                .groupBy(board)
                 .orderBy(
                         getOrder(condition.getOrder()) // 순서
                 )
-                .groupBy(board)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

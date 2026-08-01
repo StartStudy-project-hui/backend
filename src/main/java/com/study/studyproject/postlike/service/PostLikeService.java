@@ -31,27 +31,15 @@ public class PostLikeService {
 
     public PostLikeOneResponseDto getPostLikeForOneBoard(Member member, Long boardId) {
         Board board = findByBoardId(boardId);
-        Long postLikeId = findByPostLikeId(member, boardId);
-        String  postLikeValue = findByPostLike(member, board);
-        return PostLikeOneResponseDto.of(postLikeValue,postLikeId);
+        Optional<PostLike> postLike = postLikeRepository.findByBoardAndMember(board, member);
+
+        Long postLikeId = postLike.map(PostLike::getId).orElse(null);
+        String postLikeValue = postLike.isPresent() ? PostLikeState.LIKING.getName() : PostLikeState.LIKE.getName();
+        return PostLikeOneResponseDto.of(postLikeValue, postLikeId);
     }
 
     private Board findByBoardId(Long boardId) {
         return boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException(NOT_FOUND_BOARD));
-    }
-
-    public Long findByPostLikeId(Member member, long boardId) {
-        Board board = findByBoardId(boardId);
-        Optional<PostLike> byBoardAndMember = postLikeRepository.findByBoardAndMember(board, member);
-        if (byBoardAndMember.isPresent()) {
-            return byBoardAndMember.get().getId();
-        }
-        return null;
-    }
-
-    private String findByPostLike(Member member, Board board) {
-            Optional<PostLike> byBoardAndMember = postLikeRepository.findByBoardAndMember(board, member);
-            return byBoardAndMember.isPresent() ? PostLikeState.LIKING.getName() : PostLikeState.LIKE.getName();
     }
 
 
