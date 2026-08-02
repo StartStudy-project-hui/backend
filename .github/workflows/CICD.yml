@@ -62,8 +62,8 @@ jobs:
           key: ${{ secrets.OCI_SSH_KEY }}
           envs: DOCKERHUB_USERNAME
           script: |
-            cd ~/
             git pull origin main
+            cd ~/
             echo "${{ secrets.ENV }}" | base64 --decode > .env
             echo ${{ secrets.APPLICATION_SECRET }} | base64 --decode > ./src/main/resources/application-prod.yml
 
