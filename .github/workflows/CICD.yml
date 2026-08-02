@@ -55,7 +55,6 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     # main 브랜치에 push된 경우에만 실제 배포 (PR에서는 build만)
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
 
@@ -65,7 +64,6 @@ jobs:
           host: ${{ secrets.OCI_HOST }}
           username: ${{ secrets.OCI_USER }}
           key: ${{ secrets.OCI_SSH_KEY }}
-          source: "docker-compose-prod.yml,prometheus-prod.yml"
           target: "~/app"
 
       - name: Deploy via SSH
