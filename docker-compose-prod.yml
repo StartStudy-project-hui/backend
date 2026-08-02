@@ -1,8 +1,8 @@
 services:
   db:
+    image: mysql
     env_file:
       - .env
-    image: mysql
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -42,7 +42,6 @@ services:
     container_name: app
     networks:
       - springboot-mysql-net
-
 
 networks:
   springboot-mysql-net:
