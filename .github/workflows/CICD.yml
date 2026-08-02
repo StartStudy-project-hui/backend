@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -23,13 +24,10 @@ jobs:
 
       - name: Build Secrets files
         run: |
-          pwd
-          touch ./env 
-          echo ${{ secrets.ENV }} | base64 --decode > ./.env
-          
-          cd ./src/main/resources
-          touch ./application-prod.yml 
-          echo ${{ secrets.APPLICATION_SECRET }} | base64 --decode > ./application-prod.yml
+          echo "${{ secrets.ENV }}" | base64 --decode > ./.env
+
+          mkdir -p ./src/main/resources
+          echo "${{ secrets.APPLICATION_SECRET }}" | base64 --decode > ./src/main/resources/application-prod.yml
 
       - name: Build jar
         run: ./gradlew clean bootJar -x test
@@ -40,33 +38,50 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build image
         run: |
           docker build \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/study_project:latest \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/study_project:${{ github.sha }} .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/study_project:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/study_project:${{ github.sha }}
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/study_project:${{ github.sha }} \
+            .
+
+      - name: Push image
+        run: |
+          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/study_project
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}
 
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
+    # main 브랜치에 push된 경우에만 실제 배포 (PR에서는 build만)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.0
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      - uses: actions/checkout@v4
+
+      - name: Copy compose & prometheus config to server
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.OCI_HOST }}
           username: ${{ secrets.OCI_USER }}
           key: ${{ secrets.OCI_SSH_KEY }}
-          envs: DOCKERHUB_USERNAME
+          source: "docker-compose-prod.yml,prometheus-prod.yml"
+          target: "~/app"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.OCI_HOST }}
+          username: ${{ secrets.OCI_USER }}
+          key: ${{ secrets.OCI_SSH_KEY }}
           script: |
-            cd ~/
-            git pull origin main
-            echo "${{ secrets.ENV }}" | base64 --decode > .env
-            echo ${{ secrets.APPLICATION_SECRET }} | base64 --decode > ./src/main/resources/application-prod.yml
+            cd ~/app
+
+            echo "${{ secrets.ENV }}" | base64 --decode > ./.env
+
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
             docker compose -f docker-compose-prod.yml pull backend
             docker compose -f docker-compose-prod.yml up -d
+
             docker image prune -f
