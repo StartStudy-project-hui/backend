@@ -1,8 +1,8 @@
 services:
   db:
+    image: mysql
     env_file:
       - .env
-    image: mysql
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -42,8 +42,29 @@ services:
     container_name: app
     networks:
       - springboot-mysql-net
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus-prod.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    networks:
+      - springboot-mysql-net
+      - monitoring
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
 
 
 networks:
   springboot-mysql-net:
+    driver: bridge
+  monitoring:
     driver: bridge
