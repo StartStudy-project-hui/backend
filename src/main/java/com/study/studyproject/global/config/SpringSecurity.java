@@ -119,9 +119,11 @@ public class SpringSecurity {
 
         http.authorizeHttpRequests(authorize ->
                 authorize
-                        .requestMatchers("/api/v*/board/member/**", "/api/v*/user/**", "/api/v*/postLike/**", "/api/v*/reply/**", "/api/v*/back-list-history/me").authenticated()
+                        .requestMatchers("/api/v*/reply/view/**").permitAll()
+                        .requestMatchers("/api/v*/board/member/**").authenticated()
                         .requestMatchers("/api/v*/admin/**", "/api/v*/back-list/admin/**", "/api/v*/back-list-history/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v*/reply/view/**", "/api/v*/", "/api/renew-token"
+                        .requestMatchers("/api/v*/user/**", "/api/v*/postLike/**", "/api/v*/reply/**", "/api/v*/back-list-history/me").authenticated()
+                        .requestMatchers("/api/v*/", "/api/renew-token"
                                 , "/api/v*/auth/**", "/api/v*/board/**", "/api/v*/view/post-like/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().permitAll()
