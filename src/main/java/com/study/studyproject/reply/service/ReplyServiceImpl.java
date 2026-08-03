@@ -48,13 +48,24 @@ public class ReplyServiceImpl implements ReplyService {
         List<ReplyInfoResponseDto> commentResponseDTOList = new ArrayList<>();
         Map<Long, ReplyInfoResponseDto> commentDTOHashMap = new HashMap<>();
 
-
+        // 1차: 모든 댓글을 먼저 DTO로 변환해 맵에 등록 (자식이 부모보다 먼저 처리되어도 안전하도록)
         comments.forEach(c -> {
             ReplyInfoResponseDto commentResponseDTO = convertReplyToDto(c);
             commentDTOHashMap.put(commentResponseDTO.getReplyId(), commentResponseDTO);
-            if (c.getParent() != null) // 자식일 경우
-                commentDTOHashMap.get(c.getParent().getId()).getChildren().add(commentResponseDTO);
-            else commentResponseDTOList.add(commentResponseDTO); // 부모일 경우
+        });
+
+        // 2차: 부모-자식 관계 연결. 부모가 목록에 없는 경우(데이터 불일치)에는 최상위로 취급
+        comments.forEach(c -> {
+            ReplyInfoResponseDto commentResponseDTO = commentDTOHashMap.get(c.getId());
+            ReplyInfoResponseDto parentDTO = c.getParent() != null
+                    ? commentDTOHashMap.get(c.getParent().getId())
+                    : null;
+
+            if (parentDTO != null) {
+                parentDTO.getChildren().add(commentResponseDTO);
+            } else {
+                commentResponseDTOList.add(commentResponseDTO);
+            }
         });
 
         return commentResponseDTOList;
