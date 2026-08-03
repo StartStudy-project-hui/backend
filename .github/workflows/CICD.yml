@@ -67,6 +67,7 @@ jobs:
             cd ~/app
 
             echo "${{ secrets.ENV }}" | base64 --decode > ./.env
+            echo "DEBUG .env md5: $(md5sum ./.env)"
 
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
