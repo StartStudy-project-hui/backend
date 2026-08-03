@@ -85,11 +85,9 @@ public class Reply extends BaseTimeEntity {
 
     public void updateParent(Reply parent) {
         this.parent = parent;
-         parent.getChildren().add(this);
+        parent.getChildren().add(this);
     }
 
-
-    //수정
     public void updateReply(String content) {
         this.content = content;
     }
@@ -99,7 +97,7 @@ public class Reply extends BaseTimeEntity {
         member.getReplies().add(this);
     }
 
-    public void UpdateBoard(Board board) {
+    public void updateBoard(Board board) {
         this.board = board;
         if (board.getReplies() != null) {
             board.getReplies().add(this);
@@ -111,15 +109,11 @@ public class Reply extends BaseTimeEntity {
     }
 
     public static boolean isReplies(List<Reply> replies) {
-        return replies.size() != 0;
+        return !replies.isEmpty();
     }
-
 
     public boolean hasChildrenReplies() {
-        return this.getChildren().size() != 0;
+        return !getChildren().isEmpty();
     }
-
-
-
 
 }
