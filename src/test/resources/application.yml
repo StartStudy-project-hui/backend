@@ -13,6 +13,12 @@ spring:
       host: localhost
       port: 6379
 
+  mail:
+    host: localhost
+    port: 1025
+    username: test
+    password: test
+
   datasource:
     url: jdbc:h2:tcp://localhost:1521/opt/h2-data/bookstore
     driver-class-name: org.h2.Driver

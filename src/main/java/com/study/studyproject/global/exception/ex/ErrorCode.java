@@ -23,6 +23,12 @@ public enum ErrorCode {
     NOT_FOUND_EMAIL("이메일은 필수입니다.", NOT_FOUND),
     INVALID_EMAIL("이메일 형식이 올바르지 않습니다.", BAD_REQUEST),
 
+    // 이메일 인증
+    EMAIL_CODE_COOLDOWN("인증번호 재전송은 60초 후에 가능합니다.", BAD_REQUEST),
+    EMAIL_CODE_NOT_FOUND("인증번호를 요청하지 않았거나 만료되었습니다. 다시 요청해주세요.", BAD_REQUEST),
+    EMAIL_CODE_MISMATCH("인증번호가 일치하지 않습니다.", BAD_REQUEST),
+    EMAIL_NOT_VERIFIED("이메일 인증이 완료되지 않았습니다.", BAD_REQUEST),
+
     //관심글
     POST_LIKE_DUPLICATED("관심글이 이미 추가하였습니다.", BAD_REQUEST),
 

@@ -47,6 +47,19 @@ spring:
       port: 6379
       lettuce:
         shutdown-timeout: 100ms  # 연결 종료 대기 시간
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        transport:
+          protocol: smtp
   security:
     oauth2:
       client:

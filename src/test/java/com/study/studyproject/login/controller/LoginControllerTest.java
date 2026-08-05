@@ -1,6 +1,8 @@
 package com.study.studyproject.login.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.study.studyproject.global.hash.HashUtil;
+import com.study.studyproject.login.email.service.EmailVerificationService;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.global.jwt.JwtUtil;
 import com.study.studyproject.login.dto.LoginRequest;
@@ -13,10 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
 
 import static com.study.studyproject.login.domain.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,9 +49,17 @@ class LoginControllerTest {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
+
     @AfterEach
     void tearDown() {
         memberRepository.deleteAllInBatch();
+    }
+
+    private void markEmailVerified(String email) {
+        String key = EmailVerificationService.VERIFIED_KEY_PREFIX + HashUtil.sha256(email);
+        redisTemplate.opsForValue().set(key, "true", Duration.ofMinutes(30));
     }
 
     @Test
@@ -58,9 +71,11 @@ class LoginControllerTest {
         SignRequest signRequest = SignRequest.builder()
                 .name("김하임")
                 .email("jacom2@naver.com")
+                .nickname("닉네임1")
                 .pwd("!12341234")
                 .checkPwd("!12341234")
                 .build();
+        markEmailVerified(signRequest.getEmail());
 
 
         //when then
@@ -84,6 +99,7 @@ class LoginControllerTest {
 
         SignRequest signRequest = SignRequest.builder()
                 .email("jacom2@naver.com")
+                .nickname("닉네임1")
                 .pwd("!12341234")
                 .checkPwd("!12341234")
                 .build();
@@ -107,6 +123,29 @@ class LoginControllerTest {
         SignRequest signRequest = SignRequest.builder()
                 .name("김하")
                 .email("jacom2@naver.com")
+                .nickname("닉네임1")
+                .build();
+
+        //when & then
+        mockMvc.perform(post("/api/v1/auth/sign")
+                        .content(objectMapper.writeValueAsString(signRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("이메일 인증을 하지 않은 경우, 회원 가입에 실패한다.")
+    void signWithoutEmailVerification() throws Exception {
+
+        //given
+        SignRequest signRequest = SignRequest.builder()
+                .name("김하임")
+                .email("jacom3@naver.com")
+                .nickname("닉네임1")
+                .pwd("!12341234")
+                .checkPwd("!12341234")
                 .build();
 
         //when & then

@@ -19,6 +19,9 @@ public class SignRequest {
     @jakarta.validation.constraints.Email
     private String email;
 
+    @NotBlank(message = "닉네임을 입력해주세요")
+    private String nickname;
+
     @NotBlank(message = "비밀번호를 입력해주세요")
     private String pwd;
 
@@ -26,9 +29,10 @@ public class SignRequest {
     private String checkPwd;
 
     @Builder
-    public SignRequest(String name, String email, String pwd, String checkPwd) {
+    public SignRequest(String name, String email, String nickname, String pwd, String checkPwd) {
         this.name = name;
         this.email = email;
+        this.nickname = nickname;
         this.pwd = pwd;
         this.checkPwd = checkPwd;
     }
@@ -39,11 +43,5 @@ public class SignRequest {
         }
         return false;
     }
-
-
-    public String getNickname(){
-        return email.split("@")[0];
-    }
-
 
 }

@@ -1,5 +1,6 @@
 package com.study.studyproject.login.service;
 
+import com.study.studyproject.global.exception.ex.BadRequestException;
 import com.study.studyproject.global.exception.ex.DuplicateException;
 import com.study.studyproject.global.exception.ex.TokenNotValidationException;
 import com.study.studyproject.login.domain.PasswordEncoder;
@@ -13,6 +14,7 @@ import com.study.studyproject.login.dto.LoginRequest;
 import com.study.studyproject.login.dto.LoginResponseDto;
 import com.study.studyproject.login.dto.SignRequest;
 import com.study.studyproject.login.dto.TokenDtoResponse;
+import com.study.studyproject.login.email.service.EmailVerificationService;
 import com.study.studyproject.login.repository.RefreshRepository;
 import com.study.studyproject.member.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,6 +38,7 @@ public class LoginService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final EmailVerificationService emailVerificationService;
     public static final String ACCESS_TOKEN = "Access_Token";
 
 
@@ -75,6 +78,7 @@ public class LoginService {
 
         Member member = Member.toEntity(signRequest, passwordEncoder);
         memberRepository.save(member);
+        emailVerificationService.clearVerification(signRequest.getEmail());
         return new GlobalResultDto("회원가입 성공", HttpStatus.OK.value());
 
     }
@@ -86,6 +90,10 @@ public class LoginService {
         //중복 확인
         if (isPresentEmail(signRequest)) {
             throw new DuplicateException(MEMBER_DUPLICATED);
+        }
+        //이메일 인증 확인
+        if (!emailVerificationService.isVerified(signRequest.getEmail())) {
+            throw new BadRequestException(EMAIL_NOT_VERIFIED);
         }
     }
 
