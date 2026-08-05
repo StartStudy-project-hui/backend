@@ -1,337 +1,247 @@
 <div align="center">
 
-###  Start Study
-개발자들을 위한 온라인 스터디 플랫폼
+# Start Study — Backend
+
+개발자를 위한 온라인 스터디 매칭 플랫폼 · REST API 서버
+
+![CI/CD](https://github.com/StartStudy-project/Backend/actions/workflows/CICD.yml/badge.svg?branch=develop)
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.1-brightgreen)
+![License](https://img.shields.io/badge/build-Gradle-blue)
 
 </div>
 
-![example branch parameter](https://github.com/StartStudy-project/Backend/actions/workflows/CICD.yml/badge.svg?branch=develop)
 
-### 초기 데이터
-```
-아이디 : admin@naver.com 
-pwd : Y@3r9o$7aaak
 
-아이디 kimSky@naver.com
-pwd :Y@3r9o$7k
-```
-## commit-message
-- feat: 새로운 기능 추가, 요구 사항 변경으로 인해 기존 기능 변경
-- fix: 버그 수정
-- docs: 문서 추가 및 수정 (주석 등)
-- style: 코드 스타일 수정 (포매팅, 세미콜론 누락 등)
-- refactor: 프로덕션 코드 리팩토링 (버그 수정이나 기능 추가를 제외한 코드 변경)
-- test: 테스트 코드 추가 및 리팩토링 (기능을 구현할 때 테스트 코드를 함께 작성했다면 feat 사용)
-- chore: 빌드, 배포 등 기타 작업들을 추가 및 수정
-- rename: 파일명 변경
-- remove: 파일 삭제
-- revert: 작업 되돌리기
+## 목차
+
+- [프로젝트 소개](#프로젝트-소개)
+- [사용자 요구사항](#사용자-요구사항)
+- [핵심 기능](#핵심-기능)
+- [서비스 화면](#서비스-화면)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [API 문서](#api-문서)
+- [테스트](#테스트)
+- [커밋 컨벤션](#커밋-컨벤션)
 
 ## 프로젝트 소개
 
-온라인 스터디 플랫폼으로 스터디 그룹을 쉽게 생성하고 참여할 수 있도록 하며, 사용자가 스터디를 개최하고 참여함으로써 지속적인 학습과 커뮤니티 형성을 지원하다.
-개발자들에게는 스터디는 지식공유와 함께 성장의 핵심 요소 중 하나여서 많은 개발자들은 스터디를 이용한다. 이 플랫폼을 통해 프로젝트를 통해 인원을 모으거나 cs공부, 코딩테스트 공부 등 지속적인 성장을 할 수 있도록 지원한다.
-
-
-## 프로젝트 핵심 기능
-
-- 코딩테스트와 프로젝트, cs, 기타 카테고리를 나눔으로써 사용자가 필요한 스터디를 찾기 쉽도록 구성.
-- 관심 게시글을 등록하면 마이페이지에 저장.
-## Swagger
-
-<details><summary style="color:skyblue"> Swagger </summary>
-
- ![image](https://github.com/user-attachments/assets/8d9dedb8-4495-4bc2-9e61-afdb7f04c1ed)
- ![image](https://github.com/user-attachments/assets/dda24443-3bb6-4239-ab2e-c45d50e748bf)
- ![image](https://github.com/user-attachments/assets/f33614c6-8c55-42ea-9c60-d37777c7fdaf)
-
-
-
-</details>
+**Start Study**는 CS / 코딩테스트 / 프로젝트 / 기타 카테고리로 스터디 게시글(`board`)을 등록하고, 온라인·오프라인(카카오맵 위치 기반) 모집 방식을 선택해 스터디원을 모으는 커뮤니티형 플랫폼의 백엔드입니다. 게시글에는 계층형 댓글(`reply`)과 관심글 저장(`postlike`) 기능이 있으며, 관리자용 회원/게시글 관리와 반복 위반자에 대한 블랙리스트(`blacklist`) 자동 제재 로직을 포함합니다.
 
 ## 사용자 요구사항
+
 [사용자 요구사항 확인하러 가기](https://github.com/StartStudy-project-hui/backend/wiki/%EC%82%AC%EC%9A%A9%EC%9E%90-%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD)
 
+## 핵심 기능
 
-## 서비스 화면
-|           메인화면                   |                        회원가입                    |     
-| :------------------------------------------: | :------------------------------------------------: |
-| <img width="100%" src="https://github.com/user-attachments/assets/b7c18dbc-2647-4e15-8c95-db4ecfd959e6"/> | <img width="100%" src="https://github.com/Study-Blog-Project/Backend/assets/70208747/378f02a9-3614-435f-a33e-b8b3971862af"/> | 
-
-|           비회원                   |                        상세페이지[관리자]               | 
-| :------------------------------------------: | :------------------------------------------------: |
-| <img width="100%" src="https://github.com/Study-Blog-Project/Backend/assets/70208747/fd45bba1-964d-4393-b86b-6978dea5de2d"/> | <img width="100%" src="https://github.com/Study-Blog-Project/Backend/assets/70208747/691cd102-caee-4813-ac92-fea20673d652"/> | 
-
-|           게시글 상세(자신 게시글)                   |                        게시글 상세(타인 게시글)   |     
-| :------------------------------------------: | :------------------------------------------------: |
-| <img width="100%" src="https://github.com/Study-Blog-Project/Backend/assets/70208747/87dfe5a5-8355-4202-bd70-bd4bf4597a58"/> | <img width="100%" src="https://github.com/Study-Blog-Project/Backend/assets/70208747/d8eacf3e-39e8-4e6e-a0bf-c1f99fa32a81"/> | 
-
-|         글쓰기[모든 사용자]                   |                        마이페이지[모든 사용자]   |     
-| :------------------------------------------: | :------------------------------------------------: |
-| <img width="100%" src="https://github.com/Study-Blog-Project/Backend/assets/70208747/3fbdc79f-8c60-49cc-b4fd-0ee5c19f3161"/> | <img width="100%" src="https://github.com/Study-Blog-Project/Backend/assets/70208747/f4f264eb-37c9-4e55-b7a1-7a445d2a1f2a"/> | 
-
-
-|         회원정보[관리자]                   |                        전체글[관리자]   |     
-| :------------------------------------------: | :------------------------------------------------: |
-| <img width="100%" src="https://github.com/Study-Blog-Project/Backend/assets/70208747/9e2ae7b6-39b4-40a0-be28-3254825aa56d"/> | <img width="100%" src="https://github.com/Study-Blog-Project/Backend/assets/70208747/17d1e869-d8cb-4181-bff3-cb22efbd9241"/> | 
-
-
-## 기술 스택
-
-### BackEnd
-![image](https://github.com/Study-Blog-Project/Backend/assets/70208747/68a1c916-288d-4191-bdca-37ae241b5cc5)
-
+| 영역 | 기능 |
+| --- | --- |
+| **인증** | 자체 회원가입/로그인(BCrypt), 이메일 인증(SMTP), 카카오·네이버 소셜 로그인, JWT 발급/재발급(Access·Refresh Token) |
+| **게시글** | 카테고리(CS/코테/프로젝트/기타) · 온라인/오프라인(카카오맵) · 모집상태 CRUD, QueryDSL 동적 검색/정렬(최신순·인기순), 조회수(쿠키 기반 중복 방지) |
+| **댓글** | 부모-자식 대댓글 구조, 소프트 삭제(`orphanRemoval`을 활용한 계단식 정리) |
+| **관심글** | 게시글 북마크 등록/삭제, 마이페이지에서 내가 쓴 글·찜한 글 조회 |
+| **모더레이션** | 관리자 게시글 삭제(내용 마스킹), 회원 검색/조회, 위반 이력 기반 자동 블랙리스트(3회 위반 시 영구 정지) |
+| **인프라** | Redis 캐시(블랙리스트 조회 5분 캐시, SHA-256 이메일 해시 키), Actuator + Prometheus/Grafana 모니터링 |
 
 ### Infra
 ![image](https://github.com/user-attachments/assets/43f3ecb6-30fc-4d11-b1cf-f60e87437ae3)
 
+**Language / Framework**
+- Java 17, Spring Boot 3.2.1
+- Spring Web, Spring Security, Spring Data JPA, Spring Validation, Spring Mail
+- OAuth2 Client (Kakao / Naver 소셜 로그인)
 
-## 프로젝트 아키텍처
-![starstudy drawio](https://github.com/user-attachments/assets/ebf859ff-b08f-4b9c-9950-9aabe78856d6)
+**Data**
+- MySQL 8 (운영), H2 — TCP server mode (로컬 개발)
+- QueryDSL 5.0 — 동적 쿼리 (검색/정렬/페이징)
+- Redis (Spring Data Redis) — 블랙리스트 캐시
+
+**인증/보안**
+- JJWT 0.11.5 (JWT 발급/검증)
+- BCryptPasswordEncoder, SHA-256(이메일 해싱)
+
+**인프라 / DevOps**
+- Docker, Docker Compose (로컬: H2+Redis / 운영: MySQL+Redis)
+- GitHub Actions (`backend/.github/workflows/CICD.yml`)
+- Prometheus + Grafana (메트릭 수집/대시보드)
+- springdoc-openapi (Swagger UI)
+
+**Test**
+- JUnit 5, spring-security-test
+- Jacoco (라인 커버리지 80% 이상 강제, `domain`/`global`/generated Q클래스 제외)
 
 
 
-## 백엔드 아키텍처 
-![image](https://github.com/user-attachments/assets/652126b7-a382-416a-ade8-671ec8e3ada9)
 
+## Getting Started
 
-### CI/CD
-![image](https://github.com/Study-Blog-Project/Backend/assets/70208747/339ad38b-8d54-4dcd-960c-e542c751169b)
+### 1. 사전 준비
 
-## 주요 기능
+- JDK 17
+- Docker / Docker Compose (H2·Redis·모니터링 스택 실행용)
 
-<table align="center"><!-- 팀원 표 -->
-  <tr>
-   <th>
-    공통
-   </th>
-   <th>
-    사용자
-   </th>
-   <th >
-    관리자
-   </th>
-   </tr>
-  <tr>
-   <td align="left" width="350px" class="공통">
-    - 회원가입
-     <br/>
-    - 일반 로그인
-    <br/>
-    - 네이버, 카카오 소셜 로그인 연동
-    <br/>
-    - 메인 페이지 게시글 조회 기능
-         <br/>
-    - 게시글 상세 조회 및 댓글 조회 기능
-   </td>
-   <td align="left" width="350px" class="사용자 및 관리자">
-    - 게시글 관리 
-    <br/>
-    - 관심 게시글 및 내가 작성한 게시글 조회 
-    <br/>
-    - 사용자 정보 조회 및 수정 기능
-       <br/>
-    - 댓글 관리 
-   </td>
-   <td align="left" width="350px" class="관리자">
-    - 사용자 전체 게시글 조회 기능
-    <br/>
-    - 회원 정보 조회 기능 
-    <br/>
-    - 사용자 게시글 삭제 기능
-   </td>
-  </tr>
-</table>
+### 2. 환경 변수 설정
 
-## 구현 기능
+`backend/.env.example`을 참고하여 `.env` 파일을 프로젝트 루트(`backend/`)에 생성합니다.
 
-### 공통
+```bash
+cp .env.example .env
+```
 
-<details>
-  <summary>회원 가입 및 로그인, 로그아웃 기능</summary>
+```dotenv
+# Kakao OAuth2
+KAKAO_CLIENT_ID=발급받은_카카오_REST_API_키
+KAKAO_CLIENT_SECRET=카카오_클라이언트_시크릿
+KAKAO_REDIRECT_URI=http://localhost:8000/login/oauth2/code/kakao
+KAKAO_REDIRECT_URI_DEV=개발서버용_리다이렉트_URI
 
-- **구현 기능** <br>
-    - 사용자 회원 가입
-    - 일반 로그인과 로 네이버, 카카오 소셜 로그인 연동
-    - 로그아웃 기능
+# Naver OAuth2
+NAVER_CLIENT_ID=발급받은_네이버_클라이언트_ID
+NAVER_CLIENT_SECRET=네이버_클라이언트_시크릿
+NAVER_REDIRECT_URI=http://localhost:8000/login/oauth2/code/naver
+NAVER_REDIRECT_URI_DEV=개발서버용_리다이렉트_URI
 
-- **구현 방법** <br>
-    - 회원 가입 : 사용자 회원 정보를 받아 DB 저장
-      - 회원가입 : ```BCryptPasswordEncoder```를 이용하여 단방향 해시 암호화
-      - 비밀번호와 비밀번호 확인이 같은지 체크
-      - 이미 가입한 회원인지 확인
-    - 로그인 : 로그인 양식을 받아 DB의 비밀번호와 같은지 확인 후, Access Token, Refresh Token 발급
-    - 네이버, 카카오 소셜 로그인 연동
-      - 성공 시, 메인으로 이동하며 loginSuccess=true 표시 및 Access Token, Refresh Token 발급
-      - 실패 시, 메인으로 이동하며 loginSuccess=false 표시
-    - 로그아웃: 로그아웃 요청 시, Refresh Token 제거
-</details>
+# JWT
+JWT_SECRET=최소_256bit_이상의_임의_문자열
 
-<details>
-  <summary> Spring Security, JWT 발급 및 재발급 </summary>
+# 이메일 인증 (SMTP, Gmail 기준)
+MAIL_USERNAME=발신용_지메일_주소
+MAIL_PASSWORD=Gmail_앱_비밀번호
+```
 
-- **구현 기능** <br>
-    - Spring Security, JWT 발급
-    - JWT토큰 재발급
-- **구현 방법** <br>
-    - JWT
-      - 로그인 시,  Refresh Token DB에 저장
-      - Access Token 재발급
-        ```/renew-token```로 요청
-          1.  기존 Access Token과 Refresh Token 일치하는 지 비교
-              - 기존 Access Token이 만료되었다면
-              - Access Token 재발급하여 header에 Access Token과 Refresh Token 전송
-          3.  둘다 만료가 되지 않았다면
-              - header에 기존의 Access Token과 Refresh Token 전송
-          4.  Refresh Token도 만료되었을 경우
-              - "토큰이 만료되었습니다. 다시 로그인해주세요" 예외 발생
-          
-  - Spring Security 
-    - 사용자, 관리자 권한 설정하여 API 요청에 따라 접근 제어
-</details>
+> 소셜 로그인 키는 각 [Kakao Developers](https://developers.kakao.com) / [Naver Developers](https://developers.naver.com) 콘솔에서 발급받고, 리다이렉트 URI는 콘솔에 등록된 값과 일치해야 합니다.
 
-<details>
-  <summary> 메인 페이지 게시글 조회 기능</summary>
+### 3. 로컬 인프라 실행 (H2 + Redis + 모니터링)
 
-- **구현 기능** <br>
-    - 모집 중인 게시글 조회 기능
-    - 카테고리는 기타, CS, 전체, 코테, 프로젝트로 조회 가능
-    - 조회 순서는 최신순, 인기순으로 조회 가능
-    - 오프라인/온라인 여부 : 전체, 온라인, 오프라인
-- **구현 방법** <br>
-    - 기본 정렬은 최신순으로 조회되며, 카테고리는 전체 조회로 됨
-    - 기본 정렬은 전체로 조회됨.
-    - 카테고리 및 주문 순서 별 게시글 조회
-      - 카테고리 및 주문 순서에 대한 정보를 받아 Querydsl 동적 쿼리를 이용하여 모집중인 게시글만 조회
-    -  `PageableExecutionUtils` 사용하여 페이징 처리하여 게시글 조회
-    - null값을 이용하여 동적 쿼리를 이용하여 게시 조회
-    - 서브 쿼리를 이용하여 댓글 수 조회
-    - board테이블과 join하여 조회수 조회
-    - 10개씩 게시글 조회가 되며,  크기 조절 가능</details>
+```bash
+docker-compose up -d
+```
 
-<details>
-  <summary> 게시글 상세 조회 및 댓글 조회 기능 </summary>
+- H2 TCP: `1521` (DB 연결) / `8081` (웹 콘솔)
+- Redis: `6380` → 컨테이너 내부 `6379`
+- Prometheus: `9090`, Grafana: `3000` (초기 관리자 비밀번호 `admin`)
 
-- **구현 기능** <br>
-    - 게시글 상세 조회 및 댓글 조회 기능
-- **구현 방법** <br>
-    - 쿠키를 통해 조회수 중복 방지
-    - 게시글 번호를 이용하여 DB에서 select
-    - Access Token이 존재하는 경우,  사용자의 Id를 통해 해당 게시글이 관심 게시글인지 판단
-    - 댓글 조회 기능
-      - 해당 게시글 댓글들 가져오기
-      - 댓글들 중에서 내 댓글인지 확인 및 삭제된 댓글인지 확인 
-</details>
+`docker-compose.yml`은 앱 컨테이너(`Dockerfile-dev`)도 함께 띄웁니다. **애플리케이션만 로컬에서 직접 실행**하려면 `springboot` 서비스를 제외하고 `db`/`redis`만 올려도 됩니다:
 
-###  사용자
+```bash
+docker-compose up -d db redis
+```
 
-<details>
-  <summary> 게시글 관리  </summary>
+### 4. 서버 실행
 
-- **구현 기능** <br>
-    - 게시글 등록 , 수정 , 삭제  및 모집 여부 변경 기능
-- **구현 방법** <br>
-    - 게시글 등록
-      - 게시글 등록 정보를 받아, DB에 게시글 등록
-    - 게시글 수정
-      - 수정할 카테고리 및 제목, 내용에 대한 정보를 받아 존재하는 게시글인지 판단 후, DB 수정
-    - 게시글 삭제
-      - 댓글 또는 관심글이 있는 게시글일 경우, DB에서 삭제 불가
-      - 댓글 또는 관심글이 없는 게시글일 경우, DB에서 삭제 가능
-    - 모집 여부 수정
-      - 모집 구분( 모집중, 모집완료 )
-      - 수정할 모집 구분에 대한 정보를 제공 받아, 게시글이 존재하는지 검사 후  수정
-</details>
-<details>
-  <summary> 관심 게시글 및 내가 작성한 게시글 조회   </summary>
+```bash
+./gradlew bootRun          # macOS/Linux, Git Bash
+gradlew.bat bootRun        # Windows(cmd/PowerShell)
+```
 
-- **구현 기능** <br>
-    - 게시글 등록 , 수정 , 삭제  및 모집 여부 변경 기능
-    - 관심 게시글 조회, 등록, 삭제 기능 및 내가 작성한 게시글 조회
-      - 관심 게시글 조회 및 내가 작성한 게시글 조회
-      - 카테고리는 기타, CS, 전체, 코테, 프로젝트 조회
-      - 조회 순서는 최신순, 인기순으로 조회 
-  
-- **구현 방법** <br>
-    - 관심 게시글 조회 및 내가 작성한 게시글 조회
-      - 기본 정렬은 카테고리는 전체, 조회 순서는 최신순, 모집 여부는모집중, 모집완료로 조회
-      - 모집 여부, 카테고리, 주문 순서에 대한 정보를 받고, Access Token을 통해 현재 사용자 정보에 대해 제공 받아 Querydsl의  `PageableExecutionUtils`이용하여 페이징 처리
-      - null값을 이용하여 동적 쿼리를 이용하여 게시글 조회
-      - 서브 쿼리를 이용하여 댓글 수 조회
-      - board와 join하여 조회수 조회
-      - 10개씩 게시글 조회되며, 크기 조절 가능
-</details>
+기본 활성 프로필은 `local`이며, 기동 시 `data.sql`이 매번 재실행되어 초기 데이터를 시딩합니다(`ddl-auto: create-drop`). 로컬 서버 포트는 `8000`입니다 → `http://localhost:8000`.
 
-<details>
-  <summary> 사용자 정보 조회 및 수정 기능 </summary>
+**초기 계정**
 
-- **구현 기능** <br>
-    - 사용자 정보 조회 및 수정 기능
-- **구현 방법** <br>
-    - 사용자 정보 조회
-      - Access Token을 통해 현재 사용자가 있는지 검사 후, 정보 조회
-    - 사용자 정보 수정
-      - 사용자 정보 수정 관련 데이터를 받아 사용자가 있는지 검사 후, 사용자 정보 수정
-</details>
-<details>
-  <summary> 댓글 관리  </summary>
+| 구분 | 이메일 | 비밀번호 |
+| --- | --- | --- |
+| 관리자 | `admin@naver.com` | `Y@3r9o$7aaak` |
+| 일반 사용자 | `kimSky@naver.com` | `Y@3r9o$7k` |
 
-- **구현 기능** <br>
-    - 댓글 등록, 수정, 삭제 기능
-- **구현 방법** <br>
-    - 댓글 등록
-      - 게시글 번호와 부모 댓글 번호, 댓글 내용에 대한 정보를 받는다.
-      - 부모 댓글이 null이 아닌 경우,  대댓글로 작성되어 DB에 Insert한다.
-    - 댓글 수정
-      - 댓글 번호와 내용에 대한 정보를 받아 해당 댓글을 DB에 Update한다.
-    - 댓글 삭제
-      -   선택한 해당 댓글 번호에 대한 정보를 받아 해당 댓글과 부모 댓글을 fetch join을 이용하여 한꺼번에 가져온다.
-      -   해당 댓글에 대댓글이 있는 상태라면, 해당 댓글을 삭제 여부 컬럼에서 TURE로 DB에 Update한다
-      -   해당 댓글에 대댓글이 없다면, 부모 댓글 DB에서 삭제한다.
-      -   orphanRemoval = true 로 부모 댓글이 삭제되면 해당 댓글도 삭제된다.
-</details>
+### 5. 빌드
 
-### 관리자
-<details>
-  <summary> 사용자 전체 게시글 조회 기능  </summary>
+```bash
+./gradlew build                 # 컴파일 + 테스트 + jar 빌드
+./gradlew clean bootJar -x test # CI가 배포용 jar를 만들 때 쓰는 명령 (테스트 생략)
+```
 
-- **구현 기능** <br>
-    - 사용자 전체 게시글 조회 기능
-      - 모집 여부는 모집중, 모집완료 및 둘 다(모집중, 모집완료) 로 조회 가능
-      - 카테고리는 기타, CS, 전체, 코테, 프로젝트로 조회 가능
-      - 조회 순서는 최신순, 인기순으로 조회 가능
-- **구현 방법** <br>
-  - 전체 게시글 조회 기능
-    - 기본 정렬은 카테고리는 전체, 조회 순서는 최신순, 모집 여부는모집중, 모집완료 모두 조회
-    - 모집 여부, 카테고리, 주문 순서에 대한 정보를 받고 Querydsl의 `PageableExecutionUtils`이용하여 페이징 처리
-    - null값을 이용하여 동적 쿼리를 이용하여 게시글 조회
-    - 서브 쿼리를 이용하여 댓글 수 조회
-    - board와 join을 조회수 조회
-    - 10개 씩 게시글 조회되며, 크기 조절 가능
-</details>
-<details>
-  <summary> 사용자 게시글 삭제 기능   </summary>
+## API 문서
 
-- **구현 기능** <br>
-    - 관리자가  사용자 게시글 삭제하는 기능
-- **구현 방법** <br>
-    - 해당 게시글 번호에 대한 정보를 제공 받아 게시글이 있는지 판단한다.
-    - 해당 게시글을 삭제여부커럼에 True라고 DB에 Update
-    - 게시글의 제목을 “관리자로 의해 게시글 삭제” 로 DB에 Update
-    - 게시글 내용을  “관리자로 의해 게시글 삭제되었습니다.”로 DB에 Update
+애플리케이션 기동 후 Swagger UI에서 전체 스펙을 확인할 수 있습니다.
 
-</details>
-<details>
-  <summary> 회원 정보 조회 기능   </summary>
+```
+http://localhost:8000/swagger-ui/index.html
+```
 
-- **구현 기능** <br>
-    - 회원 정보 전체 조회 및 특정 문자열에 시작하는 모든 회원 정보 제공
-- **구현 방법** <br>
-    - Querydsl의 동적 쿼리를 null값을 이용하여 회원 정체를 제공 받거나 startsWith()를 이용하여 특정 문자열에 시작되는 사용자 정보 조회
-</details>
+### 주요 엔드포인트
+
+`접근` 컬럼은 `SpringSecurity.java`의 `authorizeHttpRequests` 규칙(경로 패턴이 순서대로 평가되며 먼저 매칭되는 규칙이 적용됨) 기준입니다.
+
+| 경로 | 설명 | 접근 |
+| --- | --- | --- |
+| `POST /api/v1/auth/sign` | 회원가입 | 공개 |
+| `POST /api/v1/auth/login` | 로그인 (Access/Refresh 발급) | 공개 |
+| `POST /api/v1/auth/service-logout` | 로그아웃 | 공개† |
+| `POST /api/renew-token` | Access Token 재발급 | 공개† |
+| `POST /api/v1/auth/email/send-code` | 이메일 인증코드 발송 | 공개 |
+| `POST /api/v1/auth/email/verify-code` | 이메일 인증코드 검증 | 공개 |
+| `GET /api/v1/` | 메인 게시글 목록 (카테고리/정렬/온·오프라인 필터, 페이징) | 공개 |
+| `GET /api/v1/board/{boardId}` | 게시글 상세 조회 | 공개 |
+| `POST /api/v1/board/{boardId}` | 조회수 증가 처리(쿠키 기반 중복 방지) | 공개 |
+| `POST /api/v1/board/member` | 게시글 등록 | 인증 필요 |
+| `PATCH /api/v1/board/member` | 게시글 수정 | 인증 필요 |
+| `PATCH /api/v1/board/member/recruit/{boardId}` | 모집 상태 변경 | 인증 필요 |
+| `DELETE /api/v1/board/member/{boardId}` | 게시글 삭제 | 인증 필요 |
+| `GET /api/v1/reply/view/{boardId}` | 댓글 목록 조회 | 공개 |
+| `POST /api/v1/reply` | 댓글 등록 | 인증 필요 |
+| `PATCH /api/v1/reply` | 댓글 수정 | 인증 필요 |
+| `DELETE /api/v1/reply/{rno}` | 댓글 삭제 | 인증 필요 |
+| `GET /api/v1/view/post-like/{boardId}` | 관심글 여부 조회 | 공개‡ (비로그인 시 `null` 응답) |
+| `POST /api/v1/post-like/{boardId}` | 관심글 등록 | 공개§ (컨트롤러는 로그인 전제) |
+| `DELETE /api/v1/post-like/{postLikeId}` | 관심글 삭제 | 공개§ (컨트롤러는 로그인 전제) |
+| `GET /api/v1/user/info` | 내 정보 조회 | 인증 필요 |
+| `PATCH /api/v1/user/info` | 내 정보 수정 | 인증 필요 |
+| `GET /api/v1/user/lists` | 내가 쓴 글 목록 | 인증 필요 |
+| `GET /api/v1/user/post-likes` | 찜한 글 목록 | 인증 필요 |
+| `GET /api/v1/admin/user-all` | 회원 전체 조회 | 인증 필요 (ROLE_ADMIN) |
+| `GET /api/v1/admin/dash-board` | 관리자 대시보드 | 인증 필요 (ROLE_ADMIN) |
+| `DELETE /api/v1/admin/board/{boardId}` | 게시글 강제 삭제 | 인증 필요 (ROLE_ADMIN) |
+| `GET /api/v1/back-list/admin` | 블랙리스트 조회 | 인증 필요 (ROLE_ADMIN) |
+| `POST /api/v1/back-list/admin` | 블랙리스트 등록 | 인증 필요 (ROLE_ADMIN) |
+| `PATCH /api/v1/back-list/admin/{id}` | 블랙리스트 제재 수정 | 인증 필요 (ROLE_ADMIN) |
+| `PATCH /api/v1/back-list/admin/{id}/permanent` | 블랙리스트 영구정지 처리 | 인증 필요 (ROLE_ADMIN) |
+| `DELETE /api/v1/back-list/admin/{id}` | 블랙리스트 해제 | 인증 필요 (ROLE_ADMIN) |
+| `GET /api/v1/back-list-history/admin/**` | 제재 이력 전체/개별 조회 | 인증 필요 (ROLE_ADMIN) |
+| `GET /api/v1/back-list-history/me` | 내 제재 이력 조회 | 인증 필요 |
+
+- † `/api/v*/auth/**`가 통째로 `permitAll`이라 로그아웃도 Security 레이어에서는 공개입니다. 대신 컨트롤러가 `Access_Token`/`Refresh_Token` 헤더 값을 직접 읽어 `LogoutService`/`LoginService`에서 유효성을 검사합니다. `/api/renew-token`은 만료된 Access Token이 들어오는 것이 정상이므로 `JwtFilter`가 검증 자체를 건너뜁니다.
+- ‡ `PostLikeController.postLikeView`가 `Role.isAnonymous()`를 직접 체크해 비로그인 요청엔 `null`을 반환하도록 만들어져 있어 실질적으로 선택적 인증처럼 동작합니다.
+- § **주의(코드 확인 결과)**: Security 설정은 `/api/v*/postLike/**`(카멜케이스)를 `authenticated`로 막고 있지만, 실제 컨트롤러 경로는 `/api/v1/post-like/**`(하이픈)입니다. 패턴이 일치하지 않아 이 규칙이 적용되지 않고 맨 아래 `anyRequest().permitAll()`로 빠집니다. 즉 관심글 등록/삭제는 Security 레이어에서 인증이 강제되지 않으며, 컨트롤러의 `@CurrentUser`가 비로그인 요청에서 예외를 던질 수 있는 잠재적 이슈입니다.
+
+> 전체 요청·응답 스키마는 Swagger UI 기준이 최신입니다. `인증 필요` 엔드포인트는 로그인/재발급 API로 받은 토큰을 `Authorization: Bearer` 헤더가 아니라 **`Access_Token`**(및 필요 시 `Refresh_Token`) 커스텀 헤더에 `Bearer {token}` 형식으로 담아 전송하세요(`JwtUtil.ACCESS_TOKEN`/`REFRESH_TOKEN`).
+
+### 모니터링
+
+- Actuator: `http://localhost:8000/actuator` (`health,info,metrics,env,loggers,prometheus` 노출)
+
+## 테스트
+
+```bash
+./gradlew test
+```
+
+- 특정 클래스만 실행: `./gradlew test --tests "com.study.studyproject.board.service.BoardServiceTest"`
+- 특정 메서드만 실행: `./gradlew test --tests "com.study.studyproject.board.service.BoardServiceTest.methodName"`
+- 테스트는 `src/main`의 도메인 구조를 그대로 미러링합니다 (`<domain>/{controller,service,repository}`).
+- 테스트 실행 후 `jacocoTestReport`가 자동으로 뒤따라 실행되며, 커버리지 리포트는 `build/reports/jacoco`에 생성됩니다.
+
+```bash
+./gradlew jacocoTestCoverageVerification
+```
+
+라인 커버리지 최소 80%를 강제합니다(`InitData*`, `*Application`, `domain.**`, `global.**`, QueryDSL Q클래스 제외).
+
+## 커밋 컨벤션
+
+- `feat` 새로운 기능 추가, 요구사항 변경에 따른 기존 기능 변경
+- `fix` 버그 수정
+- `docs` 문서 추가/수정
+- `style` 코드 포매팅 등 스타일 수정
+- `refactor` 기능 변경 없는 프로덕션 코드 리팩토링
+- `test` 테스트 코드 추가/리팩토링
+- `chore` 빌드, 배포 등 기타 작업
+- `rename` 파일명 변경
+- `remove` 파일 삭제
+- `revert` 작업 되돌리기
 
 ## Member
 
 |           Backend                    |                        Frontend                    |
 | :------------------------------------------: | :------------------------------------------------: |
-|  [jacomyou0121](https://github.com/jacomyou0121)  |  [blkaka66](https://github.com/blkaka66)  |  
+|  [jacomyou0121](https://github.com/jacomyou0121)  |  [blkaka66](https://github.com/blkaka66)  |
