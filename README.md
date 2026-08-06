@@ -18,6 +18,7 @@
 - [프로젝트 소개](#프로젝트-소개)
 - [사용자 요구사항](#사용자-요구사항)
 - [핵심 기능](#핵심-기능)
+- [Infra](#Infra)
 - [서비스 화면](#서비스-화면)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
@@ -44,8 +45,8 @@
 | **모더레이션** | 관리자 게시글 삭제(내용 마스킹), 회원 검색/조회, 위반 이력 기반 자동 블랙리스트(3회 위반 시 영구 정지) |
 | **인프라** | Redis 캐시(블랙리스트 조회 5분 캐시, SHA-256 이메일 해시 키), Actuator + Prometheus/Grafana 모니터링 |
 
-### Infra
-![image](https://github.com/user-attachments/assets/43f3ecb6-30fc-4d11-b1cf-f60e87437ae3)
+## Infra
+![starstudy drawio](https://github.com/user-attachments/assets/ebf859ff-b08f-4b9c-9950-9aabe78856d6)
 
 **Language / Framework**
 - Java 17, Spring Boot 3.2.1
