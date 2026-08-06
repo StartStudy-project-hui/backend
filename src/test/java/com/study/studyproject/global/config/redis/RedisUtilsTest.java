@@ -29,13 +29,13 @@ class RedisUtilsTest {
 
     @BeforeEach
     void shutDown() {
-        redisUtils.setValues(KEY, VALUE, DURATION);
+        redisUtils.setValue(KEY, VALUE, DURATION);
     }
 
     @AfterEach
     void tearDown() {
-        redisUtils.deleteValues(KEY);
-        redisUtils.deleteHashOps(HASH_PARENT_KEY, HASH_KEY);
+        redisUtils.deleteValue(KEY);
+        redisUtils.deleteHashValue(HASH_PARENT_KEY, HASH_KEY);
     }
 
 
@@ -43,7 +43,7 @@ class RedisUtilsTest {
     @DisplayName("Redis에 데이터를 저장하면 조회된다")
     void saveAndFindTest() throws Exception {
         //given
-        String findValue = redisUtils.getValues(KEY);
+        String findValue = redisUtils.getValue(KEY);
 
         //then
         assertThat(VALUE).isEqualTo(findValue);
@@ -56,10 +56,10 @@ class RedisUtilsTest {
     void updateTest() throws Exception {
         //given
         String updateValue = "updateValue";
-        redisUtils.setValues(KEY, updateValue, DURATION);
+        redisUtils.setValue(KEY, updateValue, DURATION);
 
         //when
-        String findValue = redisUtils.getValues(KEY);
+        String findValue = redisUtils.getValue(KEY);
 
         //then
         assertThat(updateValue).isEqualTo(findValue);
@@ -70,8 +70,8 @@ class RedisUtilsTest {
     @DisplayName("Redis에 저장된 데이터를 삭제한다.")
     void deleteTest() throws Exception {
         //given
-        redisUtils.deleteValues(KEY);
-        String findValue = redisUtils.getValues(KEY);
+        redisUtils.deleteValue(KEY);
+        String findValue = redisUtils.getValue(KEY);
 
         //then
         assertThat(findValue).isNull();
@@ -80,10 +80,10 @@ class RedisUtilsTest {
     @Test
     @DisplayName("Redis에 저장된 데이터는 만료시간이 지나면 삭제된다.")
     void expiredTest() throws Exception {
-        String findValue = redisUtils.getValues(KEY);
+        String findValue = redisUtils.getValue(KEY);
         Awaitility.await().pollDelay(Duration.ofMillis(6000)).untilAsserted(
                 () -> {
-                    String expiredValue = redisUtils.getValues(KEY);
+                    String expiredValue = redisUtils.getValue(KEY);
                     assertThat(expiredValue).isNotEqualTo(findValue);
                     assertThat(expiredValue).isNull();
                 }
@@ -96,7 +96,7 @@ class RedisUtilsTest {
     void setIfAbsentTest() throws Exception {
         //given
         String newKey = "setIfAbsentKey";
-        redisUtils.deleteValues(newKey);
+        redisUtils.deleteValue(newKey);
 
         try {
             //when
@@ -106,20 +106,20 @@ class RedisUtilsTest {
             //then
             assertThat(firstAcquired).isTrue();
             assertThat(secondAcquired).isFalse();
-            assertThat(redisUtils.getValues(newKey)).isEqualTo(VALUE);
+            assertThat(redisUtils.getValue(newKey)).isEqualTo(VALUE);
         } finally {
-            redisUtils.deleteValues(newKey);
+            redisUtils.deleteValue(newKey);
         }
     }
 
     @Test
     @DisplayName("Redis 해시에 저장된 데이터를 hashKey로 조회하면 값이 반환된다.")
-    void getHashOpsTest() throws Exception {
+    void getHashValueTest() throws Exception {
         //given
-        redisUtils.setHashOps(HASH_PARENT_KEY, Map.of(HASH_KEY, HASH_VALUE));
+        redisUtils.setHashValue(HASH_PARENT_KEY, Map.of(HASH_KEY, HASH_VALUE));
 
         //when
-        String findValue = redisUtils.getHashOps(HASH_PARENT_KEY, HASH_KEY);
+        String findValue = redisUtils.getHashValue(HASH_PARENT_KEY, HASH_KEY);
 
         //then
         assertThat(findValue).isEqualTo(HASH_VALUE);
@@ -127,12 +127,12 @@ class RedisUtilsTest {
 
     @Test
     @DisplayName("존재하지 않는 hashKey로 조회하면 빈 문자열이 반환된다.")
-    void getHashOpsWhenHashKeyNotExistsTest() throws Exception {
+    void getHashValueWhenHashKeyNotExistsTest() throws Exception {
         //given
-        redisUtils.setHashOps(HASH_PARENT_KEY, Map.of(HASH_KEY, HASH_VALUE));
+        redisUtils.setHashValue(HASH_PARENT_KEY, Map.of(HASH_KEY, HASH_VALUE));
 
         //when
-        String findValue = redisUtils.getHashOps(HASH_PARENT_KEY, "notExistsHashKey");
+        String findValue = redisUtils.getHashValue(HASH_PARENT_KEY, "notExistsHashKey");
 
         //then
         assertThat(findValue).isEqualTo("");
@@ -140,9 +140,9 @@ class RedisUtilsTest {
 
     @Test
     @DisplayName("존재하지 않는 key로 조회하면 빈 문자열이 반환된다.")
-    void getHashOpsWhenKeyNotExistsTest() throws Exception {
+    void getHashValueWhenKeyNotExistsTest() throws Exception {
         //when
-        String findValue = redisUtils.getHashOps("notExistsParentKey", HASH_KEY);
+        String findValue = redisUtils.getHashValue("notExistsParentKey", HASH_KEY);
 
         //then
         assertThat(findValue).isEqualTo("");
@@ -150,15 +150,15 @@ class RedisUtilsTest {
 
     @Test
     @DisplayName("Redis 해시에서 hashKey를 삭제하면 더 이상 조회되지 않는다.")
-    void deleteHashOpsTest() throws Exception {
+    void deleteHashValueTest() throws Exception {
         //given
-        redisUtils.setHashOps(HASH_PARENT_KEY, Map.of(HASH_KEY, HASH_VALUE));
+        redisUtils.setHashValue(HASH_PARENT_KEY, Map.of(HASH_KEY, HASH_VALUE));
 
         //when
-        redisUtils.deleteHashOps(HASH_PARENT_KEY, HASH_KEY);
+        redisUtils.deleteHashValue(HASH_PARENT_KEY, HASH_KEY);
 
         //then
-        assertThat(redisUtils.getHashOps(HASH_PARENT_KEY, HASH_KEY)).isEqualTo("");
+        assertThat(redisUtils.getHashValue(HASH_PARENT_KEY, HASH_KEY)).isEqualTo("");
     }
 
 

@@ -20,25 +20,25 @@ public class
 RedisUtils {
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public void setValues(String key, String data) {
+    public void setValue(String key, String data) {
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
         values.set(key, data);
     }
 
 
-    public void setValues(String key, String data, Duration duration) {
+    public void setValue(String key, String data, Duration duration) {
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
         values.set(key, data, duration);
     }
 
     @Transactional(readOnly = true)
-    public String getValues(String key) {
+    public String getValue(String key) {
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
         Object value = values.get(key);
         return value != null ? (String) value : null;
     }
 
-    public void deleteValues(String key) {
+    public void deleteValue(String key) {
         redisTemplate.delete(key);
     }
 
@@ -52,19 +52,19 @@ RedisUtils {
         redisTemplate.expire(key, timeout, TimeUnit.MILLISECONDS);
     }
 
-    public void setHashOps(String key, Map<String, String> data) {
+    public void setHashValue(String key, Map<String, String> data) {
         HashOperations<String, Object, Object> values = redisTemplate.opsForHash();
         values.putAll(key, data);
     }
 
     @Transactional(readOnly = true)
-    public String getHashOps(String key, String hashKey) {
+    public String getHashValue(String key, String hashKey) {
         HashOperations<String, Object, Object> values = redisTemplate.opsForHash();
         Object value = values.get(key, hashKey);
         return value != null ? (String) value : "";
     }
 
-    public void deleteHashOps(String key, String hashKey) {
+    public void deleteHashValue(String key, String hashKey) {
         HashOperations<String, Object, Object> values = redisTemplate.opsForHash();
         values.delete(key, hashKey);
     }

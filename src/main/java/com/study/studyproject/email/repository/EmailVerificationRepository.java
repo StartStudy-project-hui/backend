@@ -21,26 +21,26 @@ public class EmailVerificationRepository {
     }
 
     public void saveCode(String hash, String code, Duration ttl) {
-        redisUtils.setValues(CODE_KEY_PREFIX + hash, code, ttl);
+        redisUtils.setValue(CODE_KEY_PREFIX + hash, code, ttl);
     }
 
     public String findCode(String hash) {
-        return redisUtils.getValues(CODE_KEY_PREFIX + hash);
+        return redisUtils.getValue(CODE_KEY_PREFIX + hash);
     }
 
     public void deleteCode(String hash) {
-        redisUtils.deleteValues(CODE_KEY_PREFIX + hash);
+        redisUtils.deleteValue(CODE_KEY_PREFIX + hash);
     }
 
     public void markVerified(String hash, Duration ttl) {
-        redisUtils.setValues(VERIFIED_KEY_PREFIX + hash, "true", ttl);
+        redisUtils.setValue(VERIFIED_KEY_PREFIX + hash, "true", ttl);
     }
 
     public boolean isVerified(String hash) {
-        return redisUtils.getValues(VERIFIED_KEY_PREFIX + hash) != null;
+        return redisUtils.getValue(VERIFIED_KEY_PREFIX + hash) != null;
     }
 
     public void deleteVerified(String hash) {
-        redisUtils.deleteValues(VERIFIED_KEY_PREFIX + hash);
+        redisUtils.deleteValue(VERIFIED_KEY_PREFIX + hash);
     }
 }
