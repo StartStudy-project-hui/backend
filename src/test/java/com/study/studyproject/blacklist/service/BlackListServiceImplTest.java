@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.study.studyproject.blacklist.repository.blacklist.BlackListCacheRepository.BLACKLIST_CACHE_KEY_PREFIX;
 import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEMBER;
 import static org.assertj.core.api.Assertions.*;
 
@@ -150,7 +151,7 @@ class BlackListServiceImplTest {
         //given
         Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1", Role.ROLE_ADMIN);
         String hash = HashUtil.sha256(member1.getEmail().address());
-        String cacheKey = BlackList.BLACKLIST_CACHE_KEY_PREFIX + hash;
+        String cacheKey = BLACKLIST_CACHE_KEY_PREFIX + hash;
 
         // 이전 요청에서 "차단 아님"으로 캐시되어 있다고 가정
         redisTemplate.opsForValue().set(cacheKey, "false");
@@ -169,7 +170,7 @@ class BlackListServiceImplTest {
         //given
         String email = "isblocked-cachehit-test@naver.com";
         String hash = HashUtil.sha256(email);
-        String cacheKey = BlackList.BLACKLIST_CACHE_KEY_PREFIX + hash;
+        String cacheKey = BLACKLIST_CACHE_KEY_PREFIX + hash;
 
         try {
             // DB엔 블랙리스트 기록이 없지만, 캐시엔 차단됨으로 미리 저장되어 있다고 가정
@@ -191,7 +192,7 @@ class BlackListServiceImplTest {
         //given
         String email = "isblocked-cachemiss-test@naver.com";
         String hash = HashUtil.sha256(email);
-        String cacheKey = BlackList.BLACKLIST_CACHE_KEY_PREFIX + hash;
+        String cacheKey = BLACKLIST_CACHE_KEY_PREFIX + hash;
         BlackList blacklist = BlackList.create(hash, "욕설");
         blacklist.makePermanent(); // 영구정지 상태여야 isBlocked()가 true를 반환한다
         blackListRepository.save(blacklist);

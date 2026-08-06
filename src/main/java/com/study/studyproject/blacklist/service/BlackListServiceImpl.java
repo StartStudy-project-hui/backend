@@ -6,9 +6,9 @@ import com.study.studyproject.blacklist.dto.request.BlackListMainRequestDto;
 import com.study.studyproject.blacklist.dto.request.BlackListUpdateRequestDto;
 import com.study.studyproject.blacklist.dto.response.BlacklistResponseDto;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
+import com.study.studyproject.blacklist.repository.blacklist.BlackListCacheRepository;
 import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
 import com.study.studyproject.global.GlobalResultDto;
-import com.study.studyproject.global.config.redis.RedisUtils;
 import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.global.exception.ex.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.time.Duration;
-
-import static com.study.studyproject.blacklist.domain.BlackList.BLACKLIST_CACHE_KEY_PREFIX;
 import static com.study.studyproject.blacklist.domain.BlacklistAction.*;
 import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEMBER;
 
@@ -30,31 +27,28 @@ import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEM
 @Transactional
 public class BlackListServiceImpl implements BlackListService {
 
-    private static final Duration BLACKLIST_CACHE_TTL = Duration.ofMinutes(5);
-
     private final BlackListRepository blacklistRepository;
     private final BlackListHistoryRepository blackListHistoryRepository;
-    private final RedisUtils redisUtils;
+    private final BlackListCacheRepository blackListCacheRepository;
 
     private void evictBlacklistCache(String hash) {
-        redisUtils.deleteValues(BLACKLIST_CACHE_KEY_PREFIX + hash);
+        blackListCacheRepository.evict(hash);
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean isBlocked(String email) {
         String hash = HashUtil.sha256(email);
-        String cacheKey = BLACKLIST_CACHE_KEY_PREFIX + hash;
 
-        String cached = redisUtils.getValues(cacheKey);
+        Boolean cached = blackListCacheRepository.findBlocked(hash);
         if (cached != null) {
-            return Boolean.parseBoolean(cached);
+            return cached;
         }
 
         boolean blocked = blacklistRepository.findByHashValue(hash)
                 .map(BlackList::isBlocked)
                 .orElse(false);
-        redisUtils.setValues(cacheKey, String.valueOf(blocked), BLACKLIST_CACHE_TTL);
+        blackListCacheRepository.saveBlocked(hash, blocked);
         return blocked;
     }
 

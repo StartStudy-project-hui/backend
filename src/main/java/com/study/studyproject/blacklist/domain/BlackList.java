@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class  BlackList {
 
-    public static final String BLACKLIST_CACHE_KEY_PREFIX = "blacklist:status:";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

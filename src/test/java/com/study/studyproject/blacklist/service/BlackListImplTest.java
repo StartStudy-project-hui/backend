@@ -4,10 +4,10 @@ import com.study.studyproject.blacklist.domain.BlackList;
 import com.study.studyproject.blacklist.domain.BlackType;
 import com.study.studyproject.blacklist.dto.request.BlackListCreateRequestDto;
 import com.study.studyproject.blacklist.dto.request.BlackListUpdateRequestDto;
+import com.study.studyproject.blacklist.repository.blacklist.BlackListCacheRepository;
 import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.global.GlobalResultDto;
-import com.study.studyproject.global.config.redis.RedisUtils;
 import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.member.domain.Email;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +35,7 @@ class BlackListImplUnitTest {
     private BlackListHistoryRepository blackListHistoryRepository;
 
     @Mock
-    private RedisUtils redisUtils;
+    private BlackListCacheRepository blackListCacheRepository;
 
 
     @Test
