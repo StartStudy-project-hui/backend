@@ -61,7 +61,7 @@ public class  MyPagePostLikeQueryRepository{
                                 reply.count()
                         ))
                 .from(postLike)
-                .innerJoin(board).fetchJoin()
+                .innerJoin(board)
                 .on(postLike.board.id.eq(board.id))
                 .leftJoin(reply).on(reply.board.id.eq(board.id).and(reply.isDeleted.eq(false)))
                 .where(

@@ -64,6 +64,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ListResponseDto> listMember(Long memberId, MemberListRequestDto memberListRequestDto, Pageable pageable) {
         return myPageQueryRepository.MyPageListPage(memberListRequestDto, pageable,memberId, GET_MEMBER);
     }
@@ -86,6 +87,7 @@ public class MemberServiceImpl implements MemberService{
         Member createMember = toEntity(socialType, attributes.getOauth2UserInfo());
         return memberRepository.save(createMember);
     }
+    @Transactional(readOnly = true)
     public Page<ListResponseDto> postLikeBoard(Long memberId, MemberListRequestDto memberListRequestDto, Pageable pageable) {
         return myPagePostLikeQueryRepository.MyPageListPage(memberListRequestDto, pageable,memberId);
     }

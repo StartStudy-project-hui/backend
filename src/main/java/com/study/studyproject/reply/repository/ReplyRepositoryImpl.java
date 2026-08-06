@@ -8,7 +8,6 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-import static com.study.studyproject.board.domain.QBoard.board;
 import static com.study.studyproject.reply.domain.QReply.reply;
 
 
@@ -54,12 +53,13 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
 
     @Override
     public Long findBoardReplyCnt(Long id) { // 게시글 넘
-        return  queryFactory.select(reply)
+        Long count = queryFactory.select(reply.count())
                 .from(reply)
                 .where(
-                        board.id.eq(id)
+                        reply.board.id.eq(id)
                         , reply.isDeleted.eq(false)
-                ).stream().count();
+                ).fetchOne();
+        return count != null ? count : 0L;
     }
 
 

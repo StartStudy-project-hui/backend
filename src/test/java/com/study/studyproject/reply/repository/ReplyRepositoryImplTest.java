@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.study.studyproject.board.domain.Category.CS;
-import static com.study.studyproject.login.domain.Role.ROLE_USER;
+import static com.study.studyproject.auth.domain.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
@@ -151,6 +151,72 @@ class ReplyRepositoryImplTest {
 
 
 
+    @Test
+    @DisplayName("게시글의 댓글 개수를 조회하면, 다른 게시글의 댓글과 섞이지 않고 해당 게시글의 댓글 수만 정확히 카운트된다.")
+    void findBoardReplyCnt() throws Exception {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        memberRepository.save(member1);
+
+        Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        boardRepository.save(board);
+        Board otherBoard = createBoard(member1, "제목2", "내용2", "닉네임1", CS);
+        boardRepository.save(otherBoard);
+
+        Reply one = createReply("댓글1", null, member1, board);
+        Reply two = createReply("대댓글1", one, member1, board);
+        Reply tree = createReply("대댓글2", one, member1, board);
+        replyRepository.saveAll(List.of(one, two, tree));
+
+        Reply otherOne = createReply("다른게시글댓글1", null, member1, otherBoard);
+        Reply otherTwo = createReply("다른게시글댓글2", null, member1, otherBoard);
+        replyRepository.saveAll(List.of(otherOne, otherTwo));
+
+        //when
+        Long count = replyRepository.findBoardReplyCnt(board.getId());
+
+        //then
+        assertThat(count).isEqualTo(3L);
+    }
+
+    @Test
+    @DisplayName("게시글의 댓글 개수를 조회할 때, 삭제된 댓글은 카운트에서 제외된다.")
+    void findBoardReplyCntExcludesDeleted() throws Exception {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        memberRepository.save(member1);
+
+        Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        boardRepository.save(board);
+
+        Reply one = createReply("댓글1", null, member1, board);
+        Reply two = createReply("댓글2", null, member1, board);
+        two.markAsDeleted();
+        replyRepository.saveAll(List.of(one, two));
+
+        //when
+        Long count = replyRepository.findBoardReplyCnt(board.getId());
+
+        //then
+        assertThat(count).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("댓글이 없는 게시글의 댓글 개수를 조회하면 0이 반환된다.")
+    void findBoardReplyCntWhenNoReplies() throws Exception {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        memberRepository.save(member1);
+
+        Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        boardRepository.save(board);
+
+        //when
+        Long count = replyRepository.findBoardReplyCnt(board.getId());
+
+        //then
+        assertThat(count).isEqualTo(0L);
+    }
 
 
     private Board createBoard(

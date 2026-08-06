@@ -12,10 +12,10 @@ import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.postlike.domain.PostLikeState;
 import com.study.studyproject.postlike.dto.PostLikeOneResponseDto;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -29,6 +29,7 @@ public class PostLikeService {
     private final BoardRepository boardRepository;
 
 
+    @Transactional(readOnly = true)
     public PostLikeOneResponseDto getPostLikeForOneBoard(Member member, Long boardId) {
         Board board = findByBoardId(boardId);
         Optional<PostLike> postLike = postLikeRepository.findByBoardAndMember(board, member);
