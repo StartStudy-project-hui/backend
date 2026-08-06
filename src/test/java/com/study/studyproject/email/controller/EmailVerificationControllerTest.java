@@ -1,4 +1,4 @@
-package com.study.studyproject.auth.email.controller;
+package com.study.studyproject.email.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.studyproject.global.hash.HashUtil;

@@ -1,6 +1,5 @@
-package com.study.studyproject.auth.email.service;
+package com.study.studyproject.email.service;
 
-import com.study.studyproject.email.service.EmailVerificationServiceImpl;
 import com.study.studyproject.global.exception.ex.BadRequestException;
 import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.email.repository.EmailVerificationRepository;
