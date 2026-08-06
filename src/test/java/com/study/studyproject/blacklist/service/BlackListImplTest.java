@@ -7,6 +7,7 @@ import com.study.studyproject.blacklist.dto.request.BlackListUpdateRequestDto;
 import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.global.GlobalResultDto;
+import com.study.studyproject.global.config.redis.RedisUtils;
 import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.member.domain.Email;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import static com.study.studyproject.blacklist.domain.BlackType.EMAIL;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +35,7 @@ class BlackListImplUnitTest {
     private BlackListHistoryRepository blackListHistoryRepository;
 
     @Mock
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisUtils redisUtils;
 
 
     @Test

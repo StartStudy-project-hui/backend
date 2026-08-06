@@ -8,16 +8,18 @@ import com.study.studyproject.blacklist.dto.response.BlacklistResponseDto;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
 import com.study.studyproject.global.GlobalResultDto;
+import com.study.studyproject.global.config.redis.RedisUtils;
 import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.global.exception.ex.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.time.Duration;
 
 import static com.study.studyproject.blacklist.domain.BlackList.BLACKLIST_CACHE_KEY_PREFIX;
 import static com.study.studyproject.blacklist.domain.BlacklistAction.*;
@@ -27,12 +29,33 @@ import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_MEM
 @RequiredArgsConstructor
 @Transactional
 public class BlackListServiceImpl implements BlackListService {
+
+    private static final Duration BLACKLIST_CACHE_TTL = Duration.ofMinutes(5);
+
     private final BlackListRepository blacklistRepository;
     private final BlackListHistoryRepository blackListHistoryRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisUtils redisUtils;
 
     private void evictBlacklistCache(String hash) {
-        redisTemplate.delete(BLACKLIST_CACHE_KEY_PREFIX + hash);
+        redisUtils.deleteValues(BLACKLIST_CACHE_KEY_PREFIX + hash);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isBlocked(String email) {
+        String hash = HashUtil.sha256(email);
+        String cacheKey = BLACKLIST_CACHE_KEY_PREFIX + hash;
+
+        String cached = redisUtils.getValues(cacheKey);
+        if (cached != null) {
+            return Boolean.parseBoolean(cached);
+        }
+
+        boolean blocked = blacklistRepository.findByHashValue(hash)
+                .map(BlackList::isBlocked)
+                .orElse(false);
+        redisUtils.setValues(cacheKey, String.valueOf(blocked), BLACKLIST_CACHE_TTL);
+        return blocked;
     }
 
     @Override

@@ -8,10 +8,9 @@ import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHis
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.global.hash.HashUtil;
 import com.study.studyproject.global.exception.ex.NotFoundException;
-import com.study.studyproject.login.domain.Role;
+import com.study.studyproject.auth.domain.Role;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -162,6 +161,51 @@ class BlackListServiceImplTest {
 
         //then
         assertThat(redisTemplate.hasKey(cacheKey)).isFalse();
+    }
+
+    @Test
+    @DisplayName("캐시에 값이 있으면 DB에 실제 블랙리스트 기록이 없어도 캐시된 값을 그대로 반환한다.")
+    void isBlocked_cacheHit() throws Exception {
+        //given
+        String email = "isblocked-cachehit-test@naver.com";
+        String hash = HashUtil.sha256(email);
+        String cacheKey = BlackList.BLACKLIST_CACHE_KEY_PREFIX + hash;
+
+        try {
+            // DB엔 블랙리스트 기록이 없지만, 캐시엔 차단됨으로 미리 저장되어 있다고 가정
+            redisTemplate.opsForValue().set(cacheKey, "true");
+
+            //when
+            boolean blocked = blackListService.isBlocked(email);
+
+            //then
+            assertThat(blocked).isTrue();
+        } finally {
+            redisTemplate.delete(cacheKey);
+        }
+    }
+
+    @Test
+    @DisplayName("캐시가 비어있으면 DB를 조회해 결과를 반환하고, 이후 조회를 위해 캐시를 채운다.")
+    void isBlocked_cacheMiss() throws Exception {
+        //given
+        String email = "isblocked-cachemiss-test@naver.com";
+        String hash = HashUtil.sha256(email);
+        String cacheKey = BlackList.BLACKLIST_CACHE_KEY_PREFIX + hash;
+        BlackList blacklist = BlackList.create(hash, "욕설");
+        blacklist.makePermanent(); // 영구정지 상태여야 isBlocked()가 true를 반환한다
+        blackListRepository.save(blacklist);
+
+        try {
+            //when
+            boolean blocked = blackListService.isBlocked(email);
+
+            //then
+            assertThat(blocked).isTrue();
+            assertThat(redisTemplate.hasKey(cacheKey)).isTrue();
+        } finally {
+            redisTemplate.delete(cacheKey);
+        }
     }
 
     private Member createMember

@@ -19,6 +19,6 @@ public interface BlackListService {
 
     Page<BlacklistResponseDto> findPageBlackList(BlackListMainRequestDto blackListMainRequestDto, Pageable pageable);
 
-
+    boolean isBlocked(String email);
 
 }

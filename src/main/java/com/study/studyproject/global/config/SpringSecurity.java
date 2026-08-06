@@ -1,8 +1,7 @@
 package com.study.studyproject.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
-import com.study.studyproject.global.auth.UserDetailsImpl;
+import com.study.studyproject.blacklist.service.BlackListService;
 import com.study.studyproject.global.jwt.JwtAccessDeniedHandler;
 import com.study.studyproject.global.jwt.JwtAuthenticationEntryPoint;
 import com.study.studyproject.global.jwt.JwtFilter;
@@ -11,25 +10,22 @@ import com.study.studyproject.global.oauth.CookieOAuth2AuthorizationRequestRepos
 import com.study.studyproject.global.oauth.CustomOAuth2UserService;
 import com.study.studyproject.global.oauth.handler.OAuth2LoginFailureHandler;
 import com.study.studyproject.global.oauth.handler.OAuth2LoginSuccessHandler;
-import com.study.studyproject.login.service.RefreshTokenService;
+import com.study.studyproject.auth.service.RefreshTokenService;
 import com.study.studyproject.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
@@ -46,8 +42,7 @@ public class SpringSecurity {
     private final CorsFilter filter;
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
-    private final BlackListRepository blackListRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final BlackListService blackListService;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -62,7 +57,7 @@ public class SpringSecurity {
 
     @Bean
     public JwtFilter jwtFilter() {
-        return new JwtFilter(objectMapper,jwtUtil,blackListRepository,redisTemplate); // JwtFilter를 빈으로 등록
+        return new JwtFilter(objectMapper,jwtUtil,blackListService); // JwtFilter를 빈으로 등록
     }
 
 

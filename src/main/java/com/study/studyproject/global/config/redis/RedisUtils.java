@@ -34,14 +34,18 @@ RedisUtils {
     @Transactional(readOnly = true)
     public String getValues(String key) {
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
-        if (values.get(key) == null) {
-            return "false";
-        }
-        return (String) values.get(key);
+        Object value = values.get(key);
+        return value != null ? (String) value : null;
     }
 
     public void deleteValues(String key) {
         redisTemplate.delete(key);
+    }
+
+    public boolean setIfAbsent(String key, String data, Duration duration) {
+        ValueOperations<String, Object> values = redisTemplate.opsForValue();
+        Boolean acquired = values.setIfAbsent(key, data, duration);
+        return Boolean.TRUE.equals(acquired);
     }
 
     public void expireValues(String key, int timeout) {
@@ -56,18 +60,13 @@ RedisUtils {
     @Transactional(readOnly = true)
     public String getHashOps(String key, String hashKey) {
         HashOperations<String, Object, Object> values = redisTemplate.opsForHash();
-        return Boolean.TRUE.equals(values.hasKey(key, hashKey)) ? (String) redisTemplate.opsForHash().get(key, hashKey) : "";
+        Object value = values.get(key, hashKey);
+        return value != null ? (String) value : "";
     }
 
     public void deleteHashOps(String key, String hashKey) {
         HashOperations<String, Object, Object> values = redisTemplate.opsForHash();
         values.delete(key, hashKey);
     }
-
-    public boolean checkExistsValue(String value) {
-        return !value.equals("false");
-    }
-
-
 
 }

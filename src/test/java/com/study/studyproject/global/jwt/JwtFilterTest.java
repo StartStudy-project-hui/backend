@@ -6,8 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.study.studyproject.blacklist.domain.BlackList;
-import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
+import com.study.studyproject.blacklist.service.BlackListService;
 import com.study.studyproject.global.exception.ex.ErrorCode;
 import com.study.studyproject.global.jwt.JwtFilter;
 import com.study.studyproject.global.jwt.JwtUtil;
@@ -22,12 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class JwtFilterTest {
@@ -39,13 +34,7 @@ class JwtFilterTest {
     private JwtUtil jwtUtil;
 
     @Mock
-    private BlackListRepository blackListRepository;
-
-    @Mock
-    private RedisTemplate<String, Object> redisTemplate;
-
-    @Mock
-    private ValueOperations<String, Object> valueOperations;
+    private BlackListService blackListService;
 
     @Mock
     private FilterChain filterChain;
@@ -99,20 +88,12 @@ class JwtFilterTest {
         // given
         String token = "valid.token.here";
         String email = "test@test.com";
-        BlackList mockBlackList = mock(BlackList.class);
 
         given(jwtUtil.resolveToken(any())).willReturn(token);
         given(jwtUtil.isAccessTokenValid(token)).willReturn(true); // 토큰은 유효함
         given(jwtUtil.getEmailFromToken(token)).willReturn(new Email(email));
-        given(mockBlackList.isBlocked()).willReturn(true);
+        given(blackListService.isBlocked(email)).willReturn(true);
 
-        // 캐시 미스 상황을 가정
-        given(redisTemplate.opsForValue()).willReturn(valueOperations);
-        given(valueOperations.get(any())).willReturn(null);
-
-        // 블랙리스트에 존재한다고 가정
-        given(blackListRepository.findByHashValue(any()))
-                .willReturn(Optional.of(mockBlackList));
         // when
         jwtFilter.doFilterInternal(request, response, filterChain);
 
@@ -122,8 +103,8 @@ class JwtFilterTest {
     }
 
     @Test
-    @DisplayName("블랙리스트 캐시가 존재하면 DB 조회 없이 캐시된 값으로 403 에러를 반환해야 한다")
-    void blacklistedUserResponse_cacheHit() throws Exception {
+    @DisplayName("블랙리스트 유저가 아닌 경우 필터를 통과해야 한다")
+    void notBlacklistedUserPass() throws Exception {
         // given
         String token = "valid.token.here";
         String email = "test@test.com";
@@ -131,18 +112,13 @@ class JwtFilterTest {
         given(jwtUtil.resolveToken(any())).willReturn(token);
         given(jwtUtil.isAccessTokenValid(token)).willReturn(true); // 토큰은 유효함
         given(jwtUtil.getEmailFromToken(token)).willReturn(new Email(email));
-
-        // 캐시 히트 상황을 가정
-        given(redisTemplate.opsForValue()).willReturn(valueOperations);
-        given(valueOperations.get(any())).willReturn("true");
+        given(blackListService.isBlocked(email)).willReturn(false);
 
         // when
         jwtFilter.doFilterInternal(request, response, filterChain);
 
         // then
-        Assertions.assertEquals(403, response.getStatus());
-        verify(blackListRepository, never()).findByHashValue(any());
-        verify(valueOperations, never()).set(any(), any(), any());
+        verify(filterChain).doFilter(request, response);
     }
 
 
