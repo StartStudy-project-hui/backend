@@ -1,6 +1,6 @@
 package com.study.studyproject.global.oauth;
 
-import com.study.studyproject.global.auth.UserDetailsImpl;
+import com.study.studyproject.global.security.UserDetailsImpl;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.domain.SocialType;
 import com.study.studyproject.member.service.MemberService;

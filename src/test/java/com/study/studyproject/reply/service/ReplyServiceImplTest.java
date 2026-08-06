@@ -23,7 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 
 import static com.study.studyproject.board.domain.Category.CS;
-import static com.study.studyproject.login.domain.Role.ROLE_USER;
+import static com.study.studyproject.auth.domain.Role.ROLE_USER;
 import static com.study.studyproject.global.exception.ex.ErrorCode.NOT_FOUND_REPLY;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

@@ -8,10 +8,10 @@ import com.study.studyproject.board.dto.BoardReUpdateRequestDto;
 import com.study.studyproject.board.dto.BoardWriteRequestDto;
 import com.study.studyproject.board.repository.BoardRepository;
 import com.study.studyproject.global.GlobalResultDto;
-import com.study.studyproject.global.auth.UserDetailsImpl;
+import com.study.studyproject.global.security.UserDetailsImpl;
 import com.study.studyproject.global.jwt.JwtUtil;
-import com.study.studyproject.login.domain.Role;
-import com.study.studyproject.login.dto.TokenDtoResponse;
+import com.study.studyproject.auth.domain.Role;
+import com.study.studyproject.auth.dto.TokenDtoResponse;
 import com.study.studyproject.member.domain.Email;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
@@ -32,8 +32,8 @@ import java.util.List;
 
 import static com.study.studyproject.board.domain.Category.CS;
 import static com.study.studyproject.board.domain.Category.ETC;
-import static com.study.studyproject.login.domain.Role.ROLE_ADMIN;
-import static com.study.studyproject.login.domain.Role.ROLE_USER;
+import static com.study.studyproject.auth.domain.Role.ROLE_ADMIN;
+import static com.study.studyproject.auth.domain.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest

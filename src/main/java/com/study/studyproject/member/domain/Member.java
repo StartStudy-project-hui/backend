@@ -2,19 +2,18 @@ package com.study.studyproject.member.domain;
 
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.global.oauth.provider.OAuth2UserInfo;
-import com.study.studyproject.login.domain.PasswordEncoder;
+import com.study.studyproject.auth.domain.PasswordEncoder;
 import com.study.studyproject.postlike.domain.PostLike;
 import com.study.studyproject.reply.domain.Reply;
-import com.study.studyproject.login.domain.Role;
+import com.study.studyproject.auth.domain.Role;
 import com.study.studyproject.global.config.BaseTimeEntity;
-import com.study.studyproject.login.dto.SignRequest;
+import com.study.studyproject.auth.dto.SignRequest;
 import com.study.studyproject.member.dto.MemberUpdateResDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.NaturalIdCache;
 
 import java.util.ArrayList;

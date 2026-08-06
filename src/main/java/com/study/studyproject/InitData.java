@@ -9,7 +9,7 @@ import com.study.studyproject.board.domain.ConnectionType;
 import com.study.studyproject.board.domain.OfflineLocation;
 import com.study.studyproject.board.repository.BoardRepository;
 import com.study.studyproject.global.hash.HashUtil;
-import com.study.studyproject.login.domain.Role;
+import com.study.studyproject.auth.domain.Role;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.domain.PostLike;

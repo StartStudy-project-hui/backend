@@ -2,9 +2,9 @@ package com.study.studyproject.postlike.controller;
 
 
 import com.study.studyproject.global.GlobalResultDto;
-import com.study.studyproject.global.auth.CurrentUser;
-import com.study.studyproject.global.auth.UserDetailsImpl;
-import com.study.studyproject.login.domain.Role;
+import com.study.studyproject.global.security.CurrentUser;
+import com.study.studyproject.global.security.UserDetailsImpl;
+import com.study.studyproject.auth.domain.Role;
 import com.study.studyproject.postlike.dto.PostLikeOneResponseDto;
 import com.study.studyproject.postlike.service.PostLikeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 

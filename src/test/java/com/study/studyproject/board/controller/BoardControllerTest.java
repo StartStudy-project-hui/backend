@@ -7,7 +7,7 @@ import com.study.studyproject.board.dto.BoardReUpdateRequestDto;
 import com.study.studyproject.board.dto.BoardWriteRequestDto;
 import com.study.studyproject.global.jwt.JwtUtil;
 import com.study.studyproject.board.repository.BoardRepository;
-import com.study.studyproject.login.dto.TokenDtoResponse;
+import com.study.studyproject.auth.dto.TokenDtoResponse;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.study.studyproject.board.domain.Category.CS;
-import static com.study.studyproject.login.domain.Role.ROLE_USER;
+import static com.study.studyproject.auth.domain.Role.ROLE_USER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

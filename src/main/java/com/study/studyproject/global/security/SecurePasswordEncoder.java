@@ -1,6 +1,6 @@
 package com.study.studyproject.global.security;
 
-import com.study.studyproject.login.domain.PasswordEncoder;
+import com.study.studyproject.auth.domain.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 

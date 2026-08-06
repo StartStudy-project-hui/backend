@@ -19,7 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 
 import static com.study.studyproject.board.domain.Category.*;
-import static com.study.studyproject.login.domain.Role.ROLE_USER;
+import static com.study.studyproject.auth.domain.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 

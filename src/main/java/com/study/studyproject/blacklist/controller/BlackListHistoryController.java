@@ -4,8 +4,8 @@ import com.study.studyproject.blacklist.dto.request.BlackListHistoryMainRequestD
 import com.study.studyproject.blacklist.dto.response.BlacklistHistoryAdminResponseDto;
 import com.study.studyproject.blacklist.dto.response.BlacklistHistoryMemberResponseDto;
 import com.study.studyproject.blacklist.service.BlackListHistoryService;
-import com.study.studyproject.global.auth.CurrentUser;
-import com.study.studyproject.global.auth.UserDetailsImpl;
+import com.study.studyproject.global.security.CurrentUser;
+import com.study.studyproject.global.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

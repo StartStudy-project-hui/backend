@@ -2,15 +2,12 @@ package com.study.studyproject.list.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.studyproject.board.domain.ConnectionType;
-import com.study.studyproject.board.domain.OfflineLocation;
 import com.study.studyproject.board.repository.BoardRepository;
 import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.board.domain.Category;
-import com.study.studyproject.list.dto.MainRequestDto;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
-import com.study.studyproject.reply.dto.ReplyRequestDto;
 import com.study.studyproject.reply.repository.ReplyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,12 +19,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.study.studyproject.board.domain.Category.*;
 import static com.study.studyproject.board.domain.ConnectionType.OFFLINE;
 import static com.study.studyproject.board.domain.ConnectionType.ONLINE;
-import static com.study.studyproject.login.domain.Role.ROLE_USER;
+import static com.study.studyproject.auth.domain.Role.ROLE_USER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

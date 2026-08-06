@@ -6,7 +6,7 @@ import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.postlike.domain.PostLike;
 import com.study.studyproject.global.jwt.JwtUtil;
-import com.study.studyproject.login.dto.TokenDtoResponse;
+import com.study.studyproject.auth.dto.TokenDtoResponse;
 import com.study.studyproject.member.repository.MemberRepository;
 import com.study.studyproject.postlike.repository.PostLikeRepository;
 import com.study.studyproject.reply.repository.ReplyRepository;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.study.studyproject.board.domain.Category.CS;
-import static com.study.studyproject.login.domain.Role.ROLE_USER;
+import static com.study.studyproject.auth.domain.Role.ROLE_USER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

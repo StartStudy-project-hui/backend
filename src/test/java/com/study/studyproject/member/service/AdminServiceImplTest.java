@@ -5,7 +5,7 @@ import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.board.domain.RecruitStatus;
 import com.study.studyproject.board.repository.BoardRepository;
 import com.study.studyproject.list.dto.ListResponseDto;
-import com.study.studyproject.login.domain.Role;
+import com.study.studyproject.auth.domain.Role;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.dto.AdminDashBoardResponseDto;
 import com.study.studyproject.member.dto.MemberListRequestDto;
@@ -25,7 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 
 import static com.study.studyproject.board.domain.Category.*;
-import static com.study.studyproject.login.domain.Role.ROLE_USER;
+import static com.study.studyproject.auth.domain.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest

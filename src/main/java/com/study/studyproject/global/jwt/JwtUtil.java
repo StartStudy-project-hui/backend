@@ -1,8 +1,8 @@
 package com.study.studyproject.global.jwt;
 
-import com.study.studyproject.global.auth.UserDetailsServiceImpl;
+import com.study.studyproject.global.security.UserDetailsServiceImpl;
 import com.study.studyproject.global.exception.ex.TokenNotValidationException;
-import com.study.studyproject.login.dto.TokenDtoResponse;
+import com.study.studyproject.auth.dto.TokenDtoResponse;
 import com.study.studyproject.member.domain.Email;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

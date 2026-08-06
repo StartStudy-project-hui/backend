@@ -1,9 +1,9 @@
 package com.study.studyproject.member.controller;
 
 import com.study.studyproject.board.service.BoardService;
-import com.study.studyproject.global.auth.CurrentUser;
+import com.study.studyproject.global.security.CurrentUser;
 import com.study.studyproject.global.GlobalResultDto;
-import com.study.studyproject.global.auth.UserDetailsImpl;
+import com.study.studyproject.global.security.UserDetailsImpl;
 import com.study.studyproject.member.dto.AdminDashBoardResponseDto;
 import com.study.studyproject.member.dto.MemberListRequestDto;
 import com.study.studyproject.member.dto.UserInfoResponseDto;

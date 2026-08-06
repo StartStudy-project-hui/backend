@@ -1,9 +1,9 @@
 package com.study.studyproject.global.oauth.handler;
 
-import com.study.studyproject.global.auth.UserDetailsImpl;
+import com.study.studyproject.global.security.UserDetailsImpl;
 import com.study.studyproject.global.jwt.JwtUtil;
-import com.study.studyproject.login.dto.TokenDtoResponse;
-import com.study.studyproject.login.service.RefreshTokenService;
+import com.study.studyproject.auth.dto.TokenDtoResponse;
+import com.study.studyproject.auth.service.RefreshTokenService;
 import com.study.studyproject.member.repository.MemberRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

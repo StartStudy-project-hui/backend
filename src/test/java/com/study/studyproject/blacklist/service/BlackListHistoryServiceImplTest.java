@@ -8,7 +8,7 @@ import com.study.studyproject.blacklist.dto.response.BlacklistHistoryAdminRespon
 import com.study.studyproject.blacklist.dto.response.BlacklistHistoryMemberResponseDto;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.global.hash.HashUtil;
-import com.study.studyproject.login.domain.Role;
+import com.study.studyproject.auth.domain.Role;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
@@ -26,7 +26,7 @@ import java.util.List;
 
 import static com.study.studyproject.blacklist.domain.BlacklistAction.*;
 import static com.study.studyproject.blacklist.domain.BlacklistAction.REGISTER;
-import static com.study.studyproject.login.domain.Role.ROLE_USER;
+import static com.study.studyproject.auth.domain.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
