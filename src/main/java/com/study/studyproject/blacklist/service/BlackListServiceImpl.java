@@ -40,15 +40,15 @@ public class BlackListServiceImpl implements BlackListService {
     public boolean isBlocked(String email) {
         String hash = HashUtil.sha256(email);
 
-        // Boolean cached = blackListCacheRepository.findBlocked(hash);
-        // if (cached != null) {
-        //     return cached;
-        // }
+        Boolean cached = blackListCacheRepository.findBlocked(hash);
+        if (cached != null) {
+            return cached;
+        }
 
         boolean blocked = blacklistRepository.findByHashValue(hash)
                 .map(BlackList::isBlocked)
                 .orElse(false);
-        // blackListCacheRepository.saveBlocked(hash, blocked);
+        blackListCacheRepository.saveBlocked(hash, blocked);
         return blocked;
     }
 
