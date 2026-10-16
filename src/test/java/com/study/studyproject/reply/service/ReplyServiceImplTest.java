@@ -7,7 +7,9 @@ import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.reply.domain.Reply;
 import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.member.repository.MemberRepository;
+import com.study.studyproject.reply.dto.ReplyInfoResponseDto;
 import com.study.studyproject.reply.dto.ReplyRequestDto;
+import com.study.studyproject.reply.dto.ReplyResponseDto;
 import com.study.studyproject.reply.dto.UpdateReplyRequest;
 import com.study.studyproject.reply.repository.ReplyRepository;
 import jakarta.persistence.EntityManager;
@@ -235,6 +237,84 @@ class ReplyServiceImplTest {
         List<Reply> all = replyRepository.findAll();
         Assertions.assertThat(all).hasSize(0);
 
+    }
+
+    @Test
+    @DisplayName("게시글의 댓글과 대댓글을 조회하면, 대댓글은 부모 댓글의 children에 포함되어 반환된다.")
+    void getRepliesForOneBoard() {
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        memberRepository.save(member1);
+        boardRepository.save(board);
+
+        Reply parent = createReply("댓글1", null, member1, board);
+        replyRepository.save(parent);
+        Reply child = createReply("대댓글1", parent, member1, board);
+        replyRepository.save(child);
+
+        //when
+        ReplyResponseDto result = replyService.getRepliesForOneBoard(board.getId());
+
+        //then
+        assertThat(result.getGetTotal()).isEqualTo(2);
+        assertThat(result.getReplies()).hasSize(1);
+        ReplyInfoResponseDto parentDto = result.getReplies().get(0);
+        assertThat(parentDto.getReplyId()).isEqualTo(parent.getId());
+        assertThat(parentDto.getChildren()).hasSize(1);
+        assertThat(parentDto.getChildren().get(0).getReplyId()).isEqualTo(child.getId());
+    }
+
+    @Test
+    @DisplayName("댓글을 작성할 때 존재하지 않는 게시글이면 예외가 발생한다.")
+    void insertReplyWithInvalidBoard() {
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        memberRepository.save(member1);
+        ReplyRequestDto replyRequestDto = new ReplyRequestDto(99999L, null, "댓글 내용");
+
+        assertThatThrownBy(() -> replyService.insert(member1.getId(), replyRequestDto))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("댓글을 작성할 때 존재하지 않는 회원이면 예외가 발생한다.")
+    void insertReplyWithInvalidMember() {
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        memberRepository.save(member1);
+        Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        boardRepository.save(board);
+        ReplyRequestDto replyRequestDto = new ReplyRequestDto(board.getId(), null, "댓글 내용");
+
+        assertThatThrownBy(() -> replyService.insert(99999L, replyRequestDto))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("대댓글을 작성할 때 존재하지 않는 부모 댓글이면 예외가 발생한다.")
+    void insertReplyWithInvalidParent() {
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        memberRepository.save(member1);
+        Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        boardRepository.save(board);
+        ReplyRequestDto replyRequestDto = new ReplyRequestDto(board.getId(), 99999L, "댓글 내용");
+
+        assertThatThrownBy(() -> replyService.insert(member1.getId(), replyRequestDto))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 댓글을 수정하려고 하면 예외가 발생한다.")
+    void updateReplyWithInvalidId() {
+        UpdateReplyRequest updateReplyRequest = new UpdateReplyRequest(99999L, "수정 내용");
+
+        assertThatThrownBy(() -> replyService.updateReply(updateReplyRequest))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 댓글을 삭제하려고 하면 예외가 발생한다.")
+    void deleteReplyWithInvalidId() {
+        assertThatThrownBy(() -> replyService.deleteReply(99999L))
+                .isInstanceOf(NotFoundException.class);
     }
 
     private Reply createReply(

@@ -2,7 +2,9 @@ package com.study.studyproject.blacklist.service;
 
 import com.study.studyproject.blacklist.domain.*;
 import com.study.studyproject.blacklist.dto.request.BlackListCreateRequestDto;
+import com.study.studyproject.blacklist.dto.request.BlackListMainRequestDto;
 import com.study.studyproject.blacklist.dto.request.BlackListUpdateRequestDto;
+import com.study.studyproject.blacklist.dto.response.BlacklistResponseDto;
 import com.study.studyproject.blacklist.repository.blacklist.BlackListRepository;
 import com.study.studyproject.blacklist.repository.blacklisthistory.BlackListHistoryRepository;
 import com.study.studyproject.global.GlobalResultDto;
@@ -16,6 +18,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -207,6 +211,74 @@ class BlackListServiceImplTest {
         } finally {
             redisTemplate.delete(cacheKey);
         }
+    }
+
+    @Test
+    @DisplayName("블랙리스트를 영구정지로 변경하면 상태가 영구정지로 바뀌고 히스토리가 쌓인다.")
+    void makePermanent() throws Exception {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1", Role.ROLE_ADMIN);
+        String hash = HashUtil.sha256(member1.getEmail().address());
+        BlackList blacklist = BlackList.create(hash, "욕설");
+        blackListRepository.save(blacklist);
+
+        //when
+        GlobalResultDto res = blackListService.makePermanent(blacklist.getId());
+
+        //then
+        BlackList updated = blackListRepository.findById(blacklist.getId()).get();
+        assertThat(updated.getStatus()).isEqualTo(BlacklistStatus.PERMANENT);
+        assertThat(res.getMessage()).isEqualTo("영구정지로 변경되었습니다");
+        List<BlackListHistory> history = blackListHistoryRepository.findByHashValue(hash);
+        assertThat(history).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 블랙리스트를 영구정지로 변경하려고 하면 예외가 발생한다.")
+    void makePermanentWithInvalidId() {
+        assertThatThrownBy(() -> blackListService.makePermanent(99999L))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("이메일로 블랙리스트를 검색하면 해당 이메일의 블랙리스트만 조회된다.")
+    void findPageBlackListByEmail() throws Exception {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1", Role.ROLE_ADMIN);
+        Member member2 = createMember("jacom3@naver.com", "1234", "사용자명2", "닉네임2", Role.ROLE_USER);
+        String hash1 = HashUtil.sha256(member1.getEmail().address());
+        String hash2 = HashUtil.sha256(member2.getEmail().address());
+        blackListRepository.save(BlackList.create(hash1, "욕설"));
+        blackListRepository.save(BlackList.create(hash2, "피싱"));
+
+        BlackListMainRequestDto requestDto = new BlackListMainRequestDto();
+        requestDto.setEmail(member1.getEmail().address());
+
+        //when
+        Page<BlacklistResponseDto> result = blackListService.findPageBlackList(requestDto, PageRequest.of(0, 10));
+
+        //then
+        assertThat(result.getContent()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("이메일 조건 없이 블랙리스트를 조회하면 전체가 조회된다.")
+    void findPageBlackListWithoutEmail() throws Exception {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1", Role.ROLE_ADMIN);
+        Member member2 = createMember("jacom3@naver.com", "1234", "사용자명2", "닉네임2", Role.ROLE_USER);
+        String hash1 = HashUtil.sha256(member1.getEmail().address());
+        String hash2 = HashUtil.sha256(member2.getEmail().address());
+        blackListRepository.save(BlackList.create(hash1, "욕설"));
+        blackListRepository.save(BlackList.create(hash2, "피싱"));
+
+        BlackListMainRequestDto requestDto = new BlackListMainRequestDto();
+
+        //when
+        Page<BlacklistResponseDto> result = blackListService.findPageBlackList(requestDto, PageRequest.of(0, 10));
+
+        //then
+        assertThat(result.getContent()).hasSize(2);
     }
 
     private Member createMember

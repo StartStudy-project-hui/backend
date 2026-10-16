@@ -5,6 +5,8 @@ import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.member.domain.Member;
 import com.study.studyproject.postlike.domain.PostLike;
+import com.study.studyproject.postlike.domain.PostLikeState;
+import com.study.studyproject.postlike.dto.PostLikeOneResponseDto;
 import com.study.studyproject.global.GlobalResultDto;
 import com.study.studyproject.global.exception.ex.BadRequestException;
 import com.study.studyproject.global.exception.ex.ForbiddenException;
@@ -138,6 +140,42 @@ class PostLikeServiceTest {
         //when & then
         assertThatThrownBy(() -> postLikeService.postLikeDelete(postLike1.getId(), member2))
                 .isInstanceOf(ForbiddenException.class);
+    }
+
+    @Test
+    @DisplayName("관심글로 등록하지 않은 게시글을 조회하면 '관심' 상태와 null id를 반환한다.")
+    void getPostLikeForOneBoardNotLiked() throws Exception {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        Board boardCreate = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        memberRepository.save(member1);
+        boardRepository.save(boardCreate);
+
+        //when
+        PostLikeOneResponseDto result = postLikeService.getPostLikeForOneBoard(member1, boardCreate.getId());
+
+        //then
+        assertThat(result.getPostLike()).isEqualTo(PostLikeState.LIKE.getName());
+        assertThat(result.getPostLikeId()).isNull();
+    }
+
+    @Test
+    @DisplayName("관심글로 등록한 게시글을 조회하면 '관심 완료' 상태와 관심글 id를 반환한다.")
+    void getPostLikeForOneBoardLiked() throws Exception {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        Board boardCreate = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        memberRepository.save(member1);
+        boardRepository.save(boardCreate);
+        PostLike postLike1 = PostLike.create(member1, boardCreate);
+        postLikeRepository.save(postLike1);
+
+        //when
+        PostLikeOneResponseDto result = postLikeService.getPostLikeForOneBoard(member1, boardCreate.getId());
+
+        //then
+        assertThat(result.getPostLike()).isEqualTo(PostLikeState.LIKING.getName());
+        assertThat(result.getPostLikeId()).isEqualTo(postLike1.getId());
     }
 
         private Member createMember

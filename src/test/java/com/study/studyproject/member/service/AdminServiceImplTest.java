@@ -4,6 +4,8 @@ import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.board.domain.RecruitStatus;
 import com.study.studyproject.board.repository.BoardRepository;
+import com.study.studyproject.global.GlobalResultDto;
+import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.list.dto.ListResponseDto;
 import com.study.studyproject.auth.domain.Role;
 import com.study.studyproject.member.domain.Member;
@@ -179,6 +181,31 @@ class AdminServiceImplTest {
                         tuple("제목1", "CS")
                 );
 
+    }
+
+    @Test
+    @DisplayName("관리자 권한으로 게시글을 삭제하면 내용이 마스킹되고 삭제 상태로 변경된다.")
+    void adminDeleteBoard() throws Exception {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "!12341234", "사용자명1", "닉네임0");
+        Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        memberRepository.save(member1);
+        boardRepository.save(board);
+
+        //when
+        GlobalResultDto resultDto = adminService.adminDeleteBoard(board.getId());
+
+        //then
+        Board deleted = boardRepository.findById(board.getId()).get();
+        assertThat(resultDto.getMessage()).isEqualTo("관리자 권한으로 게시글 삭제 완료");
+        assertThat(deleted.getIsDeleted()).isTrue();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글을 관리자 권한으로 삭제하려고 하면 예외가 발생한다.")
+    void adminDeleteBoardWithInvalidId() {
+        assertThatThrownBy(() -> adminService.adminDeleteBoard(99999L))
+                .isInstanceOf(NotFoundException.class);
     }
 
     private Board createBoard(

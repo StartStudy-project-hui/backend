@@ -8,6 +8,8 @@ import com.study.studyproject.board.dto.BoardReUpdateRequestDto;
 import com.study.studyproject.board.dto.BoardWriteRequestDto;
 import com.study.studyproject.board.repository.BoardRepository;
 import com.study.studyproject.global.GlobalResultDto;
+import com.study.studyproject.global.exception.ex.ForbiddenException;
+import com.study.studyproject.global.exception.ex.NotFoundException;
 import com.study.studyproject.global.security.UserDetailsImpl;
 import com.study.studyproject.global.jwt.JwtUtil;
 import com.study.studyproject.auth.domain.Role;
@@ -221,6 +223,62 @@ class BoardServiceTest {
 
         assertThat(boardOneResponseDto.getContent()).isEqualTo(board.getContent());
         assertThat(boardOneResponseDto.getTitle()).isEqualTo(board.getTitle());
+    }
+
+    @Test
+    @DisplayName("게시글 작성자가 게시글을 삭제하면 삭제된다.")
+    void boardDeleteOneByOwner() {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        memberRepository.save(member1);
+        Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        boardRepository.save(board);
+
+        //when
+        GlobalResultDto resultDto = boardService.boardDeleteOne(board.getId(), member1.getId());
+
+        //then
+        assertThat(resultDto.getMessage()).isEqualTo("게시글 삭제 완료");
+        assertThat(boardRepository.findById(board.getId())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("게시글 작성자가 아니면 게시글을 삭제할 수 없다.")
+    void boardDeleteOneByNotOwner() {
+        //given
+        Member owner = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        Member other = createMember("jacom3@naver.com", "1234", "사용자명2", "닉네임2");
+        memberRepository.saveAll(List.of(owner, other));
+        Board board = createBoard(owner, "제목1", "내용1", "닉네임1", CS);
+        boardRepository.save(board);
+
+        //when & then
+        assertThatThrownBy(() -> boardService.boardDeleteOne(board.getId(), other.getId()))
+                .isInstanceOf(ForbiddenException.class);
+    }
+
+    @Test
+    @DisplayName("존재하는 게시글의 조회수를 올린다.")
+    void updateViewOfExistingBoard() {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "1234", "사용자명1", "닉네임1");
+        memberRepository.save(member1);
+        Board board = createBoard(member1, "제목1", "내용1", "닉네임1", CS);
+        boardRepository.save(board);
+
+        //when
+        boardService.updateView(board.getId());
+
+        //then
+        Board updated = boardRepository.findById(board.getId()).get();
+        assertThat(updated.getViewCount()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글의 조회수를 올리려고 하면 예외가 발생한다.")
+    void updateViewOfMissingBoard() {
+        assertThatThrownBy(() -> boardService.updateView(99999L))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test

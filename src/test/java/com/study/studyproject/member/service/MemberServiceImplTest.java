@@ -4,9 +4,12 @@ import com.study.studyproject.board.domain.Board;
 import com.study.studyproject.board.domain.Category;
 import com.study.studyproject.board.domain.RecruitStatus;
 import com.study.studyproject.board.repository.BoardRepository;
+import com.study.studyproject.global.exception.ex.DuplicateException;
 import com.study.studyproject.global.jwt.JwtUtil;
+import com.study.studyproject.global.oauth.OAuthAttributes;
 import com.study.studyproject.list.dto.ListResponseDto;
 import com.study.studyproject.member.domain.Member;
+import com.study.studyproject.member.domain.SocialType;
 import com.study.studyproject.member.dto.MemberListRequestDto;
 import com.study.studyproject.member.dto.MemberUpdateResDto;
 import com.study.studyproject.member.dto.UserInfoResponseDto;
@@ -23,7 +26,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.study.studyproject.board.domain.Category.*;
 import static com.study.studyproject.auth.domain.Role.ROLE_USER;
@@ -194,6 +199,70 @@ class MemberServiceImplTest {
 
     }
 
+
+    @Test
+    @DisplayName("닉네임이 중복되면 사용자 정보 수정 시 예외가 발생한다.")
+    void userInfoUpdateWithDuplicateNickname() {
+        //given
+        Member member1 = createMember("jacom2@naver.com", "!12341234", "사용자명1", "닉네임0");
+        Member member2 = createMember("jacom3@naver.com", "!12341234", "사용자명2", "닉네임1");
+        memberRepository.saveAll(List.of(member1, member2));
+        MemberUpdateResDto memberUpdateResDto = new MemberUpdateResDto("수정이름", "닉네임1");
+
+        //when & then
+        assertThatThrownBy(() -> memberService.userInfoUpdate(member1, memberUpdateResDto))
+                .isInstanceOf(DuplicateException.class);
+    }
+
+    @Test
+    @DisplayName("소셜 로그인 사용자가 처음 로그인하면 신규로 가입된다.")
+    void getOrCreateUserCreatesNewMember() {
+        //given
+        Map<String, Object> kakaoAccount = new HashMap<>();
+        kakaoAccount.put("email", "newsocial@kakao.com");
+        Map<String, Object> profile = new HashMap<>();
+        profile.put("nickname", "카카오닉네임");
+        kakaoAccount.put("profile", profile);
+
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("id", "kakao-id-1");
+        attributes.put("kakao_account", kakaoAccount);
+
+        OAuthAttributes oAuthAttributes = OAuthAttributes.ofKakao("id", attributes);
+
+        //when
+        Member result = memberService.getOrCreateUser(oAuthAttributes, SocialType.KAKAO);
+
+        //then
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getEmail().address()).isEqualTo("newsocial@kakao.com");
+        assertThat(memberRepository.findBySocialTypeAndSocialId(SocialType.KAKAO, "kakao-id-1")).isPresent();
+    }
+
+    @Test
+    @DisplayName("이미 가입된 소셜 사용자가 다시 로그인하면 기존 회원을 그대로 반환한다.")
+    void getOrCreateUserReturnsExistingMember() {
+        //given
+        Map<String, Object> kakaoAccount = new HashMap<>();
+        kakaoAccount.put("email", "existingsocial@kakao.com");
+        Map<String, Object> profile = new HashMap<>();
+        profile.put("nickname", "카카오닉네임");
+        kakaoAccount.put("profile", profile);
+
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("id", "kakao-id-2");
+        attributes.put("kakao_account", kakaoAccount);
+
+        OAuthAttributes oAuthAttributes = OAuthAttributes.ofKakao("id", attributes);
+        Member existing = memberService.getOrCreateUser(oAuthAttributes, SocialType.KAKAO);
+
+        //when
+        Member result = memberService.getOrCreateUser(oAuthAttributes, SocialType.KAKAO);
+
+        //then
+        assertThat(result.getId()).isEqualTo(existing.getId());
+        assertThat(memberRepository.findAll()).hasSize(1);
+    }
 
     private Member createMember
             (String email, String password, String username, String nickname) {
