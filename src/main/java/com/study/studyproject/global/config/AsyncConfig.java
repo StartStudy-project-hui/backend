@@ -6,18 +6,20 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @EnableAsync
 @Configuration
 public class AsyncConfig {
 
-    @Bean(name = "mailTaskExecutor")
-    public Executor mailTaskExecutor() {
+    @Bean(name = "mailExecutor")
+    public Executor mailExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(8);
-        executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("mail-async-");
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("mailExecutor-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         return executor;
     }

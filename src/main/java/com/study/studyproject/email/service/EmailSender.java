@@ -15,7 +15,7 @@ public class EmailSender {
 
     private final JavaMailSender mailSender;
 
-    @Async("mailTaskExecutor")
+    @Async("mailExecutor")
     public void send(String email, String code) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
